@@ -15,29 +15,150 @@
  * 4) в блочном алгоритме выделить память под блок размера b x b,
  *    а также полосы под ним и справа от него (можно объединить блок с вертикальной полосой).
  *    Выделение памяти производить 1 раз, в дальнейшем просто использовать меньший объем.
- *    Все матрицы хранить в одномерных массивах по строкам;
+ *
+ *    !Все матрицы хранить в одномерных массивах по строкам;!
+ *
  * 5) сравнить время последовательной и параллельной реализаций (с различным числом потоков),
  *    а также блочной и неблочной версий (определить наиболее эффективный размер блока).
  *    Измерять время собственно для выполняемого алгоритма
  *    (без подготовки данных и последующей проверки результата).
-
+ *
  * */
 
 
 #include <iostream>
+#include <vector>
+#include <cmath>
 #include "omp.h"
 
-/* Функция - Реализация "Традиционного алгоритма"(2.3-2.4) LU-разложения матрицы */
+/* Константа допустимой погрешности */
+const double EPS = 1e-7;
+
+
+
+/* Функция - Реализация "Традиционного алгоритма"(2.3-2.4) LU-разложения матрицы
+ *
+ *  A - входная матрица в виде одномерного массива по строкам
+ *  A_size - длина этого вектора
+ *  n - размерность матрицы
+ *  use_omp - вкл/выкл распараллеливания
+ *
+ * */
+
+double& get_elem(std::vector<double>& matrix, int row, int col, int n) {
+    return matrix[row * n + col];
+}
+
+void LU_Decomposition(std::vector<double>& A, const int& A_size, const int& n, bool use_omp = false){
+
+    for (int i = 0; i < n-1; i++){
+
+        #pragma omp parallel for if (use_omp)
+        for (int j = i + 1; j < n; j++){
+
+            A[j * n + i] /= A[i * n + i];
+
+            for (int k = i + 1; k < n; k++){
+                A[j * n + k] -= A[j * n + i] * A[i * n + k];
+            }
+        }
+    }
+}
 
 
 /* Функция - Реализация "Блочного алгоритма"(2.10) LU-разложения матрицы */
+void LU_decomposition_block();
 
 
-/* Функция - Обработка результатов */
+
+/* Функция вывода матрицы */
+void print(std::vector<double> matrix, int size){
+    for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; ++j) {
+                std::cout << matrix[i * size + j] << " ";
+            }
+            std::cout << std::endl;
+        }
+    std::cout << std::endl;
+}
+
+
+/* Функция умножения матриц */
+std::vector<double> matrix_multiply(const std::vector<double>& A, const std::vector<double>& B, int m, int n, int p) {
+    // Результирующая матрица C размером m x p
+    std::vector<double> C(m * p, 0.0); // Инициализируем нулями
+
+    // Умножение матриц
+    for (int i = 0; i < m; ++i) {
+        for (int j = 0; j < p; ++j) {
+            double sum = 0.0;
+            for (int k = 0; k < n; ++k) {
+                sum += A[i * n + k] * B[k * p + j]; // Доступ к элементам матриц
+            }
+            C[i * p + j] = sum; // Запись результата
+        }
+    }
+
+    return C;
+}
+
+
+/* Функция - Тестирование алгоритма на корректность результата */
+bool test_result(){
+
+    // Пример
+    std::vector<double> A = {2, 3, 1, 4, 7, -1, -2, -3, -4};
+    std::vector<double> A_copy(A);
+    int n = 3;
+    print(A, n);
+
+    LU_Decomposition(A, n * n, n);
+    print(A, n);
+
+
+    // Получаем L
+    std::vector<double> L(n * n, 0.0); // Инициализируем нулями
+
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (i == j) {
+                L[i * n + j] = 1.0; // Диагональные элементы равны 1
+            } else if (i > j) {
+                L[i * n + j] = A[i * n + j]; // Элементы ниже диагонали
+            }
+        }
+    }
+
+    // Получаем U
+    std::vector<double> U(n * n, 0.0); // Инициализируем нулями
+
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (i <= j) {
+                U[i * n + j] = A[i * n + j]; // Элементы на и выше диагонали
+            }
+        }
+    }
+
+
+    // A_new = L * U;
+    std::vector<double> A_new = matrix_multiply(L, U, n, n, n);
+
+    // Сравниваем исходную матрицу с восстановленной
+    for (int i = 0; i < A.size(); i++) {
+        if (abs(A_new[i] - A_copy[i]) > EPS) {
+                return false;
+        }
+    }
+    return true;
+}
+
 
 
 int main(){
+    if (test_result()){
+        std::cout << "TRUE";
+    }
 
-    std::cout << "Hello, World!" << std::endl;
     return EXIT_SUCCESS;
 }
