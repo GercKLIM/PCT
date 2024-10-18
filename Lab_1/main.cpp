@@ -27,9 +27,10 @@
 
 
 #include <iostream>
-#include <vector>
-#include <cmath>
-#include "omp.h"
+#include <vector> // Для доступа к типу std::vector
+#include "omp.h"  // Для распараллеливания вычислений
+#include <random> // Для генерации случайных чисел
+#include <ctime>  // Для инициализации генератора
 
 /* Константа допустимой погрешности */
 const double EPS = 1e-7;
@@ -45,10 +46,83 @@ const double EPS = 1e-7;
  *
  * */
 
-double& get_elem(std::vector<double>& matrix, int row, int col, int n) {
-    return matrix[row * n + col];
+
+/* Функция вывода матрицы */
+void print(std::vector<double> matrix, int size = 0){
+
+    for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; ++j) {
+                std::cout << matrix[i * size + j] << " ";
+            }
+            std::cout << std::endl;
+        }
+    std::cout << std::endl;
 }
 
+
+///* Функция умножения матриц (обычный алгоритм, для матриц различной размерности) */
+//std::vector<double> matrix_multiply(const std::vector<double>& A, const std::vector<double>& B, int m, int n, int p) {
+//    // Результирующая матрица C размером m x p
+//    std::vector<double> C(m * p, 0.0);
+//
+//    for (int i = 0; i < m; ++i) {
+//        for (int j = 0; j < p; ++j) {
+//            double sum = 0.0;
+//            for (int k = 0; k < n; ++k) {
+//                sum += A[i * n + k] * B[k * p + j];
+//            }
+//            C[i * p + j] = sum;
+//        }
+//    }
+//
+//    return C;
+//}
+
+/* Функция умножения матриц (обычный алгоритм) */
+std::vector<double> matrix_multiply(const std::vector<double>& A, const std::vector<double>& B, int n) {
+    // Результирующая матрица C размером m x p
+    std::vector<double> C(n * n, 0.0);
+
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            double sum = 0.0;
+            for (int k = 0; k < n; ++k) {
+                sum += A[i * n + k] * B[k * n + j];
+            }
+            C[i * n + j] = sum;
+        }
+    }
+
+    return C;
+}
+
+
+/* Функция умножения матриц (блочный алгоритм) */
+std::vector<double> matrix_multiply_block(const std::vector<double>& A, const std::vector<double>& B, int n, int block_size) {
+    std::vector<double> C(n * n, 0.0); // Результирующая матрица
+
+    // Проходим по блокам
+    for (int i = 0; i < n; i += block_size) {
+        for (int j = 0; j < n; j += block_size) {
+            for (int k = 0; k < n; k += block_size) {
+
+                // Перемножаем блоки
+                for (int ii = i; ii < std::min(i + block_size, n); ++ii) {
+                    for (int jj = j; jj < std::min(j + block_size, n); ++jj) {
+                        double sum = 0.0;
+                        for (int kk = k; kk < std::min(k + block_size, n); ++kk) {
+                            sum += A[ii * n + kk] * B[kk * n + jj];
+                        }
+                        C[ii * n + jj] = C[ii * n + jj] + sum;
+                    }
+                }
+            }
+        }
+    }
+    return C;
+}
+
+/* Функция реализация традиционного алгоритма LU-разложения */
 void LU_Decomposition(std::vector<double>& A, const int& A_size, const int& n, bool use_omp = false){
 
     for (int i = 0; i < n-1; i++){
@@ -65,41 +139,32 @@ void LU_Decomposition(std::vector<double>& A, const int& A_size, const int& n, b
     }
 }
 
-
 /* Функция - Реализация "Блочного алгоритма"(2.10) LU-разложения матрицы */
-void LU_decomposition_block();
+void LU_decomposition_block() {
 
-
-
-/* Функция вывода матрицы */
-void print(std::vector<double> matrix, int size){
-    for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; ++j) {
-                std::cout << matrix[i * size + j] << " ";
-            }
-            std::cout << std::endl;
-        }
-    std::cout << std::endl;
 }
 
 
-/* Функция умножения матриц */
-std::vector<double> matrix_multiply(const std::vector<double>& A, const std::vector<double>& B, int m, int n, int p) {
-    // Результирующая матрица C размером m x p
-    std::vector<double> C(m * p, 0.0); // Инициализируем нулями
+/* Функция - Создание случайного вектора размера n */
+std::vector<double> randvec(int n) {
 
-    // Умножение матриц
-    for (int i = 0; i < m; ++i) {
-        for (int j = 0; j < p; ++j) {
-            double sum = 0.0;
-            for (int k = 0; k < n; ++k) {
-                sum += A[i * n + k] * B[k * p + j]; // Доступ к элементам матриц
-            }
-            C[i * p + j] = sum; // Запись результата
-        }
+    // Границы для случайных чисел
+    double lower_bound = 0.0;
+    double upper_bound = 10.0;
+
+    // Создание вектора
+    std::vector<double> random_numbers;
+
+    // Инициализация генератора случайных чисел
+    std::mt19937 generator(static_cast<unsigned int>(std::time(0))); // Mersenne Twister
+    std::uniform_real_distribution<double> distribution(lower_bound, upper_bound);
+
+    // Заполнение вектора случайными числами
+    for (int i = 0; i < n; ++i) {
+        random_numbers.push_back(distribution(generator));
     }
 
-    return C;
+    return random_numbers;
 }
 
 
@@ -110,10 +175,10 @@ bool test_result(){
     std::vector<double> A = {2, 3, 1, 4, 7, -1, -2, -3, -4};
     std::vector<double> A_copy(A);
     int n = 3;
-    print(A, n);
+    //print(A, n);
 
     LU_Decomposition(A, n * n, n);
-    print(A, n);
+    //print(A, n);
 
 
     // Получаем L
@@ -142,7 +207,7 @@ bool test_result(){
 
 
     // A_new = L * U;
-    std::vector<double> A_new = matrix_multiply(L, U, n, n, n);
+    std::vector<double> A_new = matrix_multiply(L, U, n);
 
     // Сравниваем исходную матрицу с восстановленной
     for (int i = 0; i < A.size(); i++) {
@@ -155,10 +220,54 @@ bool test_result(){
 
 
 
-int main(){
-    if (test_result()){
-        std::cout << "TRUE";
+void time_test(){
+
+    int n = 1024; // Размерность матрицы
+
+    std::vector<double> A = randvec(n * n); // Случайная матрица, на которой тестируем
+    std::vector<double> A_copy(A);          // Копия A
+
+    double time_start = 0,  // Время старта отсчета
+           time_end = 0,    // Время конца отсчета
+           time_res = 0;    // Итоговое время
+
+
+    /* Один поток */
+
+    // Замеряем время
+    time_start = omp_get_wtime();
+    LU_Decomposition(A_copy, n * n, n, false);
+    time_end = omp_get_wtime();
+    time_res = time_end - time_start;
+    std::cout << "(1 threads) Speed time is " << time_res << std::endl;
+
+
+    /* Многа потоков */
+
+    //int num_of_threads = omp_get_max_threads(); // Максимальное возможное кол-во потоков
+
+    for (int i = 2; i <= 4; i = i + 2){
+
+        // Берем изначальный пример
+        A_copy = A;
+
+        // Устанавливаем кол-во потоков
+        omp_set_num_threads(i);
+
+        // Замеряем время
+        time_start = omp_get_wtime();
+        LU_Decomposition(A_copy, n * n, n, true);
+        time_end = omp_get_wtime();
+        time_res = time_end - time_start;
+        std::cout << "(" << i << " threads) Speed time is " << time_res << std::endl;
     }
+}
+
+
+
+int main(){
+    time_test();
+
 
     return EXIT_SUCCESS;
 }
