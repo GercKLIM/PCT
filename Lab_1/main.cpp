@@ -35,18 +35,6 @@
 /* Константа допустимой погрешности */
 const double EPS = 1e-7;
 
-
-
-/* Функция - Реализация "Традиционного алгоритма"(2.3-2.4) LU-разложения матрицы
- *
- *  A - входная матрица в виде одномерного массива по строкам
- *  A_size - длина этого вектора
- *  n - размерность матрицы
- *  use_omp - вкл/выкл распараллеливания
- *
- * */
-
-
 /* Функция вывода матрицы */
 void print(std::vector<double> matrix, int size = 0){
 
@@ -58,7 +46,6 @@ void print(std::vector<double> matrix, int size = 0){
         }
     std::cout << std::endl;
 }
-
 
 ///* Функция умножения матриц (обычный алгоритм, для матриц различной размерности) */
 //std::vector<double> matrix_multiply(const std::vector<double>& A, const std::vector<double>& B, int m, int n, int p) {
@@ -122,7 +109,23 @@ std::vector<double> matrix_multiply_block(const std::vector<double>& A, const st
     return C;
 }
 
-/* Функция реализация традиционного алгоритма LU-разложения */
+/* Функция обратного хода метода Гаусса */
+void reverse_Gauss(const std::vector<double>& A, const size_t n, std::vector<double>& b)
+{
+    for (int k = 0; k < n; ++k)
+        for (int i = k + 1; i < n; ++i)
+            b[i] -= A[i * n + k] * b[k];
+}
+
+
+/* Функция - Реализация "Традиционного алгоритма"(2.3-2.4) LU-разложения матрицы
+ *
+ *  A - входная матрица в виде одномерного массива по строкам
+ *  A_size - длина этого вектора
+ *  n - размерность матрицы
+ *  use_omp - вкл/выкл распараллеливания
+ *
+ * */
 void LU_Decomposition(std::vector<double>& A, const int& A_size, const int& n, bool use_omp = false){
 
     for (int i = 0; i < n-1; i++){
@@ -139,8 +142,10 @@ void LU_Decomposition(std::vector<double>& A, const int& A_size, const int& n, b
     }
 }
 
+
 /* Функция - Реализация "Блочного алгоритма"(2.10) LU-разложения матрицы */
-void LU_decomposition_block() {
+void LU_decomposition_block(std::vector<double>& A, const int& A_size, const int& n, const int& block_size, bool use_omp = false) {
+
 
 }
 
@@ -175,15 +180,11 @@ bool test_result(){
     std::vector<double> A = {2, 3, 1, 4, 7, -1, -2, -3, -4};
     std::vector<double> A_copy(A);
     int n = 3;
-    //print(A, n);
 
     LU_Decomposition(A, n * n, n);
-    //print(A, n);
-
 
     // Получаем L
     std::vector<double> L(n * n, 0.0); // Инициализируем нулями
-
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
             if (i == j) {
@@ -196,7 +197,6 @@ bool test_result(){
 
     // Получаем U
     std::vector<double> U(n * n, 0.0); // Инициализируем нулями
-
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
             if (i <= j) {
@@ -205,24 +205,25 @@ bool test_result(){
         }
     }
 
-
     // A_new = L * U;
     std::vector<double> A_new = matrix_multiply(L, U, n);
 
     // Сравниваем исходную матрицу с восстановленной
     for (int i = 0; i < A.size(); i++) {
         if (abs(A_new[i] - A_copy[i]) > EPS) {
-                return false;
+            std::cout << "FALSE" << std::endl;
+            return false;
         }
     }
+    std::cout << "TRUE" << std::endl;
     return true;
 }
 
+/* Функция - Тестирование алгоритма на время выполнения
+ * n - размерность матрицы */
+void time_test(int n = 1024){
 
-
-void time_test(){
-
-    int n = 1024; // Размерность матрицы
+    //int n = 1024; // Размерность матрицы
 
     std::vector<double> A = randvec(n * n); // Случайная матрица, на которой тестируем
     std::vector<double> A_copy(A);          // Копия A
@@ -239,7 +240,7 @@ void time_test(){
     LU_Decomposition(A_copy, n * n, n, false);
     time_end = omp_get_wtime();
     time_res = time_end - time_start;
-    std::cout << "(1 threads) Speed time is " << time_res << std::endl;
+    std::cout << "(1 threads, n = " << n << ") Speed time is " << time_res << " (sec)" << std::endl;
 
 
     /* Многа потоков */
@@ -259,14 +260,15 @@ void time_test(){
         LU_Decomposition(A_copy, n * n, n, true);
         time_end = omp_get_wtime();
         time_res = time_end - time_start;
-        std::cout << "(" << i << " threads) Speed time is " << time_res << std::endl;
+        std::cout << "(" << i << " threads, n = " << n << ") Speed time is " << time_res << " (sec)"<< std::endl;
     }
 }
 
 
-
 int main(){
-    time_test();
+    time_test(1024);
+    //time_test(2048);
+    //test_result();
 
 
     return EXIT_SUCCESS;
