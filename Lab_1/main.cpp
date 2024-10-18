@@ -129,7 +129,7 @@ void reverse_Gauss(const std::vector<double>& A, const size_t n, std::vector<dou
 }
 
 /* Функция обратного хода метода Гаусса */
-void reverse_Gauss_all(std::vector<double> A, std::vector<double> U, int m, int n, int b, int i){
+void reverse_Gauss_all(std::vector<double>& A, std::vector<double>& U, int m, int n, int b, int i){
     double t = 0;
     std::vector<double> temp(b, 0.0);
 
@@ -186,16 +186,18 @@ void LU_Decomposition(std::vector<double>& A, const int& A_size, const int& n, b
  * m >= n
  *
  * */
-void LU_Decomposition(std::vector<double>& A, const int& A_size, const int& m, const int& n){
+void LU_Decomposition(std::vector<double>& A, const int& A_size, const int& m, const int& n, bool use_omp = false){
 
     for (int i = 0; i < ((m - 1 < n) ? m-1 : n); i++){
 
-        #pragma omp parallel for
+
         for (int j = i + 1; j < m; j++){
 
             A[j * n + i] /= A[i * n + i];
 
             if (i < n) {
+
+                #pragma omp parallel for if (use_omp)
                 for (int k = i + 1; k < n; k++){
                     A[j * n + k] -= A[j * n + i] * A[i * n + k];
                 }
@@ -252,16 +254,9 @@ void LU_decomposition_block(std::vector<double>& A, const int& A_size, const int
                 }
             }
         }
+
+
         //print(L22, block_size, block_size);
-//        // Получаем L32
-//        for (int j = i + block_size; j < n; ++j) {
-//            for (int k = i; k < i + block_size; ++k){
-//                if (j < k) {
-//                    L32[(j - i) * block_size + (k - i)] = A[j * n + k];
-//                }
-//
-//            }
-//        }
 
         // Получаем L32
         count = 0;
@@ -280,7 +275,7 @@ void LU_decomposition_block(std::vector<double>& A, const int& A_size, const int
                 U23[count++] = A[j * n + k];
             }
         }
-        print(U23, block_size, n - block_size);
+        //print(U23, block_size, n - block_size);
 
         // Находим U23 обратным ходом метода Гаусса
         reverse_Gauss_all(L22, U23, n, n, block_size, i);
@@ -294,6 +289,8 @@ void LU_decomposition_block(std::vector<double>& A, const int& A_size, const int
         }
 
         // Пункт 3)
+
+        #pragma omp parallel for if (use_omp)
         for (int j = 0; j < n - i - block_size; ++j) {
             for (int k = 0; k < block_size; ++k) {
                 for (int p = 0; p < n - i - block_size; ++p) {
@@ -304,6 +301,8 @@ void LU_decomposition_block(std::vector<double>& A, const int& A_size, const int
         }
     }
 }
+
+
 
 
 /* Функция - Создание случайного вектора размера n */
@@ -327,6 +326,8 @@ std::vector<double> randvec(int n) {
 
     return random_numbers;
 }
+
+
 
 
 /* Функция - Тестирование алгоритма на корректность результата */
@@ -389,9 +390,9 @@ void matrix_dif(std::vector<double> A, std::vector<double> B, int m, int n) {
 }
 /* Функция - Тестирование алгоритма на время выполнения
  * n - размерность матрицы */
-void time_test(int n = 1024){
+void time_test_1(){
 
-    //int n = 1024; // Размерность матрицы
+    int n = 1024; // Размерность матрицы
 
     std::vector<double> A = randvec(n * n); // Случайная матрица, на которой тестируем
     std::vector<double> A_copy(A);          // Копия A
@@ -401,6 +402,7 @@ void time_test(int n = 1024){
            time_res = 0;    // Итоговое время
 
 
+    std::cout << "TRADITIONAL ALGORITHM" << std::endl;
     /* Один поток */
 
     // Замеряем время
@@ -432,19 +434,68 @@ void time_test(int n = 1024){
     }
 }
 
+void time_test_2(){
 
-int main(){
+    int n = 1024;       // Размерность матрицы
+    int block_size = 512; // Размер блока
+
+    std::vector<double> A = randvec(n * n); // Случайная матрица, на которой тестируем
+    std::vector<double> A_copy(A);          // Копия A
+
+
+    double time_start = 0,  // Время старта отсчета
+           time_end = 0,    // Время конца отсчета
+           time_res = 0;    // Итоговое время
+
+
+    std::cout << "BLOCK ALGORITHM" << std::endl;
+    /* Один поток */
+
+    // Замеряем время
+    time_start = omp_get_wtime();
+    LU_decomposition_block(A_copy, n * n, n, block_size, false);
+    time_end = omp_get_wtime();
+    time_res = time_end - time_start;
+    std::cout << "(1 threads, n = " << n << ") Speed time is " << time_res << " (sec)" << std::endl;
+
+
+    /* Многа потоков */
+
+    //int num_of_threads = omp_get_max_threads(); // Максимальное возможное кол-во потоков
+
+    for (int i = 2; i <= 4; i = i + 2) {
+
+        // Берем изначальный пример
+        A_copy = A;
+
+        // Устанавливаем кол-во потоков
+        omp_set_num_threads(i);
+
+        // Замеряем время
+        time_start = omp_get_wtime();
+        LU_decomposition_block(A_copy, n * n, n, block_size, true);
+        time_end = omp_get_wtime();
+
+        time_res = time_end - time_start;
+        std::cout << "(" << i << " threads, n = " << n << ") Speed time is " << time_res << " (sec)"<< std::endl;
+    }
+}
+
+void test(){
+
     //time_test(1024);
     //time_test(2048);
     //test_result();
 
     int n = 8,
-        m = 8,
-        block_size = 4;
+            m = 8,
+            block_size = 4;
 
 
+    //std::vector<double> A = randvec(n * m);
     std::vector<double> A = randvec(n * m);
-    std::vector<double> A_copy(A), A_copy2(A);
+    std::vector<double> A_copy(A);
+    std::vector<double> A_copy2(A);
 
 
     std::cout << "--------------------------" << std::endl;
@@ -457,7 +508,7 @@ int main(){
     print(A_copy, m, n);
 
 
-    LU_decomposition_block(A_copy2, n * m, n, block_size, false);
+    LU_decomposition_block(A_copy2, n * m, n, block_size);
 
     std::cout << "--------------------------" << std::endl;
     std::cout << "A_LU2 =" << std::endl;
@@ -466,6 +517,12 @@ int main(){
     std::cout << "--------------------------" << std::endl;
     std::cout << "difference =" << std::endl;
     matrix_dif(A_copy, A_copy2, m, n);
+}
+int main(){
+    time_test_2();
+
+
+
 
     return EXIT_SUCCESS;
 }
