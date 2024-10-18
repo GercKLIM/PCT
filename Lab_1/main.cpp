@@ -31,19 +31,31 @@
 #include "omp.h"  // Для распараллеливания вычислений
 #include <random> // Для генерации случайных чисел
 #include <ctime>  // Для инициализации генератора
+#include <cmath>
 
 /* Константа допустимой погрешности */
 const double EPS = 1e-7;
 
-/* Функция вывода матрицы */
-void print(std::vector<double> matrix, int size = 0){
+/* Функция вывода матрицы произвольной */
+void print(std::vector<double> matrix, int m, int n){
 
-    for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; ++j) {
-                std::cout << matrix[i * size + j] << " ";
+    for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; ++j) {
+                std::cout << matrix[i * n + j] << " ";
             }
             std::cout << std::endl;
         }
+    std::cout << std::endl;
+}
+
+void print(std::vector<double> matrix, int n){
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; ++j) {
+            std::cout << matrix[i * n + j] << " ";
+        }
+        std::cout << std::endl;
+    }
     std::cout << std::endl;
 }
 
@@ -110,11 +122,37 @@ std::vector<double> matrix_multiply_block(const std::vector<double>& A, const st
 }
 
 /* Функция обратного хода метода Гаусса */
-void reverse_Gauss(const std::vector<double>& A, const size_t n, std::vector<double>& b)
-{
+void reverse_Gauss(const std::vector<double>& A, const size_t n, std::vector<double>& b) {
     for (int k = 0; k < n; ++k)
         for (int i = k + 1; i < n; ++i)
             b[i] -= A[i * n + k] * b[k];
+}
+
+/* Функция обратного хода метода Гаусса */
+void reverse_Gauss_all(std::vector<double> A, std::vector<double> U, int m, int n, int b, int i){
+    double t = 0;
+    std::vector<double> temp(b, 0.0);
+
+    // Цикл по стобцам
+    for (int k = 0; k < (n - i - b); ++k) {
+
+        for (int j = 0; j < b; ++j) {
+            temp[j] = U[j * (n - i - b) + k];
+        }
+
+        for (int p = 0; p < b; ++p) {
+            t = temp[p];
+            for (int j = p - 1; j >= 0; --j) {
+                t -= A[p * b + j] * temp[j];
+            }
+
+            temp[p] = t / A[p * b + p];
+        }
+
+        for (int j = 0; j < b; ++j) {
+            U[j * (n - i - b) + k] = temp[j];
+        }
+    }
 }
 
 
@@ -142,11 +180,129 @@ void LU_Decomposition(std::vector<double>& A, const int& A_size, const int& n, b
     }
 }
 
+/* Функция - LU-разложения для произвольной матрицы
+ * m - число строк
+ * n - число столбцов
+ * m >= n
+ *
+ * */
+void LU_Decomposition(std::vector<double>& A, const int& A_size, const int& m, const int& n){
+
+    for (int i = 0; i < ((m - 1 < n) ? m-1 : n); i++){
+
+        #pragma omp parallel for
+        for (int j = i + 1; j < m; j++){
+
+            A[j * n + i] /= A[i * n + i];
+
+            if (i < n) {
+                for (int k = i + 1; k < n; k++){
+                    A[j * n + k] -= A[j * n + i] * A[i * n + k];
+                }
+            }
+        }
+    }
+}
+
 
 /* Функция - Реализация "Блочного алгоритма"(2.10) LU-разложения матрицы */
 void LU_decomposition_block(std::vector<double>& A, const int& A_size, const int& n, const int& block_size, bool use_omp = false) {
 
+    std::vector<double> temp_col(n * block_size, 0.0);           // Временная колонка
+    std::vector<double> L22(block_size * block_size, 0.0);       // L22
+    std::vector<double> L32(block_size * (n - block_size), 0.0); // L32
+    std::vector<double> U23(block_size * (n - block_size), 0.0); // U23
 
+
+
+    for (int i = 0; i < n - 1; i += block_size) {
+
+        int count = 0;
+        // Записываем значения A во временную колонку
+        for (int j = i; j < n; ++j){
+            for (int k = i; k < i + block_size; ++k){
+                temp_col[count++] = A[j * n + k];
+
+                //std::cout << A[j * n + k] << std::endl;
+            }
+        }
+
+        // LU-разложение для временной колонки
+        //print(temp_col, n, block_size);
+        LU_Decomposition(temp_col, (n - i) * block_size, n - i, block_size);
+        //print(temp_col, n, block_size);
+
+        // Записываем разложение обратно в A
+        count = 0;
+        for (int j = i; j < n; ++j){
+            for (int k = i; k < i + block_size; ++k){
+                A[j * n + k] = temp_col[count++];
+            }
+        }
+
+        // Получаем L22
+        for (int j = i; j < i + block_size; ++j) {
+            for (int k = i; k < i + block_size; ++k){
+                if (j > k) {
+                    L22[(j - i) * block_size + (k - i)] = A[j * n + k];
+                }
+
+                if (j == k) {
+                    L22[(j - i) * block_size + (k - i)] = 1.0;
+                }
+            }
+        }
+        //print(L22, block_size, block_size);
+//        // Получаем L32
+//        for (int j = i + block_size; j < n; ++j) {
+//            for (int k = i; k < i + block_size; ++k){
+//                if (j < k) {
+//                    L32[(j - i) * block_size + (k - i)] = A[j * n + k];
+//                }
+//
+//            }
+//        }
+
+        // Получаем L32
+        count = 0;
+        for (int j = i + block_size; j < n; ++j) {
+            for (int k = i; k < i + block_size; ++k){
+                L32[count++] = A[j * n + k];
+            }
+        }
+
+        //print(L32, block_size, n - block_size);
+
+        // Получаем U23
+        count = 0;
+        for (int j = i; j < i + block_size; ++j) {
+            for (int k = i + block_size; k < n; ++k){
+                U23[count++] = A[j * n + k];
+            }
+        }
+        print(U23, block_size, n - block_size);
+
+        // Находим U23 обратным ходом метода Гаусса
+        reverse_Gauss_all(L22, U23, n, n, block_size, i);
+
+        // Записываем обратно в A
+        count = 0;
+        for (int j = i; j < i + block_size; ++j){
+            for (int k = i + block_size; k < n; ++k){
+                A[j * n + k] = U23[count++];
+            }
+        }
+
+        // Пункт 3)
+        for (int j = 0; j < n - i - block_size; ++j) {
+            for (int k = 0; k < block_size; ++k) {
+                for (int p = 0; p < n - i - block_size; ++p) {
+                    A[(j + i + block_size) * n + (p + i + block_size)] -=
+                            L32[j * block_size + k] * U23[k * (n - i - block_size) + p];
+                }
+            }
+        }
+    }
 }
 
 
@@ -177,11 +333,14 @@ std::vector<double> randvec(int n) {
 bool test_result(){
 
     // Пример
-    std::vector<double> A = {2, 3, 1, 4, 7, -1, -2, -3, -4};
+    //std::vector<double> A = {2, 3, 1, 4, 7, -1, -2, -3, -4};
+    std::vector<double> A = randvec(12);
     std::vector<double> A_copy(A);
     int n = 3;
 
+    //print(A, m, n);
     LU_Decomposition(A, n * n, n);
+    //print(A, m, n);
 
     // Получаем L
     std::vector<double> L(n * n, 0.0); // Инициализируем нулями
@@ -219,6 +378,15 @@ bool test_result(){
     return true;
 }
 
+void matrix_dif(std::vector<double> A, std::vector<double> B, int m, int n) {
+    std::vector res(m * n, 0.0);
+    for (int i = 0; i < m; ++i) {
+        for (int j = 0; j < n; ++j){
+            res[i * n + j] = A[i * n + j] - B[i * n + j];
+        }
+    }
+    print(res, m, n);
+}
 /* Функция - Тестирование алгоритма на время выполнения
  * n - размерность матрицы */
 void time_test(int n = 1024){
@@ -266,10 +434,38 @@ void time_test(int n = 1024){
 
 
 int main(){
-    time_test(1024);
+    //time_test(1024);
     //time_test(2048);
     //test_result();
 
+    int n = 8,
+        m = 8,
+        block_size = 4;
+
+
+    std::vector<double> A = randvec(n * m);
+    std::vector<double> A_copy(A), A_copy2(A);
+
+
+    std::cout << "--------------------------" << std::endl;
+    std::cout << "A =" << std::endl;
+    print(A, m, n);
+    LU_Decomposition(A_copy, n * m, m, n);
+
+    std::cout << "--------------------------" << std::endl;
+    std::cout << "A_LU1 =" << std::endl;
+    print(A_copy, m, n);
+
+
+    LU_decomposition_block(A_copy2, n * m, n, block_size, false);
+
+    std::cout << "--------------------------" << std::endl;
+    std::cout << "A_LU2 =" << std::endl;
+    print(A_copy2, m, n);
+
+    std::cout << "--------------------------" << std::endl;
+    std::cout << "difference =" << std::endl;
+    matrix_dif(A_copy, A_copy2, m, n);
 
     return EXIT_SUCCESS;
 }
