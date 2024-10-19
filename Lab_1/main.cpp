@@ -139,6 +139,7 @@ void reverse_Gauss_all(std::vector<double>& A, std::vector<double>& U, int m, in
     // Цикл по стобцам
     for (int k = 0; k < (n - i - b); ++k) {
 
+
         for (int j = 0; j < b; ++j) {
             temp[j] = U[j * (n - i - b) + k];
         }
@@ -152,6 +153,37 @@ void reverse_Gauss_all(std::vector<double>& A, std::vector<double>& U, int m, in
             temp[p] = t / A[p * b + p];
         }
 
+
+        for (int j = 0; j < b; ++j) {
+            U[j * (n - i - b) + k] = temp[j];
+        }
+    }
+}
+
+/* Функция обратного хода метода Гаусса */
+void reverse_Gauss_all_parallel(std::vector<double>& A, std::vector<double>& U, int m, int n, int b, int i){
+    double t = 0;
+    std::vector<double> temp(b, 0.0);
+
+    // Цикл по стобцам
+    for (int k = 0; k < (n - i - b); ++k) {
+
+        //#pragma omp parallel for
+        for (int j = 0; j < b; ++j) {
+            temp[j] = U[j * (n - i - b) + k];
+        }
+
+        #pragma omp parallel for
+        for (int p = 0; p < b; ++p) {
+            t = temp[p];
+            for (int j = p - 1; j >= 0; --j) {
+                t -= A[p * b + j] * temp[j];
+            }
+
+            temp[p] = t / A[p * b + p];
+        }
+
+        //#pragma omp parallel for
         for (int j = 0; j < b; ++j) {
             U[j * (n - i - b) + k] = temp[j];
         }
@@ -193,14 +225,12 @@ void LU_Decomposition(std::vector<double>& A, const int& A_size, const int& m, c
 
     for (int i = 0; i < ((m - 1 < n) ? m-1 : n); i++){
 
-
+//        #pragma omp parallel for if (use_omp)
         for (int j = i + 1; j < m; j++){
 
             A[j * n + i] /= A[i * n + i];
 
             if (i < n) {
-
-                #pragma omp parallel for if (use_omp)
                 for (int k = i + 1; k < n; k++){
                     A[j * n + k] -= A[j * n + i] * A[i * n + k];
                 }
@@ -211,7 +241,7 @@ void LU_Decomposition(std::vector<double>& A, const int& A_size, const int& m, c
 
 
 /* Функция - Реализация "Блочного алгоритма"(2.10) LU-разложения матрицы */
-void LU_decomposition_block(std::vector<double>& A, const int& A_size, const int& n, const int& block_size, bool use_omp = false) {
+void LU_decomposition_block(std::vector<double>& A, const int& A_size, const int& n, const int& block_size) {
 
     std::vector<double> temp_col(n * block_size, 0.0);           // Временная колонка
     std::vector<double> L22(block_size * block_size, 0.0);       // L22
@@ -231,11 +261,13 @@ void LU_decomposition_block(std::vector<double>& A, const int& A_size, const int
         }
 
         // LU-разложение для временной колонки
-        LU_Decomposition(temp_col, (n - i) * block_size, n - i, block_size);
+        LU_Decomposition(temp_col, (n - i) * block_size, n - i, block_size/*, true*/);
 
 
         // Записываем разложение обратно в A
         count = 0;
+
+
         for (int j = i; j < n; ++j){
             for (int k = i; k < i + block_size; ++k){
                 A[j * n + k] = temp_col[count++];
@@ -255,9 +287,6 @@ void LU_decomposition_block(std::vector<double>& A, const int& A_size, const int
             }
         }
 
-
-        //print(L22, block_size, block_size);
-
         // Получаем L32
         count = 0;
         for (int j = i + block_size; j < n; ++j) {
@@ -266,8 +295,6 @@ void LU_decomposition_block(std::vector<double>& A, const int& A_size, const int
             }
         }
 
-        //print(L32, block_size, n - block_size);
-
         // Получаем U23
         count = 0;
         for (int j = i; j < i + block_size; ++j) {
@@ -275,10 +302,11 @@ void LU_decomposition_block(std::vector<double>& A, const int& A_size, const int
                 U23[count++] = A[j * n + k];
             }
         }
-        //print(U23, block_size, n - block_size);
+
 
         // Находим U23 обратным ходом метода Гаусса
         reverse_Gauss_all(L22, U23, n, n, block_size, i);
+        //reverse_Gauss_all_parallel(L22, U23, n, n, block_size, i);
 
         // Записываем обратно в A
         count = 0;
@@ -289,8 +317,6 @@ void LU_decomposition_block(std::vector<double>& A, const int& A_size, const int
         }
 
         // Пункт 3)
-
-        #pragma omp parallel for if (use_omp)
         for (int j = 0; j < n - i - block_size; ++j) {
             for (int k = 0; k < block_size; ++k) {
                 for (int p = 0; p < n - i - block_size; ++p) {
@@ -302,6 +328,96 @@ void LU_decomposition_block(std::vector<double>& A, const int& A_size, const int
     }
 }
 
+
+void LU_decomposition_block_parallel(std::vector<double>& A, const int& A_size, const int& n, const int& block_size) {
+
+    std::vector<double> temp_col(n * block_size, 0.0);           // Временная колонка
+    std::vector<double> L22(block_size * block_size, 0.0);       // L22
+    std::vector<double> L32(block_size * (n - block_size), 0.0); // L32
+    std::vector<double> U23(block_size * (n - block_size), 0.0); // U23
+
+
+//#pragma omp parallel for
+    for (int i = 0; i < n - 1; i += block_size) {
+
+        int count = 0;
+        // Записываем значения A во временную колонку
+//        #pragma omp parallel for
+        for (int j = i; j < n; ++j){
+            for (int k = i; k < i + block_size; ++k){
+                temp_col[count++] = A[j * n + k];
+            }
+        }
+
+        // LU-разложение для временной колонки
+        LU_Decomposition(temp_col, (n - i) * block_size, n - i, block_size, false);
+
+
+        // Записываем разложение обратно в A
+        count = 0;
+//        #pragma omp parallel for
+        for (int j = i; j < n; ++j){
+            for (int k = i; k < i + block_size; ++k){
+                A[j * n + k] = temp_col[count++];
+            }
+        }
+
+        // Получаем L22
+        #pragma omp parallel for
+        for (int j = i; j < i + block_size; ++j) {
+            for (int k = i; k < i + block_size; ++k){
+                if (j > k) {
+                    L22[(j - i) * block_size + (k - i)] = A[j * n + k];
+                }
+
+                if (j == k) {
+                    L22[(j - i) * block_size + (k - i)] = 1.0;
+                }
+            }
+        }
+
+        // Получаем L32
+        count = 0;
+//        #pragma omp parallel for
+        for (int j = i + block_size; j < n; ++j) {
+            for (int k = i; k < i + block_size; ++k){
+                L32[count++] = A[j * n + k];
+            }
+        }
+
+        // Получаем U23
+        count = 0;
+//        #pragma omp parallel for
+        for (int j = i; j < i + block_size; ++j) {
+            for (int k = i + block_size; k < n; ++k){
+                U23[count++] = A[j * n + k];
+            }
+        }
+
+        // Находим U23 обратным ходом метода Гаусса
+        reverse_Gauss_all(L22, U23, n, n, block_size, i);
+
+        // Записываем обратно в A
+        count = 0;
+//        #pragma omp parallel for
+        for (int j = i; j < i + block_size; ++j){
+            for (int k = i + block_size; k < n; ++k){
+                A[j * n + k] = U23[count++];
+            }
+        }
+
+        // Пункт 3)
+        #pragma omp parallel for
+        for (int j = 0; j < n - i - block_size; ++j) {
+            for (int k = 0; k < block_size; ++k) {
+                for (int p = 0; p < n - i - block_size; ++p) {
+                    A[(j + i + block_size) * n + (p + i + block_size)] -=
+                            L32[j * block_size + k] * U23[k * (n - i - block_size) + p];
+                }
+            }
+        }
+    }
+}
 
 /* Функция - Создание случайного вектора размера n */
 std::vector<double> randvec(int n) {
@@ -453,7 +569,7 @@ void time_test_2(){
 
     // Замеряем время
     time_start = omp_get_wtime();
-    LU_decomposition_block(A_copy, n * n, n, block_size, false);
+    LU_decomposition_block(A_copy, n * n, n, block_size);
     time_end = omp_get_wtime();
     time_res = time_end - time_start;
     std::cout << "(1 threads, n = " << n << ") Speed time is " << time_res << " (sec)" << std::endl;
@@ -473,7 +589,7 @@ void time_test_2(){
 
         // Замеряем время
         time_start = omp_get_wtime();
-        LU_decomposition_block(A_copy, n * n, n, block_size, true);
+        LU_decomposition_block_parallel(A_copy, n * n, n, block_size);
         time_end = omp_get_wtime();
 
         time_res = time_end - time_start;
