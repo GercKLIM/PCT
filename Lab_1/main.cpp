@@ -77,6 +77,7 @@ void print(std::vector<double> matrix, int n){
 //    return C;
 //}
 
+
 /* Функция умножения матриц (обычный алгоритм) */
 std::vector<double> matrix_multiply(const std::vector<double>& A, const std::vector<double>& B, int n) {
     // Результирующая матрица C размером m x p
@@ -121,12 +122,14 @@ std::vector<double> matrix_multiply_block(const std::vector<double>& A, const st
     return C;
 }
 
+
 /* Функция обратного хода метода Гаусса */
 void reverse_Gauss(const std::vector<double>& A, const size_t n, std::vector<double>& b) {
     for (int k = 0; k < n; ++k)
         for (int i = k + 1; i < n; ++i)
             b[i] -= A[i * n + k] * b[k];
 }
+
 
 /* Функция обратного хода метода Гаусса */
 void reverse_Gauss_all(std::vector<double>& A, std::vector<double>& U, int m, int n, int b, int i){
@@ -224,15 +227,12 @@ void LU_decomposition_block(std::vector<double>& A, const int& A_size, const int
         for (int j = i; j < n; ++j){
             for (int k = i; k < i + block_size; ++k){
                 temp_col[count++] = A[j * n + k];
-
-                //std::cout << A[j * n + k] << std::endl;
             }
         }
 
         // LU-разложение для временной колонки
-        //print(temp_col, n, block_size);
         LU_Decomposition(temp_col, (n - i) * block_size, n - i, block_size);
-        //print(temp_col, n, block_size);
+
 
         // Записываем разложение обратно в A
         count = 0;
@@ -303,8 +303,6 @@ void LU_decomposition_block(std::vector<double>& A, const int& A_size, const int
 }
 
 
-
-
 /* Функция - Создание случайного вектора размера n */
 std::vector<double> randvec(int n) {
 
@@ -326,8 +324,6 @@ std::vector<double> randvec(int n) {
 
     return random_numbers;
 }
-
-
 
 
 /* Функция - Тестирование алгоритма на корректность результата */
@@ -379,8 +375,9 @@ bool test_result(){
     return true;
 }
 
+
 void matrix_dif(std::vector<double> A, std::vector<double> B, int m, int n) {
-    std::vector res(m * n, 0.0);
+    std::vector<double> res(m * n, 0.0);
     for (int i = 0; i < m; ++i) {
         for (int j = 0; j < n; ++j){
             res[i * n + j] = A[i * n + j] - B[i * n + j];
@@ -388,6 +385,8 @@ void matrix_dif(std::vector<double> A, std::vector<double> B, int m, int n) {
     }
     print(res, m, n);
 }
+
+
 /* Функция - Тестирование алгоритма на время выполнения
  * n - размерность матрицы */
 void time_test_1(){
@@ -433,6 +432,7 @@ void time_test_1(){
         std::cout << "(" << i << " threads, n = " << n << ") Speed time is " << time_res << " (sec)"<< std::endl;
     }
 }
+
 
 void time_test_2(){
 
@@ -481,6 +481,7 @@ void time_test_2(){
     }
 }
 
+
 void test(){
 
     //time_test(1024);
@@ -488,8 +489,8 @@ void test(){
     //test_result();
 
     int n = 8,
-            m = 8,
-            block_size = 4;
+        m = 8,
+        block_size = 4;
 
 
     //std::vector<double> A = randvec(n * m);
@@ -518,11 +519,14 @@ void test(){
     std::cout << "difference =" << std::endl;
     matrix_dif(A_copy, A_copy2, m, n);
 }
+
+
 int main(){
+
+
+    time_test_1();
     time_test_2();
-
-
-
+    std::cout << "Complete!" << std::endl;
 
     return EXIT_SUCCESS;
 }
