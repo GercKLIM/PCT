@@ -1,0 +1,32 @@
+//void LU_decomposition_2(std::vector<double> A, const int& n, const bool& if_omp_use) {
+//
+//    double sum1;
+//    #pragma omp parallel for default(none) shared(A, n) if (if_omp_use) //schedule(dynamic)
+//    for (int j = 1; j < n; ++j)
+//        A[j * n] = A[j * n] / A[0];   //first layer
+//
+//    for (int i = 1; i < n; ++i)
+//    {
+//        //sum1 = 0.0;
+//        //#pragma omp parallel for default(none) shared(matr, i) private(sum1) //schedule(dynamic)
+//        for (int j = i; j < n; ++j)
+//        {
+//            sum1 = 0.0;
+//            for (int k = 0; k < i; ++k)
+//            {
+//                sum1 += A[i * n + k] * A[k * n + j];
+//            }
+//            A[n * i + j] -= sum1; // "U" elements
+//        }
+//        //#pragma omp parallel for default(none) shared(matr,i) private(sum1) //schedule(dynamic)
+//        for (int j = i + 1; j < n; ++j)
+//        {
+//            sum1 = 0.0;
+//            for (int k = 0; k < i; ++k)
+//            {
+//                sum1 += A[j * n + k] * A[k * n + i];
+//            }
+//            A[n * j + i] = (A[n * j + i] - sum1) / A[n * i + i];
+//        }
+//    }
+//}

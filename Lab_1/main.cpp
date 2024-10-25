@@ -438,6 +438,7 @@ void test(){
 }
 
 void time_test(){
+
     int n = 1024;          /* Размерность матрицы */
     int block_size = 128; /* Размерность блока для блочного алгоритма */
 
@@ -448,7 +449,7 @@ void time_test(){
 
 void make_data_for_grid(){
 
-    std::vector<int> ns = {1024/*, 2048, 4096, 8192*/};          /* Размерность матрицы */
+    std::vector<int> ns = {1024};          /* Размерность матрицы */
     int block_size = 64; /* Размерность блока для блочного алгоритма */
     std::ofstream file1, file2;
     int n;
