@@ -31,6 +31,7 @@
 #include "omp.h"  // Для распараллеливания вычислений
 #include <random> // Для генерации случайных чисел
 #include <ctime>  // Для инициализации генератора
+#include <fstream>// Для работы с файлами
 
 
 
@@ -127,6 +128,7 @@ std::vector<double> matrix_multiply_block(const std::vector<double>& A, const st
  * */
 void LU_Decomposition(std::vector<double>& A, const int& n, bool if_omp_use = false){
 
+/**///#pragma omp parallel for default(none) shared(A, n) if (if_omp_use) //schedule(dynamic)
     for (int i = 0; i < n-1; i++){
 
         #pragma omp parallel for if (if_omp_use)
@@ -140,6 +142,8 @@ void LU_Decomposition(std::vector<double>& A, const int& n, bool if_omp_use = fa
         }
     }
 }
+
+
 
 /* Функция - Обратный ход метода Гаусса */
 void back_gauss(std::vector<double>& U23, std::vector<double>& L22, const int& i, const int& block_size, const int& n, double& sum, const bool& if_omp_use) {
@@ -303,13 +307,14 @@ std::vector<double> matrix_dif(std::vector<double> A, std::vector<double> B, int
 }
 
 /* Функция - Тестирование Традиционного алгоритма на время выполнения */
-void time_test_1(){
+std::vector<std::vector<double>> time_test_1(int n){
 
-    int n = 1024; // Размерность матрицы
+    //int n = 1024; // Размерность матрицы
 
     std::vector<double> A = randvec(n * n); // Случайная матрица, на которой тестируем
     std::vector<double> A_copy(A);          // Копия A
 
+    std::vector<std::vector<double>> times;
     double time_start = 0,  // Время старта отсчета
            time_end = 0,    // Время конца отсчета
            time_res = 0;    // Итоговое время
@@ -324,7 +329,7 @@ void time_test_1(){
     time_end = omp_get_wtime();
     time_res = time_end - time_start;
     std::cout << "(1 threads, n = " << n << ") Speed time is " << time_res << " (sec)" << std::endl;
-
+    times.push_back({1, time_res});
 
     /* Многа потоков */
 
@@ -344,19 +349,23 @@ void time_test_1(){
         time_end = omp_get_wtime();
         time_res = time_end - time_start;
         std::cout << "(" << i << " threads, n = " << n << ") Speed time is " << time_res << " (sec)"<< std::endl;
+        times.push_back({1.0 * i, time_res});
     }
+
+
+    return times;
 }
 
 /* Функция - Тестирование Блочного алгоритма на время выполнения */
-void time_test_2(){
+std::vector<std::vector<double>> time_test_2(int n, int block_size){
 
-    int n = 1024;       // Размерность матрицы
-    int block_size = 32; // Размер блока
+    //int n = 1024;       // Размерность матрицы
+    //int block_size = 64; // Размер блока
 
     std::vector<double> A = randvec(n * n); // Случайная матрица, на которой тестируем
     std::vector<double> A_copy(A);          // Копия A
 
-
+    std::vector<std::vector<double>> times;
     double time_start = 0,  // Время старта отсчета
            time_end = 0,    // Время конца отсчета
            time_res = 0;    // Итоговое время
@@ -368,11 +377,12 @@ void time_test_2(){
     // Замеряем время
     time_start = omp_get_wtime();
     LU_decomposition_block(A_copy, n, block_size, false);
+
     time_end = omp_get_wtime();
 
     time_res = time_end - time_start;
-    std::cout << "(1 threads, n = " << n << ") Speed time is " << time_res << " (sec)" << std::endl;
-
+    std::cout << "(1 threads, n = " << n << ", B = " << block_size << ") Speed time is " << time_res << " (sec)" << std::endl;
+    times.push_back({1, time_res});
 
     /* Многа потоков */
 
@@ -389,11 +399,14 @@ void time_test_2(){
         // Замеряем время
         time_start = omp_get_wtime();
         LU_decomposition_block(A_copy, n, block_size, true);
+
         time_end = omp_get_wtime();
 
         time_res = time_end - time_start;
-        std::cout << "(" << i << " threads, n = " << n << ") Speed time is " << time_res << " (sec)"<< std::endl;
+        std::cout << "(" << i << " threads, n = " << n << ", B = " << block_size << ") Speed time is " << time_res << " (sec)"<< std::endl;
+        times.push_back({1.0 * i, time_res});
     }
+    return times;
 }
 
 /* Функция - Проверка решения на корректность */
@@ -424,12 +437,62 @@ void test(){
     std::cout << "Norm1 = " << norm1 << std::endl;
 }
 
+void time_test(){
+    int n = 1024;          /* Размерность матрицы */
+    int block_size = 128; /* Размерность блока для блочного алгоритма */
+
+    time_test_1(n);
+    time_test_2(n, block_size);
+
+}
+
+void make_data_for_grid(){
+
+    std::vector<int> ns = {1024/*, 2048, 4096, 8192*/};          /* Размерность матрицы */
+    int block_size = 64; /* Размерность блока для блочного алгоритма */
+    std::ofstream file1, file2;
+    int n;
+
+    for (int ins = 0; ins < ns.size(); ++ins) {
+
+        n = ns[ins];
+
+        file1.open(("output_data_traditional_" + std::to_string(n) + ".txt"));
+        std::vector<std::vector<double>> times_traditional = time_test_1(n);
+        std::vector<std::vector<double>> times_block = time_test_2(n, block_size);
+
+        for (int i = 0; i < times_traditional.size(); ++i) {
+            file1 << times_traditional[i][0];
+            file1 << " ";
+            file1 << times_traditional[i][1];
+            file1 << std::endl;
+        }
+        file1.close();
+
+        file2.open(("output_data_block_" + std::to_string(n) + ".txt"));
+        for (int i = 0; i < times_block.size(); ++i) {
+            file2 << times_block[i][0];
+            file2 << " ";
+            file2 << times_block[i][1];
+            file2 << std::endl;
+        }
+        file2.close();
+    }
+
+
+
+
+
+};
+
 
 int main(){
 
-    time_test_1();
-    time_test_2();
+    //time_test();
     //test();
+    make_data_for_grid();
+
+
     std::cout << "Complete!" << std::endl;
 
     return EXIT_SUCCESS;
