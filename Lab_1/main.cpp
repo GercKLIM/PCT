@@ -31,7 +31,14 @@
 #include "omp.h"  // Для распараллеливания вычислений
 #include <random> // Для генерации случайных чисел
 #include <ctime>  // Для инициализации генератора
-#include <cmath>
+
+
+
+/* -------------------------------- */
+/* ### ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ  ### */
+/* -------------------------------- */
+
+
 
 /* Константа допустимой погрешности */
 const double EPS = 1e-7;
@@ -48,6 +55,7 @@ void print(std::vector<double> matrix, int m, int n){
     std::cout << std::endl;
 }
 
+/* Функция вывода матрицы квадратной */
 void print(std::vector<double> matrix, int n){
 
     for (int i = 0; i < n; i++) {
@@ -58,7 +66,6 @@ void print(std::vector<double> matrix, int n){
     }
     std::cout << std::endl;
 }
-
 
 /* Функция умножения матриц (обычный алгоритм) */
 std::vector<double> matrix_multiply(const std::vector<double>& A, const std::vector<double>& B, int n) {
@@ -77,7 +84,6 @@ std::vector<double> matrix_multiply(const std::vector<double>& A, const std::vec
 
     return C;
 }
-
 
 /* Функция умножения матриц (блочный алгоритм) */
 std::vector<double> matrix_multiply_block(const std::vector<double>& A, const std::vector<double>& B, int n, int block_size) {
@@ -105,6 +111,13 @@ std::vector<double> matrix_multiply_block(const std::vector<double>& A, const st
 }
 
 
+
+/* -------------------------- */
+/* ### ФУНКЦИИ АЛГОРИТМОВ ### */
+/* -------------------------- */
+
+
+
 /* Функция - Реализация "Традиционного алгоритма"(2.3-2.4) LU-разложения матрицы
  *
  *  A - входная матрица в виде одномерного массива по строкам
@@ -128,6 +141,22 @@ void LU_Decomposition(std::vector<double>& A, const int& n, bool if_omp_use = fa
     }
 }
 
+/* Функция - Обратный ход метода Гаусса */
+void back_gauss(std::vector<double>& U23, std::vector<double>& L22, const int& i, const int& block_size, const int& n, double& sum, const bool& if_omp_use) {
+
+/**/#pragma omp parallel for default(none) shared(U23, L22, i, block_size, n) private(sum) collapse(2) if(if_omp_use)
+    for (int j = i + block_size; j < n; ++j) {
+        for (int k = 1; k < block_size; ++k) {
+            for (int p = 0; p < k; ++p) {
+                sum += U23[p * (n - block_size) + j - block_size] * L22[k * block_size + p];
+            }
+            U23[k * (n - block_size) + j - block_size] = (U23[k * (n - block_size) + j - block_size] - sum);
+            sum = 0.0;
+        }
+    }
+}
+
+
 
 /* Функция - Реализация "Блочного алгоритма"(2.10) LU-разложения матрицы
  *
@@ -143,8 +172,10 @@ void LU_decomposition_block(std::vector<double>& A, const int& n, const int& blo
         std::vector<double> L32(block_size * (n - block_size), 0.0); // L32
         std::vector<double> U23(block_size * (n - block_size), 0.0); // U23
 
+
         for (int i = 0; i < n; i += block_size) {
 
+            /* Заполнение L22 */
 /*        */#pragma omp parallel for default(none) shared(A, L22, i, block_size, n) collapse(2) if(if_omp_use) // заполнение блока
             for (int j = 0; j < block_size; j++) {
                 for (int k = 0; k < block_size; k++) {
@@ -152,12 +183,11 @@ void LU_decomposition_block(std::vector<double>& A, const int& n, const int& blo
                 }
             }
 
+            /* LU-разложение блока */
             LU_Decomposition(L22, block_size, if_omp_use);
 
-
-
-
-/*        */#pragma omp parallel for default(none) shared(A, L22, i, n, block_size) collapse(2) if(if_omp_use)// заполнение матрицы блоком
+            /* Записываем разложение в A */
+/*        */#pragma omp parallel for default(none) shared(A, L22, i, n, block_size) collapse(2) if(if_omp_use)
             for (int j = 0; j < block_size; j++) {
                 for (int k = 0; k < block_size; k++) {
                     A[n * (j + i) + k + i] = L22[j * block_size + k];
@@ -166,26 +196,29 @@ void LU_decomposition_block(std::vector<double>& A, const int& n, const int& blo
 
             double sum = 0.0;
 
+            /* Заполнение L32 */
 /*        */#pragma omp parallel for default(none) shared(L32, A, i, block_size, n) collapse(2) if(if_omp_use)
-            for (int j = i; j < n - block_size; j++) {// заполнение L
+            for (int j = i; j < n - block_size; j++) {
                 for (int k = 0; k < block_size; k++) {
                     L32[j * block_size + k] = A[(j + block_size) * n + k + i];
                 }
             }
 
+            /* Заполнение U23 */
 /*        */#pragma omp parallel for default(none) shared(U23, A, i, block_size, n) collapse(2) if(if_omp_use)
-            for (int j = 0; j < block_size; j++) {// заполнение U
+            for (int j = 0; j < block_size; j++) {
                 for (int k = i; k < n - block_size; k++) {
                     U23[j * (n - block_size) + k] = A[(j + i) * n + block_size + k];
                 }
             }
 
+            /* Вычисление L32  */
 /*        */#pragma omp parallel for default(none) shared(L32, L22, i, block_size, n) private(sum) if(if_omp_use)
             for (int j = i + block_size; j < n; ++j) {
                 L32[(j - block_size) * block_size] = L32[(j - block_size) * block_size] / L22[0];
                 for (int k = 1; k < block_size; ++k) {
                     for (int p = 0; p < k; ++p) {
-                        sum += L32[(j - block_size) * block_size + p] * L22[p * block_size + k];        // L
+                        sum += L32[(j - block_size) * block_size + p] * L22[p * block_size + k];
                     }
 
                     L32[(j - block_size) * block_size + k] =
@@ -194,22 +227,17 @@ void LU_decomposition_block(std::vector<double>& A, const int& n, const int& blo
                 }
             }
 
-            for (int j = i; j < n - block_size; j++) {// заполнение матрицы элементами L
+            /* Записываем в A */
+            for (int j = i; j < n - block_size; j++) {
                 for (int k = 0; k < block_size; k++) {
                     A[(j + block_size) * n + k + i] = L32[j * block_size + k];
                 }
             }
 
-/*        */#pragma omp parallel for default(none) shared(U23, L22, i, block_size, n) private(sum) collapse(2) if(if_omp_use)
-            for (int j = i + block_size; j < n; ++j) {
-                for (int k = 1; k < block_size; ++k) {
-                    for (int p = 0; p < k; ++p) {
-                        sum += U23[p * (n - block_size) + j - block_size] * L22[k * block_size + p];    // U
-                    }
-                    U23[k * (n - block_size) + j - block_size] = (U23[k * (n - block_size) + j - block_size] - sum);
-                    sum = 0.0;
-                }
-            }
+
+            /* Обратный ход метода Гаусса */
+            back_gauss(U23, L22, i, block_size, n, sum, if_omp_use);
+
 
 /*        */#pragma omp parallel for default(none) shared(U23, A, i, block_size, n) collapse(2) if(if_omp_use)
             for (int j = 0; j < block_size; j++) {// заполнение U
@@ -218,11 +246,13 @@ void LU_decomposition_block(std::vector<double>& A, const int& n, const int& blo
                 }
             }
 
+            /* Пункт 3) */
 /*        */#pragma omp parallel for default(none) shared(A, L32, U23, i, block_size, n) private(sum) collapse(2) if(if_omp_use)
             for (int j = i + block_size; j < n; ++j) {
                 for (int k = i + block_size; k < n; ++k) {
-                    for (int p = 0; p < block_size; ++p)
+                    for (int p = 0; p < block_size; ++p) {
                         sum += L32[(j - block_size) * block_size + p] * U23[p * (n - block_size) + k - block_size];
+                    }
                     A[j * n + k] -= sum;
                     sum = 0.0;
                 }
@@ -230,7 +260,15 @@ void LU_decomposition_block(std::vector<double>& A, const int& n, const int& blo
         }
 }
 
-/* Функция - Создание случайного вектора размера n */
+
+
+/* --------------------------------------- */
+/* ### ФУНКЦИИ ТЕСТИРОВАНИЯ АЛГОРИТМОВ ### */
+/* --------------------------------------- */
+
+
+
+/* Функция генерация случайного вектора размера n */
 std::vector<double> randvec(int n) {
 
     // Границы для случайных чисел
@@ -252,57 +290,7 @@ std::vector<double> randvec(int n) {
     return random_numbers;
 }
 
-
-/* Функция - Тестирование алгоритма на корректность результата */
-bool test_result(){
-
-    // Пример
-    //std::vector<double> A = {2, 3, 1, 4, 7, -1, -2, -3, -4};
-    std::vector<double> A = randvec(12);
-    std::vector<double> A_copy(A);
-    int n = 3;
-
-    //print(A, m, n);
-    LU_Decomposition(A, n * n, n);
-    //print(A, m, n);
-
-    // Получаем L
-    std::vector<double> L(n * n, 0.0); // Инициализируем нулями
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            if (i == j) {
-                L[i * n + j] = 1.0; // Диагональные элементы равны 1
-            } else if (i > j) {
-                L[i * n + j] = A[i * n + j]; // Элементы ниже диагонали
-            }
-        }
-    }
-
-    // Получаем U
-    std::vector<double> U(n * n, 0.0); // Инициализируем нулями
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            if (i <= j) {
-                U[i * n + j] = A[i * n + j]; // Элементы на и выше диагонали
-            }
-        }
-    }
-
-    // A_new = L * U;
-    std::vector<double> A_new = matrix_multiply(L, U, n);
-
-    // Сравниваем исходную матрицу с восстановленной
-    for (int i = 0; i < A.size(); i++) {
-        if (abs(A_new[i] - A_copy[i]) > EPS) {
-            std::cout << "FALSE" << std::endl;
-            return false;
-        }
-    }
-    std::cout << "TRUE" << std::endl;
-    return true;
-}
-
-
+/* Функция матричной разности */
 std::vector<double> matrix_dif(std::vector<double> A, std::vector<double> B, int m, int n) {
     std::vector<double> res(m * n, 0.0);
     for (int i = 0; i < m; ++i) {
@@ -314,9 +302,7 @@ std::vector<double> matrix_dif(std::vector<double> A, std::vector<double> B, int
     return res;
 }
 
-
-/* Функция - Тестирование алгоритма на время выполнения
- * n - размерность матрицы */
+/* Функция - Тестирование Традиционного алгоритма на время выполнения */
 void time_test_1(){
 
     int n = 1024; // Размерность матрицы
@@ -361,7 +347,7 @@ void time_test_1(){
     }
 }
 
-
+/* Функция - Тестирование Блочного алгоритма на время выполнения */
 void time_test_2(){
 
     int n = 1024;       // Размерность матрицы
@@ -410,42 +396,26 @@ void time_test_2(){
     }
 }
 
-
+/* Функция - Проверка решения на корректность */
 void test(){
-
-    //time_test(1024);
-    //time_test(2048);
-    //test_result();
 
     int n = 8;          /* Размерность матрицы */
     int block_size = 4; /* Размерность блока для блочного алгоритма */
 
-
-    //std::vector<double> A = randvec(n * m);
     std::vector<double> A = randvec(n * n);
     std::vector<double> A_copy(A);
     std::vector<double> A_copy2(A);
 
-
-    //std::cout << "--------------------------" << std::endl;
-    //std::cout << "A =" << std::endl;
-    //print(A, n);
     LU_Decomposition(A_copy, n);
-
-    //std::cout << "--------------------------" << std::endl;
-    //std::cout << "A_LU1 =" << std::endl;
-    //print(A_copy, n);
-
-
     LU_decomposition_block(A_copy2, n, block_size);
 
-    //std::cout << "--------------------------" << std::endl;
-    //std::cout << "A_LU2 =" << std::endl;
-    //print(A_copy2, n);
-
-    //std::cout << "--------------------------" << std::endl;
-    //std::cout << "difference =" << std::endl;
-    std::vector<double> dif = matrix_dif(A_copy, A_copy2, n, n);
+    /* Матричная разность A_copy и A_copy2*/
+    std::vector<double> dif(n * n, 0.0);
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            dif[i * n + j] = A_copy[i * n + j] - A_copy2[i * n + j];
+        }
+    }
 
     double norm1 = 0.0;
     for (int i = 0; i < n * n; ++i) {
@@ -457,10 +427,9 @@ void test(){
 
 int main(){
 
-
     time_test_1();
     time_test_2();
-    test();
+    //test();
     std::cout << "Complete!" << std::endl;
 
     return EXIT_SUCCESS;
