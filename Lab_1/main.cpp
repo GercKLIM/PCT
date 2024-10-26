@@ -180,7 +180,7 @@ void LU_decomposition_block(std::vector<double>& A, const int& n, const int& blo
         for (int i = 0; i < n; i += block_size) {
 
             /* Заполнение L22 */
-/*        */#pragma omp parallel for default(none) shared(A, L22, i, block_size, n) collapse(2) if(if_omp_use) // заполнение блока
+/*        */#pragma omp parallel for default(none) shared(A, L22, i, block_size, n) collapse(2) if(if_omp_use)
             for (int j = 0; j < block_size; j++) {
                 for (int k = 0; k < block_size; k++) {
                     L22[j * block_size + k] = A[n * (j + i) + k + i];
@@ -239,7 +239,7 @@ void LU_decomposition_block(std::vector<double>& A, const int& n, const int& blo
             }
 
 
-            /* Обратный ход метода Гаусса */
+            /* Вычисление U23 */
             back_gauss(U23, L22, i, block_size, n, sum, if_omp_use);
 
 
@@ -480,19 +480,68 @@ void make_data_for_grid(){
         file2.close();
     }
 
-
-
-
-
 };
+
+
+void test_result(){
+
+    // Пример
+    //std::vector<double> A = {2, 3, 1, 4, 7, -1, -2, -3, -4};
+    int n = 512;
+    int block_size = 64;
+    std::vector<double> A = randvec(n * n);
+    std::vector<double> A_dec1(A);
+    //std::vector<double> A_dec2(A);
+
+
+    //LU_Decomposition(A_dec1, n, true);
+    LU_decomposition_block(A_dec1, n, block_size, true);
+
+    // Получаем L
+    std::vector<double> L(n * n, 0.0); // Инициализируем нулями
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (i == j) {
+                L[i * n + j] = 1.0; // Диагональные элементы равны 1
+            } else if (i > j) {
+                L[i * n + j] = A_dec1[i * n + j]; // Элементы ниже диагонали
+            }
+        }
+    }
+
+    // Получаем U
+    std::vector<double> U(n * n, 0.0); // Инициализируем нулями
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (i <= j) {
+                U[i * n + j] = A_dec1[i * n + j]; // Элементы на и выше диагонали
+            }
+        }
+    }
+
+    // A_new = L * U;
+    std::vector<double> A_new = matrix_multiply(L, U, n);
+
+    double sum = 0;
+    // Сравниваем исходную матрицу с восстановленной
+    for (int i = 0; i < n * n; i++) {
+        sum += fabs(A_new[i] - A[i]);
+    }
+
+    std::cout << "Sum = " << sum << std::endl;
+}
+
+
+
+
 
 
 int main(){
 
     //time_test();
     //test();
-    make_data_for_grid();
-
+    //make_data_for_grid();
+    test_result();
 
     std::cout << "Complete!" << std::endl;
 
