@@ -5,17 +5,19 @@
 #include "Helmholtz_Solver.h"
 
 
-/* Функция нормы разности векторов */
-double DifferentNorm(int size, std::vector<double> A, std::vector<double> B) {
-    double sum = 0;
-    double tmp;
+
+
+double DifferentNorm(const int& size, const double& h, const std::vector<double>& A, const std::vector<double>& B) {
+    double sum = 0.0;
+    double tmp = 0.;
 
     #pragma omp parallel for default(none) shared(size,A,B) private(tmp) reduction(+:sum)
     for (int i = 0; i < size; ++i){
         tmp = A[i] - B[i];
         sum += tmp * tmp;
     }
-    return sqrt(sum);
+    std::cout << "std::scientific: " << std::scientific << sqrt(sum * h) << '\n';
+    return sqrt(sum * h);
 }
 
 //  метод Якоби
@@ -42,6 +44,25 @@ void Method_Jacobi(std::vector<double>& y, std::function<double(double, double)>
     double h_sqr = h * h;
     double mult = 1. / (4 + k * k * h_sqr);
 
+    // ГУ
+    double u0 = 0.;
+    for (int i = 0; i < N; ++i) {
+        y[i] = u0;
+    }
+
+    for (int i = 0; i < N * N; i += N) {
+        y[i] = u0;
+    }
+
+    for (int i = N * (N -1); i < N * N; ++i) {
+        y[i] = u0;
+    }
+
+    for (int i = N -1; i < N * N; i += N) {
+        y[i] = u0;
+    }
+
+
     std::vector<double> yp(y);
 
     for (int iterations = 1; iterations <= max_num_iterations; ++iterations) {
@@ -59,11 +80,12 @@ void Method_Jacobi(std::vector<double>& y, std::function<double(double, double)>
             }
         }
 
-        if (DifferentNorm(N, y, yp) < eps) {
+        if (DifferentNorm(N * N, h, y, yp) < eps) {
             true_iterations = iterations;
             break;
         }
     }
+    std::cout << "Iter: " << true_iterations << std::endl;
 }
 
 

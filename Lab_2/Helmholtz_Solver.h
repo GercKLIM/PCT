@@ -4,12 +4,18 @@
 
 
 #pragma once
+#include <iostream>
 #include <vector> // Для доступа к типу std::vector
 #include "omp.h"  // Для распараллеливания вычислений
 #include <ctime>  // Для инициализации генератора
 #include <fstream>// Для работы с файлами
 #include <cmath>  // Для математических функций
 #include <functional> // Для передачи функторов
+
+
+/* Функция нормы разности векторов */
+double DifferentNorm(const int& size, const double& h, const std::vector<double>& A, const std::vector<double>& B);
+
 
 /** Метод решения двумерного уравнения Гельмгольца методом Якоби
  * @param y - массив решения

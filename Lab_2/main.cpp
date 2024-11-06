@@ -27,6 +27,7 @@
 
 #include "Helmholtz_Solver.h"
 #include <iostream>
+#include <iomanip> // Для setprecision
 #include <vector> // Для доступа к типу std::vector
 #include "omp.h"  // Для распараллеливания вычислений
 #include <ctime>  // Для инициализации генератора
@@ -40,16 +41,16 @@
 /* -------------------------------- */
 
 const double PI = 3.14159265358979;
-const double EPS = 1e-6;
+const double EPS = 1e-7;
 
 /* Ограничение кол-ва итераций */
-const int MAX_ITERATION = 1000;
+const int MAX_ITERATION = 100;
 
 /* Коэффициент k */
-double k = 1;
+double k = 20;
 
 /* Кол-во узлов в одном направлении */
-int N = 100;
+int N = 10;
 
 /* Правая часть f */
 //double f(double x, double y) {
@@ -61,7 +62,7 @@ int N = 100;
 
 /* Точное решение задачи u(x, y) */
 double TRUE_SOL(double x, double y) {
-    return ((1 - x) * x * sin(M_PI * y));
+    return ((1 - x) * x * sin(PI * y));
 }
 
 void test() {
@@ -74,7 +75,7 @@ void test() {
                 + PI * PI * (1 - x) * x * sin(PI * y));
     });
 
-    std::vector<double> y(N * N, 0.);
+    std::vector<double> y(N * N, 0.0);
 
 
     // Инициализация решения правой частью
@@ -87,10 +88,29 @@ void test() {
 
     Method_Jacobi(y, f, k, N, EPS, MAX_ITERATION);
 
+    std::vector<double> y_true(N*N, 0.0);
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            y_true[i * N + j] = TRUE_SOL(i * h, j * h);
+        }
+    }
+
+    double norm_res = DifferentNorm(N*N, h, y_true, y);
+    printf("Norm = %f \n", norm_res);
+    std::cout << "std::scientific: " << std::scientific << norm_res << '\n';
+
+
+    std::vector<double> NT(N * N, 0.0);
+    std::cout << "Different " << std::scientific /*<< DifferentNorm(N*N, h, y_true, NT)*/<< DifferentNorm(N*N, h, y, NT) << std::endl;
+
+
 }
 
 
 int main() {
+
+
+
     test();
     std::cout << "Complete!" << std::endl;
     return 0;
