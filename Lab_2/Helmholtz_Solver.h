@@ -35,14 +35,6 @@ struct MethodResultInfo {
 };
 
 
-//void print_result(MethodResultInfo info){
-//    std::cout << "Norm   = " << test_sol(N, y, TRUE_SOL) << std::endl;
-//    std::cout << "Iter   = " << info.iterations            << std::endl;
-//    std::cout << "Time   = " << info.time                  << std::endl;
-//    std::cout << "|Y-Yp| = " << info.norm_iter             << std::endl;
-//}
-
-
 
 /** Метод решения двумерного уравнения Гельмгольца методом Якоби
  * @param y - массив решения
@@ -55,6 +47,18 @@ struct MethodResultInfo {
 MethodResultInfo Method_Jacobi(std::vector<double>& y, std::function<double(double, double)>&f, const double& k, const int& N,
                    const double& eps, const int& max_num_iterations = 1000);
 
+
+/** Метод Зейделя (красно-черных итераций)
+ *  решения двумерного уравнения Гельмгольца
+ * @param y - массив решения
+ * @param f - функция правой части
+ * @param k - коэффициент в уравнении
+ * @param N - число разбиений
+ * @param max_num_iterations - Макс. кол-во итераций
+ * @return  структуру с информацией о работе метода
+ */
+MethodResultInfo Method_Zeidel(std::vector<double>& y, std::function<double(double, double)>&f, const double& k,
+                               const int& N, const double& eps, const int& max_num_iterations);
 
 /** Функция для проверки корректности решения уравнения
  * @param N - Кол-во узлов в решении
