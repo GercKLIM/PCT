@@ -156,19 +156,28 @@ MethodResultInfo Method_Zeidel(std::vector<double>& y, std::function<double(doub
 
         // По красным узлам
         #pragma omp parallel for default(shared)
-        for (int i = 1; i < N - 1; ++i)
-            for (int j = 1 + (i + 1) % 2; j < N - 1; j += 2)
-            {
-                y[i * N + j] = (yp[(i + 1) * N + j] + yp[(i - 1) * N + j] + yp[i * N + (j + 1)] + yp[i * N + (j - 1)] + h_sqr * f(i*h,j*h)) * mult;
+        for (int i = 1; i < N - 1; ++i) {
+            //#pragma omp parallel for default(none) private(i) shared(mult, h_sqr, h, f, yp, y, N)
+            for (int j = 1 + (i + 1) % 2; j < N - 1; j += 2) {
+                y[i * N + j] = (yp[(i + 1) * N + j]
+                                + yp[(i - 1) * N + j]
+                                + yp[i * N + (j + 1)]
+                                + yp[i * N + (j - 1)]
+                                + h_sqr * f(i * h, j * h)) * mult;
             }
+        }
 
         // По чёрным узлам
         #pragma omp parallel for default(shared)
-        for (int i = 1; i < N - 1; ++i)
-            for (int j = 1 + i % 2; j < N - 1; j += 2)
-            {
-                y[i * N + j] = (y[(i + 1) * N + j] + y[(i - 1) * N + j] + y[i * N + (j + 1)] + y[i * N + (j - 1)] + h_sqr * f(i*h,j*h)) * mult;
+        for (int i = 1; i < N - 1; ++i) {
+            for (int j = 1 + i % 2; j < N - 1; j += 2) {
+                y[i * N + j] = (y[(i + 1) * N + j]
+                                + y[(i - 1) * N + j]
+                                + y[i * N + (j + 1)]
+                                + y[i * N + (j - 1)]
+                                + h_sqr * f(i * h, j * h)) * mult;
             }
+        }
 
         if (NOD(N*N, h, yp, y) < eps) {
             true_iterations = iterations;
