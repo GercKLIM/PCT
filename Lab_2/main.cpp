@@ -27,12 +27,6 @@
 
 #include "Helmholtz_Solver.h"
 #include <iostream>
-#include <iomanip> // Для setprecision
-#include <vector> // Для доступа к типу std::vector
-#include "omp.h"  // Для распараллеливания вычислений
-#include <ctime>  // Для инициализации генератора
-#include <fstream>// Для работы с файлами
-#include <cmath>  // Для математических функций
 
 
 
@@ -40,69 +34,47 @@
 /* ### ТЕСТИРОВАНИЕ АЛГОРИТМА  ### */
 /* -------------------------------- */
 
-const double PI = 3.14159265358979;
-const double EPS = 1e-7;
 
-/* Ограничение кол-ва итераций */
-const int MAX_ITERATION = 100;
-
-/* Коэффициент k */
-double k = 20;
-
-/* Кол-во узлов в одном направлении */
-int N = 10;
-
-/* Правая часть f */
-//double f(double x, double y) {
-//    return (2 * sin(M_PI * y) + k * k * (1 - x) * x * sin(M_PI * y)
-//                    + M_PI * M_PI * (1 - x) * x * sin(M_PI * y));
-//}
-
-
-
-/* Точное решение задачи u(x, y) */
-double TRUE_SOL(double x, double y) {
-    return ((1 - x) * x * sin(PI * y));
-}
 
 void test() {
-    //Method_Jacobi(std::vector<double>& y, std::function<double(double, double)>&f, const double& k, const int& N,
-    //const double& eps, const int& max_num_iterations = 1000)
 
-    //double PI = 3.14159265358979;
+    /* Числовая константа Пи */
+    const double PI = 3.14159265358979;
+
+    /* Точность алгоритмов */
+    const double EPS = 1e-7;
+
+    /* Ограничение кол-ва итераций */
+    const int MAX_ITERATION = 1000;
+
+    /* Коэффициент k */
+    double k = 20;
+
+    /* Кол-во узлов в одном направлении */
+    int N = 100;
+
+    /* Правая часть*/
     std::function<double(double, double)> f = ([&](double x, double y){
         return (2 * sin(PI * y) + k * k * (1 - x) * x * sin(PI * y)
                 + PI * PI * (1 - x) * x * sin(PI * y));
     });
 
+    /* Точное решение */
+    std::function<double(double, double)> TRUE_SOL = ([&](double x, double y){
+        return ((1 - x) * x * sin(PI * y));
+    });
+
+
+    /* Численное решение задачи */
     std::vector<double> y(N * N, 0.0);
+    MethodResultInfo MJ = Method_Jacobi(y, f, k, N, EPS, MAX_ITERATION);
 
-
-    // Инициализация решения правой частью
-    double h = 1 / (N - 1);
-    for (int i = 0; i < N; ++i) {
-        for (int j = 0; j < N; ++j) {
-            y[i * N + j] = f(i * h, j * h);
-        }
-    }
-
-    Method_Jacobi(y, f, k, N, EPS, MAX_ITERATION);
-
-    std::vector<double> y_true(N*N, 0.0);
-    for (int i = 0; i < N; ++i) {
-        for (int j = 0; j < N; ++j) {
-            y_true[i * N + j] = TRUE_SOL(i * h, j * h);
-        }
-    }
-
-    double norm_res = DifferentNorm(N*N, h, y_true, y);
-    printf("Norm = %f \n", norm_res);
-    std::cout << "std::scientific: " << std::scientific << norm_res << '\n';
-
-
-    std::vector<double> NT(N * N, 0.0);
-    std::cout << "Different " << std::scientific /*<< DifferentNorm(N*N, h, y_true, NT)*/<< DifferentNorm(N*N, h, y, NT) << std::endl;
-
+    std::cout << "<----------------------------------->" << std::endl;
+    std::cout << "Norm   = " << test_sol(N, y, TRUE_SOL) << std::endl;
+    std::cout << "Iter   = " << MJ.iterations            << std::endl;
+    std::cout << "Time   = " << MJ.time                  << std::endl;
+    std::cout << "|Y-Yp| = " << MJ.norm_iter             << std::endl;
+    std::cout << "<----------------------------------->" << std::endl;
 
 }
 

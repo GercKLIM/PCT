@@ -6,8 +6,15 @@
 
 
 
-
-double DifferentNorm(const int& size, const double& h, const std::vector<double>& A, const std::vector<double>& B) {
+/** Функция Нормы разности векторов
+ * (NOD - Norm Of Difference)
+ * @param size - Длина вектора
+ * @param h    - Шаг по узлам
+ * @param A    - Первый вектор
+ * @param B    - Второй вектор
+ * @return     Норму разности векторов
+ */
+double NOD(const int& size, const double& h, const std::vector<double>& A, const std::vector<double>& B) {
     double sum = 0.0;
     double tmp = 0.;
 
@@ -16,36 +23,38 @@ double DifferentNorm(const int& size, const double& h, const std::vector<double>
         tmp = A[i] - B[i];
         sum += tmp * tmp;
     }
-    std::cout << "std::scientific: " << std::scientific << sqrt(sum * h) << '\n';
     return sqrt(sum * h);
 }
 
-//  метод Якоби
-//struct MethodResultInfo {
-//    int iterations = 0;
-//    std::vector<double> Y;
-//    std::vector<double> Yp;
-//
-//};
 
-/** Метод решения двумерного уравнения Гельмгольца методом Якоби
+/** Метод Якоби
+ *  решения двумерного уравнения Гельмгольца
  * @param y - массив решения
  * @param f - функция правой части
  * @param k - коэффициент в уравнении
  * @param N - число разбиений
  * @param max_num_iterations - Макс. кол-во итераций
+ * @return  структуру с информацией о работе метода
  */
-void Method_Jacobi(std::vector<double>& y, std::function<double(double, double)>&f, const double& k, const int& N,
-                   const double& eps, const int& max_num_iterations) {
+MethodResultInfo Method_Jacobi(std::vector<double>& y, std::function<double(double, double)>&f, const double& k,
+                               const int& N, const double& eps, const int& max_num_iterations) {
 
     int true_iterations = max_num_iterations; // Число итераций
-    double h = 1. / (N - 1);  // Шаг
+    double h = 1. / (N - 1);                  // Шаг
+    std::vector<double> yp(y);                // Предыдущее приближение решения
+
+    /* Инициализация решения правой частью */
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            y[i * N + j] = f(i * h, j * h);
+        }
+    }
 
     double h_sqr = h * h;
     double mult = 1. / (4 + k * k * h_sqr);
 
-    // ГУ
-    double u0 = 0.;
+    /* Заполнение Граничных Условий (ГУ) */
+    double u0 = 0.; // Значение на краях
     for (int i = 0; i < N; ++i) {
         y[i] = u0;
     }
@@ -62,11 +71,10 @@ void Method_Jacobi(std::vector<double>& y, std::function<double(double, double)>
         y[i] = u0;
     }
 
-
-    std::vector<double> yp(y);
-
+    /* Итерационный процесс */
+    double time_start = omp_get_wtime();
     for (int iterations = 1; iterations <= max_num_iterations; ++iterations) {
-        //std::swap(y, yp);
+
         y.swap(yp);
 
         #pragma omp parallel for default(shared)
@@ -76,16 +84,45 @@ void Method_Jacobi(std::vector<double>& y, std::function<double(double, double)>
                 y[i * N + j] = mult * (yp[(i + 1) * N + j] + yp[(i - 1) * N + j] +
                                        yp[i * N + (j + 1)] + yp[i * N + (j - 1)] +
                                        h_sqr * f(h * i, h * j));
-
             }
         }
 
-        if (DifferentNorm(N * N, h, y, yp) < eps) {
+        if (NOD(N * N, h, y, yp) < eps) {
             true_iterations = iterations;
             break;
         }
     }
-    std::cout << "Iter: " << true_iterations << std::endl;
+    double time_end = omp_get_wtime();
+
+    /* Упаковка результата работы алгоритма */
+    MethodResultInfo info;
+    info.iterations = true_iterations;
+    info.norm_iter = NOD(N * N, h, y, yp);
+    info.time = time_end - time_start;
+    info.Y =  y;
+    info.Yp = yp;
+    return info;
+}
+
+
+/** Функция для проверки корректности решения уравнения
+ * @param N - Кол-во узлов в решении
+ * @param y - Вектор численного решения
+ * @param True_sol_func - Функция точного решения
+ * @return Норму разности точного и численного решения
+ */
+double test_sol(const int& N, const std::vector<double>& y, std::function<double(double, double)>& True_sol_func) {
+
+    double h = 1. / (N - 1);
+    std::vector<double> y_true(N*N, 0.0);
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            y_true[i * N + j] = True_sol_func(i * h, j * h);
+        }
+    }
+
+    double norm_res = NOD(N*N, h, y, y_true);
+    return norm_res;
 }
 
 
