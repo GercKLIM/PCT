@@ -32,8 +32,10 @@
 #include <cmath>  // Для математических функций
 #include <functional> // Для передачи функторов
 #include <iomanip> // Для setprecision
-
-
+#include <string>
+#include <cassert>
+#include <sstream>
+#include <utility>
 
 /* --------------------------------------------------------- */
 /* ### РЕАЛИЗАЦИЯ ФУНКЦИЙ РЕШЕНИЯ УРАВНЕНИЯ ГЕЛЬМГОЛЬЦА  ### */
@@ -263,6 +265,21 @@ double test_sol(const int& N, const std::vector<double>& y, std::function<double
 }
 
 
+/* -------------------------------- */
+/* ### СЧИТЫВАНИЕ ПАРАМЕТРОВ ИЗ ФАЙЛА  ### */
+/* -------------------------------- */
+
+void setValsFromFile(std::string fileName, double& k, int& N, double& eps, int& nThreads, int& maxIts){
+    std::ifstream file(fileName);
+    assert(file.is_open());
+    std::string tmp_line;
+    std::getline(file, tmp_line);
+    std::istringstream ss(tmp_line);
+    ss >> k >> N >> eps >> nThreads >> maxIts;
+    printf("Values of the test: k = %f, N = %d, eps = %f, nThreads = %d, maxIts = %d",
+           k, N, eps, nThreads, maxIts);
+}
+
 
 /* -------------------------------- */
 /* ### ТЕСТИРОВАНИЕ АЛГОРИТМА  ### */
@@ -277,19 +294,23 @@ void test() {
 
     /* Кол-во потоков */
     int NUM_THREADS = 1;
-    omp_set_num_threads(NUM_THREADS);
+
 
     /* Точность алгоритмов */
-    const double EPS = 1e-7;
+    double EPS = 1e-7;
 
     /* Ограничение кол-ва итераций */
-    const int MAX_ITERATION = 10000;
+    int MAX_ITERATION = 10000;
 
     /* Коэффициент k */
     double k = 20;
 
     /* Кол-во узлов в одном направлении */
     int N = 100;
+
+    setValsFromFile("initTest", k, N, EPS, NUM_THREADS, MAX_ITERATION);
+
+    omp_set_num_threads(NUM_THREADS);
 
     /* Правая часть*/
     std::function<double(double, double)> f = ([&](double x, double y){
