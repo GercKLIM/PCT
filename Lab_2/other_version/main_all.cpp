@@ -1,4 +1,4 @@
-/* ### ЛАБОРАТОРНАЯ РАБОТА №1 ###
+/* ### ЛАБОРАТОРНАЯ РАБОТА №2 ###
  *
  *  ЗАДАНИЕ:
  *
@@ -32,8 +32,10 @@
 #include <cmath>  // Для математических функций
 #include <functional> // Для передачи функторов
 #include <iomanip> // Для setprecision
-
-
+#include <string>
+#include <cassert>
+#include <sstream>
+#include <utility>
 
 /* --------------------------------------------------------- */
 /* ### РЕАЛИЗАЦИЯ ФУНКЦИЙ РЕШЕНИЯ УРАВНЕНИЯ ГЕЛЬМГОЛЬЦА  ### */
@@ -122,7 +124,7 @@ MethodResultInfo Method_Jacobi(std::vector<double>& y, std::function<double(doub
 
         y.swap(yp);
 
-        #pragma omp parallel for default(shared)
+#pragma omp parallel for default(shared)
         for (int i = 1; i < N - 1; ++i) {
             for (int j = 1; j < N - 1; ++j) {
                 /* Результирующее соотношение */
@@ -200,7 +202,7 @@ MethodResultInfo Method_Zeidel(std::vector<double>& y, std::function<double(doub
         std::swap(yp, y);
 
         // По красным узлам
-        #pragma omp parallel for default(shared)
+#pragma omp parallel for default(shared)
         for (int i = 1; i < N - 1; ++i) {
             //#pragma omp parallel for default(none) private(i) shared(mult, h_sqr, h, f, yp, y, N)
             for (int j = 1 + (i + 1) % 2; j < N - 1; j += 2) {
@@ -213,7 +215,7 @@ MethodResultInfo Method_Zeidel(std::vector<double>& y, std::function<double(doub
         }
 
         // По чёрным узлам
-        #pragma omp parallel for default(shared)
+#pragma omp parallel for default(shared)
         for (int i = 1; i < N - 1; ++i) {
             for (int j = 1 + i % 2; j < N - 1; j += 2) {
                 y[i * N + j] = (y[(i + 1) * N + j]
@@ -263,6 +265,21 @@ double test_sol(const int& N, const std::vector<double>& y, std::function<double
 }
 
 
+/* -------------------------------- */
+/* ### СЧИТЫВАНИЕ ПАРАМЕТРОВ ИЗ ФАЙЛА  ### */
+/* -------------------------------- */
+
+void setValsFromFile(std::string fileName, double& k, int& N, double& eps, int& nThreads, int& maxIts){
+    std::ifstream file(fileName);
+    assert(file.is_open());
+    std::string tmp_line;
+    std::getline(file, tmp_line);
+    std::istringstream ss(tmp_line);
+    ss >> k >> N >> eps >> nThreads >> maxIts;
+    printf("Values of the test: k = %f, N = %d, eps = %f, nThreads = %d, maxIts = %d",
+           k, N, eps, nThreads, maxIts);
+}
+
 
 /* -------------------------------- */
 /* ### ТЕСТИРОВАНИЕ АЛГОРИТМА  ### */
@@ -270,26 +287,31 @@ double test_sol(const int& N, const std::vector<double>& y, std::function<double
 
 
 
-void test() {
+void test(std::string filename) {
 
     /* Числовая константа Пи */
     const double PI = 3.14159265358979;
 
     /* Кол-во потоков */
     int NUM_THREADS = 1;
-    omp_set_num_threads(NUM_THREADS);
+
 
     /* Точность алгоритмов */
-    const double EPS = 1e-7;
+    double EPS = 1e-7;
 
     /* Ограничение кол-ва итераций */
-    const int MAX_ITERATION = 10000;
+    int MAX_ITERATION = 10000;
 
     /* Коэффициент k */
     double k = 20;
 
     /* Кол-во узлов в одном направлении */
     int N = 100;
+
+    setValsFromFile(filename, k, N, EPS, NUM_THREADS, MAX_ITERATION);
+
+    //omp_set_dynamic(0);
+    omp_set_num_threads(NUM_THREADS);
 
     /* Правая часть*/
     std::function<double(double, double)> f = ([&](double x, double y){
@@ -313,7 +335,7 @@ void test() {
     std::cout << "Iter   = " << MJ.iterations            << std::endl;
     std::cout << "Time   = " << MJ.time                  << std::endl;
     std::cout << "|Y-Yp| = " << MJ.norm_iter             << std::endl;
-    std::cout<<"CPU: "<<omp_get_num_threads()<<" threads"<< std::endl;
+    std::cout<<"CPU: "<<NUM_THREADS<<" threads"<< std::endl;
     std::cout << "<----------------------------------->" << std::endl;
 
     /* Численное решение задачи 2) МЕТОД ЗЕЙДЕЛЯ */
@@ -326,7 +348,7 @@ void test() {
     std::cout << "Iter   = " << MZ.iterations             << std::endl;
     std::cout << "Time   = " << MZ.time                   << std::endl;
     std::cout << "|Y-Yp| = " << MZ.norm_iter              << std::endl;
-    std::cout <<"CPU: "<<omp_get_num_threads()<<" threads"<< std::endl;
+    std::cout <<"CPU: "<<NUM_THREADS<<" threads"<< std::endl;
     std::cout << "<----------------------------------->"  << std::endl;
 
 }
@@ -337,16 +359,21 @@ void speadup_test() {
     const double PI = 3.14159265358979;
 
     /* Точность алгоритмов */
-    const double EPS = 1e-7;
+    /*const*/ double EPS = 1e-7;
 
     /* Ограничение кол-ва итераций */
-    const int MAX_ITERATION = 10000;
+    /*const*/ int MAX_ITERATION = 10000;
 
     /* Коэффициент k */
-    double k = 20;
+    /*const*/ double k = 20;
 
     /* Кол-во узлов в одном направлении */
     int N = 100;
+
+    int NUM_THREADS = 1;
+
+
+    setValsFromFile("input.txt", k, N, EPS, NUM_THREADS, MAX_ITERATION);
 
     /* Правая часть*/
     std::function<double(double, double)> f = ([&](double x, double y){
@@ -367,24 +394,33 @@ void speadup_test() {
     std::ofstream file1, file2;
     int MAX_TREADS = omp_get_max_threads();
 
+    double time_threads1;
 
     /* Численное решение задачи 1) МЕТОД ЯКОБИ */
     std::cout << "<----------------------------------->" << std::endl;
     std::cout << " ### METHOD JACOBI ### "   << std::endl<< std::endl;
 
-    file1.open(("output/output_method_1.txt"));
+    file1.open(("/output/output_method_1.txt"));
     omp_set_num_threads(1);
     y = y_copy;
     MethodResultInfo MJ = Method_Jacobi(y, f, k, N, EPS, MAX_ITERATION);
-    std::cout << "Threads = " << 1 << ", Iter = " << MJ.iterations << ", Time   = " << MJ.time << std::endl;
+    std::cout << "Threads = " << 1 << ", Iter = " << MJ.iterations << ", Norm = " + std::to_string(test_sol(N, y, TRUE_SOL)) << ", Time   = " << MJ.time << std::endl;
+    file2 << "Threads = " << 1 << ", Iter = " << MJ.iterations << ", Norm = " + std::to_string(test_sol(N, y, TRUE_SOL)) << ", Time   = " << MJ.time << std::endl;
+
+    time_threads1 = MJ.time;
 
     file1 << std::to_string(1) << " " << std::to_string(MJ.time) << std::endl;
     for (int i = 2; i <= MAX_TREADS; ++i) {
         omp_set_num_threads(i);
         y = y_copy;
         MJ = Method_Jacobi(y, f, k, N, EPS, MAX_ITERATION);
-        file1 << std::to_string(i) << " " << std::to_string(MJ.time) << std::endl;
-        std::cout << "Threads = " << i << ", Iter = " << MJ.iterations << ", Time   = " << MJ.time << std::endl;
+        //file1 << std::to_string(i) << " " << std::to_string(MJ.time) << std::endl;
+        //std::cout << "Threads = " << i << ", Iter = " << MJ.iterations << ", Time   = " << MJ.time << std::endl;
+        std::cout << "Threads = " << i << ", Iter = " << MJ.iterations << ", Norm = " + std::to_string(test_sol(N, y, TRUE_SOL)) << ", Time   = " << MJ.time << ", speadup = " << time_threads1 / MJ.time << std::endl;
+
+        //file1 << "Threads = " + std::to_string(i) << ", Iter = " + std::to_string(MZ.iterations) << ", Time = " + std::to_string(MJ.time) << std::endl;
+        file2 << "Threads = " << i << ", Iter = " << MJ.iterations << ", Norm = " + std::to_string(test_sol(N, y, TRUE_SOL)) << ", Time   = " << MJ.time << std::endl;
+
     }
     file1.close();
 
@@ -394,26 +430,31 @@ void speadup_test() {
 
     std::cout << "<----------------------------------->" << std::endl;
     std::cout << " ### METHOD ZEIDEL ### "   << std::endl<< std::endl;
+    file1.open(("/output/output_method_2.txt"));
     omp_set_num_threads(1);
     y = y_copy;
     MethodResultInfo MZ = Method_Zeidel(y, f, k, N, EPS, MAX_ITERATION);
-    file2 << std::to_string(1) << " " << std::to_string(MZ.time) << std::endl;
-    std::cout << "Threads = " << 1 << ", Iter = " << MZ.iterations << ", Time   = " << MZ.time << std::endl;
+    file2 << "Threads = " << 1 << ", Iter = " << MZ.iterations << ", Norm = " + std::to_string(test_sol(N, y, TRUE_SOL)) << ", Time   = " << MZ.time << std::endl;
+    std::cout << "Threads = " << 1 << ", Iter = " << MZ.iterations << ", Norm = " + std::to_string(test_sol(N, y, TRUE_SOL)) << ", Time   = " << MZ.time << std::endl;
 
+    time_threads1 = MZ.time;
     for (int i = 2; i <= MAX_TREADS; ++i) {
         omp_set_num_threads(i);
         y = y_copy;
         MZ = Method_Zeidel(y, f, k, N, EPS, MAX_ITERATION);
-        file2 << std::to_string(i) << " " << std::to_string(MZ.time) << std::endl;
-        std::cout << "Threads = " << i << ", Iter = " << MZ.iterations << ", Time   = " << MZ.time << std::endl;
+        //file2 << std::to_string(i) << " " << std::to_string(MZ.time) << std::endl;
+        std::cout << "Threads = " << i << ", Iter = " << MZ.iterations << ", Norm = " + std::to_string(test_sol(N, y, TRUE_SOL)) << ", Time   = " << MZ.time << ", speadup = " << time_threads1 / MZ.time<< std::endl;
+        file2 << "Threads = " << i << ", Iter = " << MZ.iterations << ", Norm = " + std::to_string(test_sol(N, y, TRUE_SOL)) << ", Time   = " << MZ.time << std::endl;
     }
     file2.close();
 }
 
 
 int main() {
-    //speadup_test();
-    test();
+    speadup_test();
+    //test("input1.txt");
+    //test("input4.txt");
+
     std::cout << "Complete!" << std::endl;
     return 0;
 }
