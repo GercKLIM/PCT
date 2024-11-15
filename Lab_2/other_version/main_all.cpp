@@ -36,11 +36,50 @@
 #include <cassert>
 #include <sstream>
 #include <utility>
+#include <format>
 
 /* --------------------------------------------------------- */
 /* ### РЕАЛИЗАЦИЯ ФУНКЦИЙ РЕШЕНИЯ УРАВНЕНИЯ ГЕЛЬМГОЛЬЦА  ### */
 /* --------------------------------------------------------- */
 
+
+template<typename T>
+struct scientificNumberType
+{
+    explicit scientificNumberType(T number, int decimalPlaces) : number(number), decimalPlaces(decimalPlaces) {}
+
+    T number;
+    int decimalPlaces;
+};
+
+template<typename T>
+scientificNumberType<T> scientificNumber(T t, int decimalPlaces)
+{
+    return scientificNumberType<T>(t, decimalPlaces);
+}
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const scientificNumberType<T>& n)
+{
+    double numberDouble = n.number;
+
+    int eToThe = 0;
+    for(; numberDouble > 9; ++eToThe)
+    {
+        numberDouble /= 10;
+    }
+
+    // memorize old state
+    std::ios oldState(nullptr);
+    oldState.copyfmt(os);
+
+    os << std::fixed << std::setprecision(n.decimalPlaces) << numberDouble << "e" << eToThe;
+
+    // restore state
+    os.copyfmt(oldState);
+
+    return os;
+}
 
 
 /* Структура для определения выходной информации о работе метода */
@@ -276,7 +315,7 @@ void setValsFromFile(std::string fileName, double& k, int& N, double& eps, int& 
     std::getline(file, tmp_line);
     std::istringstream ss(tmp_line);
     ss >> k >> N >> eps >> nThreads >> maxIts;
-    printf("Values of the test: k = %f, N = %d, eps = %f, nThreads = %d, maxIts = %d",
+    printf("Values of the test: k = %f, N = %d, eps = %f, nThreads = %d, maxIts = %d \n",
            k, N, eps, nThreads, maxIts);
 }
 
@@ -400,26 +439,35 @@ void speadup_test() {
     std::cout << "<----------------------------------->" << std::endl;
     std::cout << " ### METHOD JACOBI ### "   << std::endl<< std::endl;
 
-    file1.open(("/output/output_method_1.txt"));
+
+
+    //std::cout << std::scientific;
+    //std::cout.precision(3);//точность 4 цифры
+
+
+
+    file1.open(("output_method_1.txt"));
     omp_set_num_threads(1);
     y = y_copy;
     MethodResultInfo MJ = Method_Jacobi(y, f, k, N, EPS, MAX_ITERATION);
-    std::cout << "Threads = " << 1 << ", Iter = " << MJ.iterations << ", Norm = " + std::to_string(test_sol(N, y, TRUE_SOL)) << ", Time   = " << MJ.time << std::endl;
-    file2 << "Threads = " << 1 << ", Iter = " << MJ.iterations << ", Norm = " + std::to_string(test_sol(N, y, TRUE_SOL)) << ", Time   = " << MJ.time << std::endl;
+    std::cout << "Threads = " << 1 << ", Iter = " << MJ.iterations << ", Norm = "  << std::scientific << test_sol(N, y, TRUE_SOL) << ", Time   = " << MJ.time << std::endl;
+    file1 << "Threads = " << 1 << ", Iter = " << MJ.iterations << ", Norm = " << std::scientific << test_sol(N, y, TRUE_SOL) << ", Time   = " << MJ.time << std::endl;
 
     time_threads1 = MJ.time;
 
-    file1 << std::to_string(1) << " " << std::to_string(MJ.time) << std::endl;
-    for (int i = 2; i <= MAX_TREADS; ++i) {
+    for (int i = 2; i <= MAX_TREADS; i+=2) {
         omp_set_num_threads(i);
         y = y_copy;
         MJ = Method_Jacobi(y, f, k, N, EPS, MAX_ITERATION);
         //file1 << std::to_string(i) << " " << std::to_string(MJ.time) << std::endl;
+
         //std::cout << "Threads = " << i << ", Iter = " << MJ.iterations << ", Time   = " << MJ.time << std::endl;
-        std::cout << "Threads = " << i << ", Iter = " << MJ.iterations << ", Norm = " + std::to_string(test_sol(N, y, TRUE_SOL)) << ", Time   = " << MJ.time << ", speadup = " << time_threads1 / MJ.time << std::endl;
+        std::cout << "Threads = " << i << ", Iter = " << MJ.iterations << ", Norm = " << std::scientific << test_sol(N, y, TRUE_SOL) <<
+                  ", Time   = " << MJ.time << ", speadup = " << time_threads1 / MJ.time << std::endl;
 
         //file1 << "Threads = " + std::to_string(i) << ", Iter = " + std::to_string(MZ.iterations) << ", Time = " + std::to_string(MJ.time) << std::endl;
-        file2 << "Threads = " << i << ", Iter = " << MJ.iterations << ", Norm = " + std::to_string(test_sol(N, y, TRUE_SOL)) << ", Time   = " << MJ.time << std::endl;
+        file1 << "Threads = " << i << ", Iter = " << MJ.iterations << ", Norm = " << std::scientific << test_sol(N, y, TRUE_SOL) <<
+              ", Time   = " << MJ.time << ", speadup = " << time_threads1 / MJ.time << std::endl;
 
     }
     file1.close();
@@ -430,27 +478,36 @@ void speadup_test() {
 
     std::cout << "<----------------------------------->" << std::endl;
     std::cout << " ### METHOD ZEIDEL ### "   << std::endl<< std::endl;
-    file1.open(("/output/output_method_2.txt"));
+    file2.open(("output_method_2.txt"));
     omp_set_num_threads(1);
     y = y_copy;
     MethodResultInfo MZ = Method_Zeidel(y, f, k, N, EPS, MAX_ITERATION);
-    file2 << "Threads = " << 1 << ", Iter = " << MZ.iterations << ", Norm = " + std::to_string(test_sol(N, y, TRUE_SOL)) << ", Time   = " << MZ.time << std::endl;
-    std::cout << "Threads = " << 1 << ", Iter = " << MZ.iterations << ", Norm = " + std::to_string(test_sol(N, y, TRUE_SOL)) << ", Time   = " << MZ.time << std::endl;
+
+    file2 << "Threads = " << 1 << ", Iter = " << MZ.iterations << ", Norm = " << std::scientific << test_sol(N, y, TRUE_SOL) <<
+          ", Time   = " << MZ.time << std::endl;
+
+    std::cout << "Threads = " << 1 << ", Iter = " << MZ.iterations << ", Norm = " << std::scientific << test_sol(N, y, TRUE_SOL) << ", Time   = " << MZ.time << std::endl;
 
     time_threads1 = MZ.time;
-    for (int i = 2; i <= MAX_TREADS; ++i) {
+    for (int i = 2; i <= MAX_TREADS; i += 2) {
         omp_set_num_threads(i);
         y = y_copy;
         MZ = Method_Zeidel(y, f, k, N, EPS, MAX_ITERATION);
-        //file2 << std::to_string(i) << " " << std::to_string(MZ.time) << std::endl;
-        std::cout << "Threads = " << i << ", Iter = " << MZ.iterations << ", Norm = " + std::to_string(test_sol(N, y, TRUE_SOL)) << ", Time   = " << MZ.time << ", speadup = " << time_threads1 / MZ.time<< std::endl;
-        file2 << "Threads = " << i << ", Iter = " << MZ.iterations << ", Norm = " + std::to_string(test_sol(N, y, TRUE_SOL)) << ", Time   = " << MZ.time << std::endl;
+
+        file2 << std::to_string(i) << " " << std::to_string(MZ.time) << std::endl;
+        std::cout << "Threads = " << i << ", Iter = " << MZ.iterations << ", Norm = " << std::scientific << test_sol(N, y, TRUE_SOL) <<
+                  ", Time   = " << MZ.time << ", speadup = " << time_threads1 / MZ.time<< std::endl;
+
+
+        file2 << "Threads = " << i << ", Iter = " << MZ.iterations << ", Norm = " << std::scientific << test_sol(N, y, TRUE_SOL) <<
+              ", Time   = " << MZ.time << std::endl;
     }
     file2.close();
 }
 
 
 int main() {
+    std::cout << std::scientific;
     speadup_test();
     //test("input1.txt");
     //test("input4.txt");

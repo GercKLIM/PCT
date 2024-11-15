@@ -1,0 +1,5 @@
+Threads = 1, Iter = 21, Norm = 1.323782e-07, Time   = 3.622000e+00
+Threads = 2, Iter = 21, Norm = 1.323782e-07, Time   = 1.916000e+00, speadup = 1.890397e+00
+Threads = 4, Iter = 21, Norm = 1.323782e-07, Time   = 1.198000e+00, speadup = 3.023372e+00
+Threads = 6, Iter = 21, Norm = 1.323782e-07, Time   = 9.320002e-01, speadup = 3.886265e+00
+Threads = 8, Iter = 21, Norm = 1.323782e-07, Time   = 8.390000e-01, speadup = 4.317044e+00

@@ -1,0 +1,9 @@
+Threads = 1, Iter = 12, Norm = 3.807557e-09, Time   = 2.075000e+00
+2 1.125000
+Threads = 2, Iter = 12, Norm = 3.807557e-09, Time   = 1.125000e+00
+4 0.708000
+Threads = 4, Iter = 12, Norm = 3.807557e-09, Time   = 7.079999e-01
+6 0.682000
+Threads = 6, Iter = 12, Norm = 3.807557e-09, Time   = 6.819999e-01
+8 0.908000
+Threads = 8, Iter = 12, Norm = 3.807557e-09, Time   = 9.080000e-01
