@@ -3,7 +3,7 @@
 /* ### РЕАЛИЗАЦИЯ ДОПОЛНИТЕЛЬНЫх ФУНКЦИЙ ПРОГРАММЫ ### */
 /* --------------------------------------------------- */
 
-#include "../INCLUDE/Helmholtz_Solver.h"
+#include "../include/Helmholtz_Solver.h"
 #include <iostream>
 
 

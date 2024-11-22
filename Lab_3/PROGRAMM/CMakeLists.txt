@@ -30,8 +30,8 @@ add_executable(Helmholtz_Solver
         src/Helmholtz_Solver_MPI.cpp
 
         ### TESTS
-        tests/test_omp.cpp
-        tests/test_mpi.cpp
+        ##=tests/test_omp.cpp
+        #tests/test_mpi.cpp
 
 )
 

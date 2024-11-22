@@ -3,7 +3,7 @@
 /* ### ТЕСТИРОВАНИЕ АЛГОРИТМА C MPI ### */
 /* ------------------------------------ */
 
-#include "../INCLUDE/Helmholtz_Solver.h"
+#include "../include/Helmholtz_Solver.h"
 #include <iostream>
 
 int main(){
