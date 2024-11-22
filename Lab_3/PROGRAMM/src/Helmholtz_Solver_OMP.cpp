@@ -1,68 +1,13 @@
+
 /* --------------------------------------------------------- */
 /* ### РЕАЛИЗАЦИЯ ФУНКЦИЙ РЕШЕНИЯ УРАВНЕНИЯ ГЕЛЬМГОЛЬЦА  ### */
 /* --------------------------------------------------------- */
 
-#include "Helmholtz_Solver.h"
+#include "../INCLUDE/Helmholtz_Solver.h"
 
 
 
-/** Функция Нормы разности векторов
- * (NOD - Norm Of Difference)
- * @param size - Длина вектора
- * @param h    - Шаг по узлам
- * @param A    - Первый вектор
- * @param B    - Второй вектор
- * @return     Норму разности векторов
- */
-double NOD(const int& size, const double& h, const std::vector<double>& A, const std::vector<double>& B) {
-    double sum = 0.0;
-    double tmp = 0.;
-
-    #pragma omp parallel for default(none) shared(size,A,B) private(tmp) reduction(+:sum)
-    for (int i = 0; i < size; ++i){
-        tmp = A[i] - B[i];
-        sum += tmp * tmp;
-    }
-    return sqrt(sum * h);
-}
-
-/** Функция раздача работы
- *  (по умолчанию это делает 0-й процесс)
- * @param NP            - Общее кол-во процессов, которым надо раздать работу
- * @param N             - Размерность задачи (число строк в уравнении)
- * @param str_local     - Объем работы вызывающего процесса (ID)
- * @param nums_local    - Порядковый номер первого вхождения работы
- * @param str_per_proc  - Объем работы на процесс
- * @param nums_start    - Порядковый номер первого вхождения работы для процессов
- */
-void WorkDistribution(int NP, int N, int& str_local, int& nums_local,
-                      std::vector<int>& str_per_proc, std::vector<int>& nums_start){
-
-    str_per_proc.resize(NP, N / NP);
-    nums_start.resize(NP, 0);
-
-    for (int i = 0; i < N % NP; ++i)
-        ++str_per_proc[i];
-
-    for (int i = 1; i < NP; ++i)
-        nums_start[i] = nums_start[i - 1] + str_per_proc[i - 1];
-
-    // Передача работы процессам
-    int ID = 0; // Процесс, который раздает работы
-    MPI_Scatter(str_per_proc.data(), 1, MPI_INT, &str_local, 1, MPI_INT, ID, MPI_COMM_WORLD);
-    MPI_Scatter(nums_start.data(), 1, MPI_INT, &nums_local, 1, MPI_INT, ID, MPI_COMM_WORLD);
-}
-
-
-/** Метод Якоби
- *  решения двумерного уравнения Гельмгольца
- * @param y - массив решения
- * @param f - функция правой части
- * @param k - коэффициент в уравнении
- * @param N - число разбиений
- * @param max_num_iterations - Макс. кол-во итераций
- * @return  структуру с информацией о работе метода
- */
+/** Метод Якоби */
 MethodResultInfo Method_Jacobi(std::vector<double>& y, std::function<double(double, double)>&f, const double& k,
                                const int& N, const double& eps, const int& max_num_iterations) {
 
@@ -131,22 +76,9 @@ MethodResultInfo Method_Jacobi(std::vector<double>& y, std::function<double(doub
     return info;
 }
 
-MethodResultInfo Method_Jacobi_P2P(int ID, int NP, std::vector<double>& y, std::function<double(double, double)>&f, const double& k, const int& N,
-                                   const double& eps, const int& max_num_iterations);
 
 
-
-
-
-/** Метод Зейделя (красно-черных итераций)
- *  решения двумерного уравнения Гельмгольца
- * @param y - массив решения
- * @param f - функция правой части
- * @param k - коэффициент в уравнении
- * @param N - число разбиений
- * @param max_num_iterations - Макс. кол-во итераций
- * @return  структуру с информацией о работе метода
- */
+/** Метод Зейделя (красно-черных итераций) */
 MethodResultInfo Method_Zeidel(std::vector<double>& y, std::function<double(double, double)>&f, const double& k,
                                const int& N, const double& eps, const int& max_num_iterations) {
 
@@ -230,24 +162,7 @@ MethodResultInfo Method_Zeidel(std::vector<double>& y, std::function<double(doub
 }
 
 
-/** Функция для проверки корректности решения уравнения
- * @param N - Кол-во узлов в решении
- * @param y - Вектор численного решения
- * @param True_sol_func - Функция точного решения
- * @return Норму разности точного и численного решения
- */
-double test_sol(const int& N, const std::vector<double>& y, std::function<double(double, double)>& True_sol_func) {
 
-    double h = 1. / (N - 1);
-    std::vector<double> y_true(N*N, 0.0);
-    for (int i = 0; i < N; ++i) {
-        for (int j = 0; j < N; ++j) {
-            y_true[i * N + j] = True_sol_func(i * h, j * h);
-        }
-    }
 
-    double norm_res = NOD(N*N, h, y, y_true);
-    return norm_res;
-}
 
 
