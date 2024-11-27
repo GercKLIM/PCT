@@ -24,7 +24,7 @@ double NOD(const int& size, const double& h, const std::vector<double>& A, const
 
 
 /** Функция получения параметров из .json файла */
-bool input_parametres(const std::string& filename, int&  NP, int& N, double& K,
+bool input_parametres(const std::string& filename, int& N, double& K,
                       int& max_iterations, double& EPS, std::string& test_name){
 
     // Открываем файл
@@ -48,7 +48,7 @@ bool input_parametres(const std::string& filename, int&  NP, int& N, double& K,
     // Получаем значения из JSON
     try {
 
-        NP = config.at("NP").get<int>();
+        //NP = config.at("NP").get<int>();
         N = config.at("N").get<int>();
         K = config.at("K").get<double>();
         max_iterations = config.at("max_iterations").get<int>();
@@ -60,7 +60,6 @@ bool input_parametres(const std::string& filename, int&  NP, int& N, double& K,
         return false;
     }
 
-    std::cout << Logs::LOG_SUCCESS << "Parametres import process was SUCCESSFULLY." << std::endl;
     return true;
 }
 
@@ -100,4 +99,17 @@ void Work_Distribution(int NP, int N, int& str_local, int& nums_local,
     int ID = 0; // Процесс, который раздает работы
     MPI_Scatter(str_per_proc.data(), 1, MPI_INT, &str_local, 1, MPI_INT, ID, MPI_COMM_WORLD);
     MPI_Scatter(nums_start.data(), 1, MPI_INT, &nums_local, 1, MPI_INT, ID, MPI_COMM_WORLD);
+}
+
+/* Вывод результатов метода */
+void print_MethodResultInfo(const MethodResultInfo& MR){
+
+    std::cout << "<----------------------------------->"  << std::endl;
+    std::cout << " ### "      << MR.method_name << " ### "<< std::endl << std::endl;
+    std::cout << "Norm    = " << MR.norm_sol              << std::endl;
+    std::cout << "Iter    = " << MR.iterations            << std::endl;
+    std::cout << "Time    = " << MR.time                  << std::endl;
+    std::cout << "|Y-Yp|  = " << MR.norm_iter             << std::endl;
+    std::cout << "Threads = " << MR.NP                    << std::endl;
+    std::cout << "<----------------------------------->"  << std::endl;
 }

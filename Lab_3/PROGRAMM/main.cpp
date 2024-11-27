@@ -28,83 +28,131 @@
 #include "include/Helmholtz_Solver.h"
 #include <iostream>
 
-/* Числовая константа Пи */
-const double PI = 3.14159265358979;
 
-
-void testMPI(int argc, char** argv){
-
-    int k = 0;
-    int ID = 0;
-    MPI_Init(&argc, &argv);
-
-    k = 5;
-    //MPI_Comm_size(MPI_COMM_WORLD, &NP); // Получаем кол-во исполняемых программ
-    MPI_Comm_rank(MPI_COMM_WORLD, &ID); // Получаем номер исполняемой программы
-    std::cout << ID << std::endl;
-
-    MPI_Finalize();
-
-    std::cout << k << std::endl;
-}
+//void testMPI(int argc, char** argv){
+//
+//    int k = 0;
+//    int ID = 0;
+//    MPI_Init(&argc, &argv);
+//
+//    k = 5;
+//    //MPI_Comm_size(MPI_COMM_WORLD, &NP); // Получаем кол-во исполняемых программ
+//    MPI_Comm_rank(MPI_COMM_WORLD, &ID); // Получаем номер исполняемой программы
+//    std::cout << ID << std::endl;
+//
+//    MPI_Finalize();
+//
+//    std::cout << k << std::endl;
+//}
 
 
 
 
 int main(int argc, char** argv) {
 
-//    const std::string TEST_FILENAME = "../../INPUT/input_parametres_1.json";
-//
-//    /* Начальные параметры программы */
-//    int NP = 1;                  // Кол-во потоков
-//    int N = 1;                   // Кол-во разбиений
-//    double K = 1;                // Коэф. уравнения K
-//    int MAX_ITERATIONS = 1;      // Ограничение кол-ва итераций
-//    double EPS = 1;              // Допустимая погрешность
-//    std::string TEST_NAME = " "; // Назавние Теста
-//
-//    /* Получаем параметры из внешнего файла */
-//    input_parametres(TEST_FILENAME, NP, N, K, MAX_ITERATIONS, EPS, TEST_NAME);
-//
-//
-//    /* Определение задачи */
-//
-//    /* Правая часть */
-//    std::function<double(double, double)> f = ([&](double x, double y){
-//        return (2 * sin(PI * y) + K * K * (1 - x) * x * sin(PI * y)
-//                + PI * PI * (1 - x) * x * sin(PI * y));
-//    });
-//
-//    /* Точное решение */
-//    std::function<double(double, double)> TRUE_SOL = ([&](double x, double y){
-//        return ((1 - x) * x * sin(PI * y));
-//    });
+    /* Путь к файлу с тестовыми параметрами */
+    const std::string TEST_FILENAME = "../INPUT/input_parametres_1.json";
 
 
-    testMPI(argc,argv);
+    /* Начальные параметры программы */
+    int ID = 0;                  // ID Процесса
+    int NP = 1;                  // Общее число процессов
+    int N = 1;                   // Кол-во разбиений
+    double K = 1;                // Коэф. уравнения K
+    int MAX_ITERATIONS = 1;      // Ограничение кол-ва итераций
+    double EPS = 1;              // Допустимая погрешность
+    std::string TEST_NAME = " "; // Назавние Теста
+
+    /* Получаем параметры из внешнего файла */
+    input_parametres(TEST_FILENAME, N, K, MAX_ITERATIONS, EPS, TEST_NAME);
+//    if ((input_parametres(TEST_FILENAME, N, K, MAX_ITERATIONS, EPS, TEST_NAME)) and (ID == 0)) {
+//        std::cout << Logs::LOG_SUCCESS << "Parametres import process was SUCCESSFULLY." << std::endl;
+//    }
+
+    /* Запускаем MPI */
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &NP); // Получаем общее число процессов
+    MPI_Comm_rank(MPI_COMM_WORLD, &ID); // Получаем ID текущего процесса
+
+
+    /* Определение задачи */
+
+    /* Правая часть */
+    std::function<double(double, double)> f = ([&](double x, double y){
+        return (2 * sin(M_PI * y) + K * K * (1 - x) * x * sin(M_PI * y)
+                + M_PI * M_PI * (1 - x) * x * sin(M_PI * y));
+    });
+
+    /* Точное решение */
+    std::function<double(double, double)> TRUE_SOL = ([&](double x, double y){
+        return ((1 - x) * x * sin(M_PI * y));
+    });
+
+
+
+    /* РЕШЕНИЕ УРАВНЕНИЯ */
+
+
+
     /* Решение методом Якоби Send Recv */
-//    std::vector<double> y(N * N, 0.0);
-//    MethodResultInfo MJ = Method_Jacobi_P2P(argc, argv, f, K, N, EPS, MAX_ITERATIONS);
-//
-//    std::cout << "<----------------------------------->" << std::endl;
-//    std::cout << " ### METHOD JACOBI ### "   << std::endl<< std::endl;
-//    std::cout << "Norm   = " << test_sol(N, y, TRUE_SOL) << std::endl;
-//    std::cout << "Iter   = " << MJ.iterations            << std::endl;
-//    std::cout << "Time   = " << MJ.time                  << std::endl;
-//    std::cout << "|Y-Yp| = " << MJ.norm_iter             << std::endl;
-//    //std::cout<<"CPU: "<<omp_get_num_threads()<<" threads"<< std::endl;
-//    std::cout << "<----------------------------------->" << std::endl;
+    MethodResultInfo MJ1;
+    Method_Jacobi_P2P(MJ1, f, K, N, EPS, MAX_ITERATIONS);
+    if (ID ==0 ) {
+        MJ1.norm_sol = test_sol(N, MJ1.Y, TRUE_SOL);
+        print_MethodResultInfo(MJ1);
+    }
+
 
     /* Решение методом Якоби SendRecv */
+    MethodResultInfo MJ2;
+    Method_Jacobi_SIMULT(MJ2, f, K, N, EPS, MAX_ITERATIONS);
+    if (ID ==0 ) {
+        MJ2.norm_sol = test_sol(N, MJ2.Y, TRUE_SOL);
+        print_MethodResultInfo(MJ2);
+    }
+
 
     /* Решение методом Якоби ISend IRecv */
+    MethodResultInfo MJ3;
+    Method_Jacobi_NOBLOCK(MJ3, f, K, N, EPS, MAX_ITERATIONS);
+    if (ID ==0 ) {
+        MJ3.norm_sol = test_sol(N, MJ3.Y, TRUE_SOL);
+        print_MethodResultInfo(MJ3);
+    }
+
 
     /* Решение методом Зейделя Send Recv */
+    MethodResultInfo MZ1;
+    Method_Zeidel_P2P(MZ1, f, K, N, EPS, MAX_ITERATIONS);
+    if (ID ==0 ) {
+        MZ1.norm_sol = test_sol(N, MZ1.Y, TRUE_SOL);
+        print_MethodResultInfo(MZ1);
+    }
+
 
     /* Решение методом Зейделя SendRecv */
+    MethodResultInfo MZ2;
+    Method_Zeidel_SIMULT(MZ2, f, K, N, EPS, MAX_ITERATIONS);
+    if (ID ==0 ) {
+        MZ2.norm_sol = test_sol(N, MZ2.Y, TRUE_SOL);
+        print_MethodResultInfo(MZ2);
+    }
+
 
     /* Решение методом Зейделя ISend IRecv */
+    MethodResultInfo MZ3;
+    Method_Zeidel_NOBLOCK(MZ3, f, K, N, EPS, MAX_ITERATIONS);
+    if (ID == 0) {
+        MZ3.norm_sol = test_sol(N, MZ3.Y, TRUE_SOL);
+        print_MethodResultInfo(MZ3);
+    }
 
-    std::cout << Logs::LOG_SUCCESS << "Complete!" << std::endl;
+
+    /* КОНЕЦ */
+    if (ID == 0) {
+        std::cout << Logs::LOG_SUCCESS << "Complete!" << std::endl;
+    }
+
+    MPI_Finalize();
     return EXIT_SUCCESS;
 }
