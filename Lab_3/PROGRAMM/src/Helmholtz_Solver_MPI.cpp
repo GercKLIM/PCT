@@ -281,10 +281,6 @@ void Method_Jacobi_NOBLOCK(MethodResultInfo& result, std::function<double(double
     double q = 1.0 / (4.0 + kk * hh); // Выражение из схемы
 
 
-    std::vector<double> y; // Общее решение
-    if (ID == 0)
-        y.resize(N * N);
-
     std::vector<double> temp(y_local.size()); // Копия приближения
 
     // пересылаем верхние и нижние строки temp
@@ -314,6 +310,10 @@ void Method_Jacobi_NOBLOCK(MethodResultInfo& result, std::function<double(double
     MPI_Recv_init(y_next_top.data(), scount, MPI_DOUBLE,
                   dest_proc, 0, MPI_COMM_WORLD, recv_req2 + 1);
 
+    std::vector<double> y; // Общее решение
+    if (ID == 0)
+        y.resize(N * N);
+
     double t1 = -MPI_Wtime();
     for (int iteration = 1; iteration < max_iterations; iteration++) {
 
@@ -328,11 +328,15 @@ void Method_Jacobi_NOBLOCK(MethodResultInfo& result, std::function<double(double
         }
 
         /* пересчитываем все строки в полосе кроме верхней и нижней пока идёт пересылка */
-        for (int i = 1; i < str_local - 1; ++i)
-            for (int j = 1; j < N - 1; ++j)
-                y_local[i * N + j] = (temp[(i + 1) *  + j] + temp[(i - 1) * N + j] +
-                        temp[i * N + (j + 1)] + temp[i * N + (j - 1)] +
-                        hh * f((nums_local + i) * h, j * h)) * q;
+        for (int i = 1; i < str_local - 1; ++i) {
+            for (int j = 1; j < N - 1; ++j) {
+                y_local[i * N + j] = (temp[(i + 1) * N + j] +
+                                      temp[(i - 1) * N + j] +
+                                      temp[i * N + (j + 1)] +
+                                      temp[i * N + (j - 1)] +
+                                      hh * f((nums_local + i) * h, j * h)) * q;
+            }
+        }
 
         if (iteration % 2 == 0) {
             MPI_Waitall(2, send_req1, MPI_STATUSES_IGNORE);
@@ -343,21 +347,23 @@ void Method_Jacobi_NOBLOCK(MethodResultInfo& result, std::function<double(double
         }
 
         /* пересчитываем верхние строки */
-        if (ID != 0)
-            for (int j = 1; j < N - 1; ++j)
+        if (ID != 0) {
+            for (int j = 1; j < N - 1; ++j) {
                 y_local[j] = (temp[N + j] + y_prev_low[j] +
-                        temp[j + 1] + temp[j - 1] +
-                        hh * f(nums_local * h, j * h)) * q;
-
+                              temp[j + 1] + temp[j - 1] +
+                              hh * f(nums_local * h, j * h)) * q;
+            }
+        }
         /* пересчитываем нижние строки */
-        if (ID != NP - 1)
-            for (int j = 1; j < NP - 1; ++j)
+        if (ID != NP - 1) {
+            for (int j = 1; j < N - 1; ++j) {
                 y_local[(str_local - 1) * N + j] = (y_next_top[j] +
-                        temp[(str_local - 2) * N + j] +
-                        temp[(str_local - 1) * N + (j + 1)] +
-                        temp[(str_local - 1) * N + (j - 1)] +
-                        hh * f((nums_local + (str_local - 1)) * h, j * h)) * q;
-
+                                                    temp[(str_local - 2) * N + j] +
+                                                    temp[(str_local - 1) * N + (j + 1)] +
+                                                    temp[(str_local - 1) * N + (j - 1)] +
+                                                    hh * f((nums_local + (str_local - 1)) * h, j * h)) * q;
+            }
+        }
         norm_local = NOD((int)temp.size(), h, temp, y_local);
 
         MPI_Allreduce(&norm_local, &norm_err, 1, MPI_DOUBLE,
@@ -379,6 +385,9 @@ void Method_Jacobi_NOBLOCK(MethodResultInfo& result, std::function<double(double
     /* Собираем общее решение */
     MPI_Gatherv(y_local.data(), str_local * N, MPI_DOUBLE, y.data(),
                 str_per_proc.data(), nums_start.data(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+//    MPI_Gather(y_local.data(), str_local * N, MPI_DOUBLE,
+//               y.data(), str_local * N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
     /* Записываем результаты */
     if (ID == 0) {
@@ -901,6 +910,7 @@ void Method_Zeidel_NOBLOCK(MethodResultInfo& result, std::function<double(double
     /* Собираем общее решение */
 //    MPI_Gatherv(y_local.data(), str_local * N, MPI_DOUBLE, y.data(),
 //                str_per_proc.data(), nums_start.data(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
 
     MPI_Gather(y_local.data(), str_local * N, MPI_DOUBLE,
                y.data(), str_local * N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
