@@ -733,14 +733,15 @@ void Method_Zeidel_NOBLOCK(MethodResultInfo& result, std::function<double(double
     MPI_Request* recv_req1;
     MPI_Request* recv_req2;
 
-    /* Раздача работы процессам */
-    Work_Distribution(NP, N, str_local, nums_local, str_per_proc, nums_start);
-
     int source_proc = ID ? ID - 1 : NP - 1; // myid == 0 = np - 1 // Процесс из которого отправляем
     int dest_proc = (ID != (NP - 1)) ? ID + 1 : 0; // у myid == np - 1 = 0 // Процесс в который отправляем
 
     int scount = (ID != (NP - 1)) ? N : 0; // у myid == np - 1 = 0 // Кол-во отправляемых данных
     int rcount = ID ? N : 0; // myid == 0 = 0                      // Кол-во получаемых данных
+
+    /* Раздача работы процессам */
+    Work_Distribution(NP, N, str_local, nums_local, str_per_proc, nums_start);
+
 
     double h = 1.0 / (double)(N - 1); // Шаг сетки
     double hh = h * h;                // Квадрат шага
@@ -770,8 +771,9 @@ void Method_Zeidel_NOBLOCK(MethodResultInfo& result, std::function<double(double
     MPI_Recv_init(y_next_top.data(), scount, MPI_DOUBLE, dest_proc, 0, MPI_COMM_WORLD, recv_req2 + 1);
 
     std::vector<double> y; // Общее решение
-    if (ID == 0)
+    if (ID == 0) {
         y.resize(N * N);
+    }
 
     double t1 = -MPI_Wtime();
 
@@ -893,32 +895,12 @@ void Method_Zeidel_NOBLOCK(MethodResultInfo& result, std::function<double(double
         str_per_proc[i] *= N;
         nums_start[i] *= N;
     }
-
-    //MPI_Gather(y_local.data(), str_local * n, MPI_DOUBLE, y.data(), str_local * n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    /* Собираем общее решение */
+//    MPI_Gather(y_local.data(), str_local * N, MPI_DOUBLE,
+//               y.data(), str_local * N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Gatherv(y_local.data(), str_local * N, MPI_DOUBLE,
                 y.data(), str_per_proc.data(), nums_start.data(),
                 MPI_DOUBLE, 0, MPI_COMM_WORLD);
-
-    for (int i = 0; i < NP; ++i) {
-        str_per_proc[i] *= N;
-        nums_start[i] *= N;
-    }
-
-
-
-
-    /* Собираем общее решение */
-//    MPI_Gatherv(y_local.data(), str_local * N, MPI_DOUBLE, y.data(),
-//                str_per_proc.data(), nums_start.data(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
-
-
-    MPI_Gather(y_local.data(), str_local * N, MPI_DOUBLE,
-               y.data(), str_local * N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-
-//    if (ID == 0) {
-//        sleep(10);
-//    }
-//    std::cout << "Hello, " << ID << std::endl;
 
     /* Записываем результаты */
     if (ID == 0) {

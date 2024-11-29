@@ -24,8 +24,6 @@
 #include <nlohmann/json.hpp> // Для работы с json файлами
 #include <Logs.h>            // Для логов
 
-#include <unistd.h>
-
 /* ### ПОБОЧНЫЕ ФУНКЦИИ ### */
 
 

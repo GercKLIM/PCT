@@ -500,7 +500,10 @@ void red_black_ISend_IRecv(int myid, int np)
     }
 
     //MPI_Gather(y_local.data(), str_local * n, MPI_DOUBLE, y.data(), str_local * n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Gatherv(y_local.data(), str_local * n, MPI_DOUBLE, y.data(), str_per_proc.data(), nums_start.data(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Gatherv(y_local.data(), str_local * n,
+                MPI_DOUBLE, y.data(),
+                str_per_proc.data(), nums_start.data(),
+                MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
     if (myid == 0)
     {
