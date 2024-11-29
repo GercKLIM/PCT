@@ -1,0 +1,7 @@
+{
+      "test_name": "MAIN_TEST",
+              "T": 1,
+            "tau": 1,
+ "max_iterations": 1000,
+            "EPS": 1e-8
+}
