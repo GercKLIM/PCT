@@ -8,19 +8,16 @@
 
 
 
-
-
-
 void Method_Jacobi_P2P(MethodResultInfo& result, std::function<double(double, double)>&f, const double& K, const int& N,
                        const double& eps, const int& max_iterations){
 
-    int NP = 1; // Начальное значение кол-ва потоков программы
-    int ID = 0; // Начальное значение ID (номера) исполняемого процесса
-    MPI_Comm_size(MPI_COMM_WORLD, &NP); // Получаем кол-во исполняемых программ
-    MPI_Comm_rank(MPI_COMM_WORLD, &ID); // Получаем номер исполняемой программы
+    int NP = 1; // Начальное значение кол-ва процессов
+    int ID = 0; // Начальное значение идентификатора текущего процесса
+    MPI_Comm_size(MPI_COMM_WORLD, &NP); // Получаем общее кол-во процессов
+    MPI_Comm_rank(MPI_COMM_WORLD, &ID); // Получаем номер идентификатора текущего процесса
 
-    std::vector<int> str_per_proc; // Строка на процесс
-    std::vector<int> nums_start;   // Индекс первой строки для потока
+    std::vector<int> str_per_proc; // Кол-ва строк на каждый процесс
+    std::vector<int> nums_start;   // Индексы первой строки для потока
 
     int str_local; // Кол-во строк в процессе
     int nums_local; // Индекс первой строки, которой процесс будет обрабатывать
@@ -30,15 +27,15 @@ void Method_Jacobi_P2P(MethodResultInfo& result, std::function<double(double, do
     /* Раздача работы процессам */
     Work_Distribution(NP, N, str_local, nums_local, str_per_proc, nums_start);
 
-    std::vector<double> y_local(str_local * N); // Блок матрицы на процесс
-    std::vector<double> y_next_top(N);             // Текущая приближение
-    std::vector<double> y_prev_low(N);             // Предыдущее приближение
+    std::vector<double> y_local(str_local * N); // Полоска матрицы на процесс
+    std::vector<double> y_next_top(N);             // Верхняя строка для следующего процесса
+    std::vector<double> y_prev_low(N);             // Нижняя строка из предыдущего процесса
 
-    int source_proc = ID ? ID - 1 : NP - 1; // myid == 0 = np - 1 // Процесс из которого отправляем
+    int source_proc = ID ? ID - 1 : NP - 1; // myid == 0 = np - 1          // Процесс из которого отправляем
     int dest_proc = (ID != (NP - 1)) ? ID + 1 : 0; // у myid == np - 1 = 0 // Процесс в который отправляем
 
-    int scount = (ID != (NP - 1)) ? N : 0; // у myid == np - 1 = 0 // Кол-во отправляемых данных
-    int rcount = ID ? N : 0; // myid == 0 = 0                      // Кол-во получаемых данных
+    int scount = (ID != (NP - 1)) ? N : 0; // у myid == np - 1 = 0         // Кол-во отправляемых данных
+    int rcount = ID ? N : 0; // myid == 0 = 0                              // Кол-во получаемых данных
 
     double h = 1.0 / (double)(N - 1); // Шаг сетки
     double hh = h * h;                // Квадрат шага
@@ -149,8 +146,8 @@ void Method_Jacobi_SIMULT(MethodResultInfo& result, std::function<double(double,
     std::vector<double> y_prev_low(N);             // Предыдущее приближение
 
 
-    int source_proc = ID ? ID - 1 : NP - 1; // myid == 0 = np - 1 // Процесс из которого отправляем
-    int dest_proc = (ID != (NP - 1)) ? ID + 1 : 0; // у myid == np - 1 = 0 // Процесс в который отправляем
+    int source_proc = ID ? ID - 1 : NP - 1; // myid == 0 = np - 1 // Предыдущий процесс
+    int dest_proc = (ID != (NP - 1)) ? ID + 1 : 0; // у myid == np - 1 = 0 // Следующий процесс
 
     int scount = (ID != (NP - 1)) ? N : 0; // у myid == np - 1 = 0 // Кол-во отправляемых данных
     int rcount = ID ? N : 0; // myid == 0 = 0                      // Кол-во получаемых данных
@@ -319,13 +316,13 @@ void Method_Jacobi_NOBLOCK(MethodResultInfo& result, std::function<double(double
 
         std::swap(temp, y_local);
 
-        if (iteration  % 2 == 0) {
+//        if (iteration % 2 == 0) {
             MPI_Startall(2, send_req1);
             MPI_Startall(2, recv_req1);
-        } else {
-            MPI_Startall(2, send_req2);
-            MPI_Startall(2, recv_req2);
-        }
+//        } else {
+//            MPI_Startall(2, send_req2);
+//            MPI_Startall(2, recv_req2);
+//        }
 
         /* пересчитываем все строки в полосе кроме верхней и нижней пока идёт пересылка */
         for (int i = 1; i < str_local - 1; ++i) {
@@ -338,13 +335,15 @@ void Method_Jacobi_NOBLOCK(MethodResultInfo& result, std::function<double(double
             }
         }
 
-        if (iteration % 2 == 0) {
+//        if (iteration % 2 == 0) {
+//
+//            MPI_Waitall(2, send_req2, MPI_STATUSES_IGNORE);
+//            MPI_Waitall(2, recv_req2, MPI_STATUSES_IGNORE);
+//        } else {
+
             MPI_Waitall(2, send_req1, MPI_STATUSES_IGNORE);
             MPI_Waitall(2, recv_req1, MPI_STATUSES_IGNORE);
-        } else {
-            MPI_Waitall(2, send_req2, MPI_STATUSES_IGNORE);
-            MPI_Waitall(2, recv_req2, MPI_STATUSES_IGNORE);
-        }
+//        }
 
         /* пересчитываем верхние строки */
         if (ID != 0) {

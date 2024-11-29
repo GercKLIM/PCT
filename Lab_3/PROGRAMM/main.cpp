@@ -32,7 +32,7 @@
 void test_cout(int argc, char** argv){
 
     /* Путь к файлу с тестовыми параметрами */
-    const std::string TEST_FILENAME = "/nethome/student/FS21/FS2-x1/Klim_and_Shaman/LAB_3/INPUT/input_parametres_1.json";
+    const std::string TEST_FILENAME = "../INPUT/input_parametres_1.json";
 
 
     /* Начальные параметры программы */
@@ -260,6 +260,6 @@ void test_fout(int argc, char** argv){
 
 int main(int argc, char** argv) {
 
-    test_fout(argc, argv);
+    test_cout(argc, argv);
     return EXIT_SUCCESS;
 }
