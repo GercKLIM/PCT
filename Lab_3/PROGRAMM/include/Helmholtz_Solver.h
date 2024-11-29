@@ -76,6 +76,9 @@ struct MethodResultInfo {
 void print_MethodResultInfo(const MethodResultInfo& MR);
 
 
+/* Вывод результатов метода в файл */
+void print_MethodResultInfoFile(const MethodResultInfo& MR, std::ofstream& Fout);
+
 
 /** Функция для проверки корректности решения уравнения
  * @param N - Кол-во узлов в решении
@@ -89,7 +92,7 @@ double test_sol(const int& N, const std::vector<double>& y, std::function<double
 
 /** Функция раздача работы */
 void Work_Distribution(int NP, int N, int& str_local, int& nums_local,
-                      std::vector<int>& str_per_proc, std::vector<int>& nums_start);
+                       std::vector<int>& str_per_proc, std::vector<int>& nums_start);
 
 
 
@@ -107,7 +110,7 @@ void Work_Distribution(int NP, int N, int& str_local, int& nums_local,
  * @return  структуру с информацией о работе метода
  */
 MethodResultInfo Method_Jacobi(std::vector<double>& y, std::function<double(double, double)>&f, const double& k, const int& N,
-                   const double& eps, const int& max_num_iterations = 1000);
+                               const double& eps, const int& max_num_iterations = 1000);
 
 
 /** Метод Зейделя (красно-черных итераций)

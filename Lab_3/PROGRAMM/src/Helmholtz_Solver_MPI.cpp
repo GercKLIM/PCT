@@ -12,7 +12,7 @@
 
 
 void Method_Jacobi_P2P(MethodResultInfo& result, std::function<double(double, double)>&f, const double& K, const int& N,
-                                   const double& eps, const int& max_iterations){
+                       const double& eps, const int& max_iterations){
 
     int NP = 1; // Начальное значение кол-ва потоков программы
     int ID = 0; // Начальное значение ID (номера) исполняемого процесса
@@ -69,20 +69,20 @@ void Method_Jacobi_P2P(MethodResultInfo& result, std::function<double(double, do
         for (int i = 1; i < str_local - 1; ++i)
             for (int j = 1; j < N - 1; ++j)
                 y_local[i * N + j] = (temp[(i + 1) * N + j] + temp[(i - 1) * N + j] + temp[i * N + (j + 1)]
-                        + temp[i * N + (j - 1)] + h * h * f((nums_local + i) * h, j * h)) * q;
+                                      + temp[i * N + (j - 1)] + h * h * f((nums_local + i) * h, j * h)) * q;
 
         /* Пересчитываем верхние строки */
         if (ID != 0)
             for (int j = 1; j < N - 1; ++j)
                 y_local[j] = (temp[N + j] + y_prev_low[j] + temp[j + 1] + temp[j - 1]
-                        + hh * f(nums_local * h, j * h)) * q;
+                              + hh * f(nums_local * h, j * h)) * q;
 
         /* Пересчитываем нижние строки */
         if (ID != NP - 1)
             for (int j = 1; j < N - 1; ++j)
                 y_local[(str_local - 1) * N + j] = (y_next_top[j] + temp[(str_local - 2) * N + j]
-                        + temp[(str_local - 1) * N + (j + 1)] + temp[(str_local - 1) * N + (j - 1)]
-                        + hh * f((nums_local + (str_local - 1)) * h, j * h)) * q;
+                                                    + temp[(str_local - 1) * N + (j + 1)] + temp[(str_local - 1) * N + (j - 1)]
+                                                    + hh * f((nums_local + (str_local - 1)) * h, j * h)) * q;
 
         norm_local = NOD((int)temp.size(), h, temp, y_local);
 
@@ -126,7 +126,7 @@ void Method_Jacobi_P2P(MethodResultInfo& result, std::function<double(double, do
 }
 
 void Method_Jacobi_SIMULT(MethodResultInfo& result, std::function<double(double, double)>&f, const double& K, const int& N,
-                       const double& eps, const int& max_iterations) {
+                          const double& eps, const int& max_iterations) {
 
     int NP = 1; // Начальное значение кол-ва потоков программы
     int ID = 0; // Начальное значение ID (номера) исполняемого процесса
@@ -186,22 +186,22 @@ void Method_Jacobi_SIMULT(MethodResultInfo& result, std::function<double(double,
         for (int i = 1; i < str_local - 1; ++i)
             for (int j = 1; j < N - 1; ++j)
                 y_local[i * N + j] = (temp[(i + 1) * N + j] + temp[(i - 1) * N + j] +
-                        temp[i * N + (j + 1)] + temp[i * N + (j - 1)] +
-                        hh * f((nums_local + i) * h, j * h)) * q;
+                                      temp[i * N + (j + 1)] + temp[i * N + (j - 1)] +
+                                      hh * f((nums_local + i) * h, j * h)) * q;
 
         /* пересчитываем верхние строки */
         if (ID != 0)
             for (int j = 1; j < N - 1; ++j)
                 y_local[j] = (temp[N + j] + y_prev_low[j] + temp[j + 1]
-                        + temp[j - 1] + hh * f(nums_local * h, j * h)) * q;
+                              + temp[j - 1] + hh * f(nums_local * h, j * h)) * q;
 
         /* пересчитываем нижние строки */
         if (ID != NP - 1)
             for (int j = 1; j < N - 1; ++j)
                 y_local[(str_local - 1) * N + j] = (y_next_top[j] + temp[(str_local - 2) * N + j]
-                        + temp[(str_local - 1) * N + (j + 1)] +
-                        temp[(str_local - 1) * N + (j - 1)] +
-                        hh * f((nums_local + (str_local - 1)) * h, j * h)) * q;
+                                                    + temp[(str_local - 1) * N + (j + 1)] +
+                                                    temp[(str_local - 1) * N + (j - 1)] +
+                                                    hh * f((nums_local + (str_local - 1)) * h, j * h)) * q;
 
         norm_local = NOD((int)temp.size(), h, temp, y_local);
 
@@ -239,7 +239,7 @@ void Method_Jacobi_SIMULT(MethodResultInfo& result, std::function<double(double,
 }
 
 void Method_Jacobi_NOBLOCK(MethodResultInfo& result, std::function<double(double, double)>&f, const double& K, const int& N,
-                          const double& eps, const int& max_iterations) {
+                           const double& eps, const int& max_iterations) {
 
     MPI_Request* send_req1;
     MPI_Request* send_req2;
@@ -407,7 +407,7 @@ void Method_Jacobi_NOBLOCK(MethodResultInfo& result, std::function<double(double
 }
 
 void Method_Zeidel_P2P(MethodResultInfo& result, std::function<double(double, double)>&f, const double& K, const int& N,
-                              const double& eps, const int& max_iterations) {
+                       const double& eps, const int& max_iterations) {
 
 
     int NP = 1; // Начальное значение кол-ва потоков программы
@@ -469,23 +469,23 @@ void Method_Zeidel_P2P(MethodResultInfo& result, std::function<double(double, do
         for (int i = 1; i < str_local - 1; ++i)
             for (int j = ((i + 1) % 2 + 1); j < N - 1; j += 2)
                 y_local[i * N + j] = (temp[(i + 1) * N + j] + temp[(i - 1) * N + j] +
-                        temp[i * N + (j + 1)] + temp[i * N + (j - 1)] +
-                        hh * f((nums_local + i) * h, j * h)) * q;
+                                      temp[i * N + (j + 1)] + temp[i * N + (j - 1)] +
+                                      hh * f((nums_local + i) * h, j * h)) * q;
 
         // верхние строки (красные)
         if (ID != 0)
             for (int j = 2; j < N - 1; j += 2)
                 y_local[j] = (temp[N + j] + y_prev_low[j] +
-                        temp[j + 1] + temp[j - 1] +
-                        hh * f(nums_local * h, j * h)) * q;
+                              temp[j + 1] + temp[j - 1] +
+                              hh * f(nums_local * h, j * h)) * q;
 
         // нижние строки (красные)
         if (ID != NP - 1)
             for (int j = 1 + str_local % 2; j < N - 1; j += 2)
                 y_local[(str_local - 1) * N + j] = (y_next_top[j] +
-                        temp[(str_local - 2) * N + j] + temp[(str_local - 1) * N +
-                        (j + 1)] + temp[(str_local - 1) * N + (j - 1)] +
-                        hh * f((nums_local + (str_local - 1)) * h, j * h)) * q;
+                                                    temp[(str_local - 2) * N + j] + temp[(str_local - 1) * N +
+                                                                                         (j + 1)] + temp[(str_local - 1) * N + (j - 1)] +
+                                                    hh * f((nums_local + (str_local - 1)) * h, j * h)) * q;
 
         //MPI_Barrier;
 
@@ -506,24 +506,24 @@ void Method_Zeidel_P2P(MethodResultInfo& result, std::function<double(double, do
         for (int i = 1; i < str_local - 1; ++i)
             for (int j = (i % 2 + 1); j < N - 1; j += 2)
                 y_local[i * N + j] = (y_local[(i + 1) * N + j] + y_local[(i - 1) * N + j] +
-                        y_local[i * N + (j + 1)] +
-                        y_local[i * N + (j - 1)] +
-                        hh * f((nums_local + i) * h, j * h)) * q;
+                                      y_local[i * N + (j + 1)] +
+                                      y_local[i * N + (j - 1)] +
+                                      hh * f((nums_local + i) * h, j * h)) * q;
 
         // верхние строки (чёрные)
         if (ID != 0)
             for (int j = 1; j < N - 1; j += 2)
                 y_local[j] = (y_local[N + j] + y_prev_low[j] + y_local[j + 1] +
-                        y_local[j - 1] + hh * f(nums_local * h, j * h)) * q;
+                              y_local[j - 1] + hh * f(nums_local * h, j * h)) * q;
 
         // нижние строки (чёрные)
         if (ID != NP - 1)
             for (int j = 1 + (str_local - 1) % 2; j < N - 1; j += 2)
                 y_local[(str_local - 1) * N + j] = (y_next_top[j] +
-                        y_local[(str_local - 2) * N + j] +
-                        y_local[(str_local - 1) * N + (j + 1)] +
-                        y_local[(str_local - 1) * N + (j - 1)] +
-                        hh * f((nums_local + (str_local - 1)) * h, j * h)) * q;
+                                                    y_local[(str_local - 2) * N + j] +
+                                                    y_local[(str_local - 1) * N + (j + 1)] +
+                                                    y_local[(str_local - 1) * N + (j - 1)] +
+                                                    hh * f((nums_local + (str_local - 1)) * h, j * h)) * q;
 
         norm_local = NOD((int)temp.size(), h, temp, y_local);
 
@@ -620,8 +620,8 @@ void Method_Zeidel_SIMULT(MethodResultInfo& result, std::function<double(double,
         for (int i = 1; i < str_local - 1; ++i)
             for (int j = ((i + 1) % 2 + 1); j < N - 1; j += 2)
                 y_local[i * N + j] = (temp[(i + 1) * N + j] + temp[(i - 1) * N + j] +
-                        temp[i * N + (j + 1)] + temp[i * N + (j - 1)] +
-                        hh * f((nums_local + i) * h, j * h)) * q;
+                                      temp[i * N + (j + 1)] + temp[i * N + (j - 1)] +
+                                      hh * f((nums_local + i) * h, j * h)) * q;
 
         // верхние строки (красные)
         if (ID != 0)
@@ -632,10 +632,10 @@ void Method_Zeidel_SIMULT(MethodResultInfo& result, std::function<double(double,
         if (ID != NP - 1)
             for (int j = 1 + str_local % 2; j < N - 1; j += 2)
                 y_local[(str_local - 1) * N + j] = (y_next_top[j] +
-                        temp[(str_local - 2) * N + j] +
-                        temp[(str_local - 1) * N + (j + 1)] +
-                        temp[(str_local - 1) * N + (j - 1)] +
-                        hh * f((nums_local + (str_local - 1)) * h, j * h)) * q;
+                                                    temp[(str_local - 2) * N + j] +
+                                                    temp[(str_local - 1) * N + (j + 1)] +
+                                                    temp[(str_local - 1) * N + (j - 1)] +
+                                                    hh * f((nums_local + (str_local - 1)) * h, j * h)) * q;
 
         //MPI_Barrier;
 
@@ -655,23 +655,23 @@ void Method_Zeidel_SIMULT(MethodResultInfo& result, std::function<double(double,
         for (int i = 1; i < str_local - 1; ++i)
             for (int j = (i % 2 + 1); j < N - 1; j += 2)
                 y_local[i * N + j] = (y_local[(i + 1) * N + j] +
-                        y_local[(i - 1) * N + j] + y_local[i * N + (j + 1)] +
-                        y_local[i * N + (j - 1)] + hh * f((nums_local + i) * h, j * h)) * q;
+                                      y_local[(i - 1) * N + j] + y_local[i * N + (j + 1)] +
+                                      y_local[i * N + (j - 1)] + hh * f((nums_local + i) * h, j * h)) * q;
 
         // верхние строки (чёрные)
         if (ID != 0)
             for (int j = 1; j < N - 1; j += 2)
                 y_local[j] = (y_local[N + j] + y_prev_low[j] + y_local[j + 1] +
-                        y_local[j - 1] + hh * f(nums_local * h, j * h)) * q;
+                              y_local[j - 1] + hh * f(nums_local * h, j * h)) * q;
 
         // нижние строки (чёрные)
         if (ID != NP - 1)
             for (int j = 1 + (str_local - 1) % 2; j < N - 1; j += 2)
                 y_local[(str_local - 1) * N + j] = (y_next_top[j] +
-                        y_local[(str_local - 2) * N + j] +
-                        y_local[(str_local - 1) * N + (j + 1)] +
-                        y_local[(str_local - 1) * N + (j - 1)] +
-                        hh * f((nums_local + (str_local - 1)) * h, j * h)) * q;
+                                                    y_local[(str_local - 2) * N + j] +
+                                                    y_local[(str_local - 1) * N + (j + 1)] +
+                                                    y_local[(str_local - 1) * N + (j - 1)] +
+                                                    hh * f((nums_local + (str_local - 1)) * h, j * h)) * q;
 
 
         norm_local = NOD((int)temp.size(), h, temp, y_local);
@@ -710,7 +710,7 @@ void Method_Zeidel_SIMULT(MethodResultInfo& result, std::function<double(double,
 
 
 void Method_Zeidel_NOBLOCK(MethodResultInfo& result, std::function<double(double, double)>&f, const double& K, const int& N,
-                          const double& eps, const int& max_iterations) {
+                           const double& eps, const int& max_iterations) {
 
 
     int NP = 1; // Начальное значение кол-ва потоков программы

@@ -84,7 +84,7 @@ double test_sol(const int& N, const std::vector<double>& y, std::function<double
 
 /** Функция раздача работы */
 void Work_Distribution(int NP, int N, int& str_local, int& nums_local,
-                      std::vector<int>& str_per_proc, std::vector<int>& nums_start){
+                       std::vector<int>& str_per_proc, std::vector<int>& nums_start){
 
     str_per_proc.resize(NP, N / NP);
     nums_start.resize(NP, 0);
@@ -113,3 +113,21 @@ void print_MethodResultInfo(const MethodResultInfo& MR){
     std::cout << "Threads = " << MR.NP                    << std::endl;
     std::cout << "<----------------------------------->"  << std::endl;
 }
+
+
+/* Вывод результатов метода в файл */
+void print_MethodResultInfoFile(const MethodResultInfo& MR, std::ofstream& Fout){
+
+
+    Fout << "<----------------------------------->"  << std::endl;
+    Fout << " ### "      << MR.method_name << " ### "<< std::endl << std::endl;
+    Fout << "Norm    = " << MR.norm_sol              << std::endl;
+    Fout << "Iter    = " << MR.iterations            << std::endl;
+    Fout << "Time    = "<< MR.time                   << std::endl;
+    Fout << "|Y-Yp|  = " << MR.norm_iter             << std::endl;
+    Fout << "Threads = " << MR.NP                    << std::endl;
+    Fout << "<----------------------------------->"  << std::endl;
+
+}
+
+
