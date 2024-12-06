@@ -18,7 +18,7 @@ double NOD(const int& size, const double& h, const std::vector<double>& A, const
         tmp = A[i] - B[i];
         sum += tmp * tmp;
     }
-    return sqrt(sum * h);
+    return sum;
 }
 
 

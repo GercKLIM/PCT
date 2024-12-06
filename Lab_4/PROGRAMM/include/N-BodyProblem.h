@@ -14,9 +14,11 @@
 #include <algorithm>
 #include "mpi.h"
 
+#include <nlohmann/json.hpp> // Для работы с json файлами
 
-const double G = 6.67 * 1e-11;
-const double eps = 1e-12;
+
+const double G = 6.67 * 1e-11; // Гравитационная постоянная
+
 
 
 /** Структура Тела
@@ -25,9 +27,9 @@ const double eps = 1e-12;
  *   - 3 скорости
  * */
 struct Body {
-    double m;                // Массы тел
-    std::array<double, 3> r; // Начальные положения тел
-    std::array<double, 3> v; // Начальные скорости тел
+    double m;                // Масса тела
+    std::array<double, 3> r; // Начальные положение тела
+    std::array<double, 3> v; // Начальные скорость тела
 
     Body() : m(0), r{ 0,0,0 }, v{ 0,0,0 } {};
 };
@@ -61,7 +63,7 @@ void vec_add_mul(const std::vector<Body>& a, const std::vector<Body>& b,
                  double alpha, std::vector<Body>& res);
 
 
-/* Функция нормы R2 */
+/* Функция нормы R^3 */
 double norm(const std::array<double, 3>& arr);
 
 
@@ -95,12 +97,37 @@ void write(const std::string& path, const Body& body, double t, int num);
 void clear_files(const std::string& path, int N);
 
 
+/** Функция получения параметров из .json файла */
+template <typename type>
+bool input_json(const std::string& filename, const std::string& name, type& pts) {
+    std::ifstream config_file(filename);
+    if (!config_file.is_open()) {
+        std::cerr << "[LOG]: ERROR: Unable to open " << filename << std::endl;
+        return false;
+    }
+    nlohmann::json config;
+    try {
+        config_file >> config;
+    } catch (const nlohmann::json::parse_error& e) {
+        std::cerr << "[LOG]: ERROR: Parsing error: " << e.what() << "\n";
+        return false;
+    }
+    try {
+        pts = config.at(name).get<type>();
+    } catch (const nlohmann::json::out_of_range& e) {
+        std::cerr << "[LOG]: ERROR: Key \"" << name << "\" not found: " << e.what() << "\n";
+        return false;
+    }
+    return true;
+}
+
+
 
 /* ### Методы Рунге-Кутты ### */
 
 
 
-/** Функция, описывающая систему диффуров, по формулам из файла ИК
+/** Функция, описывающая систему диффуров, по формулам из файла
  *
  * @param left
  * @param right
@@ -120,7 +147,7 @@ void f(std::vector<Body>& left, const std::vector<Body>& right, int start, int e
  * @param output
  */
 void Runge_Kutta(const std::string& path, const std::vector<Body>& init, double tau,
-                 double T, double& t, bool output);
+                 double T, double& t, const double& EPS, bool output);
 
 
 /** Функция метода Рунге-Кутты 4-го порядка с MPI
@@ -131,14 +158,14 @@ void Runge_Kutta(const std::string& path, const std::vector<Body>& init, double 
  * @param T
  * @param t
  * @param output
- * @param np
+ * @param NP
  * @param myid
  * @param N
  * @param MPI_BODY_VPART
  */
 void Runge_Kutta_MPI(const std::string& path, const std::vector<Body>& init, double tau,
-                     double T, double& t, bool output,
-                     int np, int myid, int N, MPI_Datatype MPI_BODY_VPART);
+                     double T, double& t, const double& EPS, bool output,
+                     int NP, int myid, int N, MPI_Datatype MPI_BODY_VPART);
 
 
 

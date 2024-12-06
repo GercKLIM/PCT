@@ -23,6 +23,7 @@ void Method_Jacobi_P2P(MethodResultInfo& result, std::function<double(double, do
     int nums_local; // Индекс первой строки, которой процесс будет обрабатывать
     double norm_local; // Норма
     double norm_err;
+    double eps2 = eps * eps;
 
     /* Раздача работы процессам */
     Work_Distribution(NP, N, str_local, nums_local, str_per_proc, nums_start);
@@ -84,9 +85,9 @@ void Method_Jacobi_P2P(MethodResultInfo& result, std::function<double(double, do
         norm_local = NOD((int)temp.size(), h, temp, y_local);
 
         /* Выбираем максимальную ошибку среди всех прцоессов */
-        MPI_Allreduce(&norm_local, &norm_err, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+        MPI_Allreduce(&norm_local, &norm_err, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 
-        if (norm_err < eps) {
+        if (norm_err < eps2 ) {
             result.iterations = iteration;
             break;
         }
@@ -137,6 +138,7 @@ void Method_Jacobi_SIMULT(MethodResultInfo& result, std::function<double(double,
     int nums_local; // Индекс первой строки, которой процесс будет обрабатывать
     double norm_local; // Норма
     double norm_err;
+    double eps2 = eps * eps;
 
     /* Раздача работы процессам */
     Work_Distribution(NP, N, str_local, nums_local, str_per_proc, nums_start);
@@ -203,9 +205,9 @@ void Method_Jacobi_SIMULT(MethodResultInfo& result, std::function<double(double,
         norm_local = NOD((int)temp.size(), h, temp, y_local);
 
         MPI_Allreduce(&norm_local, &norm_err, 1,
-                      MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+                      MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 
-        if (norm_err < eps) {
+        if (norm_err < eps2) {
             result.iterations = iteration;
             break;
         }
@@ -255,6 +257,7 @@ void Method_Jacobi_NOBLOCK(MethodResultInfo& result, std::function<double(double
     int nums_local; // Индекс первой строки, которой процесс будет обрабатывать
     double norm_local; // Норма
     double norm_err;
+    double eps2 = eps * eps;
 
     /* Раздача работы процессам */
     Work_Distribution(NP, N, str_local, nums_local, str_per_proc, nums_start);
@@ -312,17 +315,17 @@ void Method_Jacobi_NOBLOCK(MethodResultInfo& result, std::function<double(double
         y.resize(N * N);
 
     double t1 = -MPI_Wtime();
-    for (int iteration = 1; iteration < max_iterations; iteration++) {
+    for (int iteration = 1; iteration < max_iterations; ++iteration) {
 
         std::swap(temp, y_local);
 
-//        if (iteration % 2 == 0) {
+        if (iteration % 2 == 0) {
             MPI_Startall(2, send_req1);
             MPI_Startall(2, recv_req1);
-//        } else {
-//            MPI_Startall(2, send_req2);
-//            MPI_Startall(2, recv_req2);
-//        }
+        } else {
+            MPI_Startall(2, send_req2);
+            MPI_Startall(2, recv_req2);
+        }
 
         /* пересчитываем все строки в полосе кроме верхней и нижней пока идёт пересылка */
         for (int i = 1; i < str_local - 1; ++i) {
@@ -335,15 +338,15 @@ void Method_Jacobi_NOBLOCK(MethodResultInfo& result, std::function<double(double
             }
         }
 
-//        if (iteration % 2 == 0) {
-//
-//            MPI_Waitall(2, send_req2, MPI_STATUSES_IGNORE);
-//            MPI_Waitall(2, recv_req2, MPI_STATUSES_IGNORE);
-//        } else {
+        if (iteration % 2 == 0) {
+
+            MPI_Waitall(2, send_req2, MPI_STATUSES_IGNORE);
+            MPI_Waitall(2, recv_req2, MPI_STATUSES_IGNORE);
+        } else {
 
             MPI_Waitall(2, send_req1, MPI_STATUSES_IGNORE);
             MPI_Waitall(2, recv_req1, MPI_STATUSES_IGNORE);
-//        }
+        }
 
         /* пересчитываем верхние строки */
         if (ID != 0) {
@@ -366,9 +369,9 @@ void Method_Jacobi_NOBLOCK(MethodResultInfo& result, std::function<double(double
         norm_local = NOD((int)temp.size(), h, temp, y_local);
 
         MPI_Allreduce(&norm_local, &norm_err, 1, MPI_DOUBLE,
-                      MPI_MAX, MPI_COMM_WORLD);
+                      MPI_SUM, MPI_COMM_WORLD);
 
-        if (norm_err < eps) {
+        if (norm_err < eps2) {
             result.iterations = iteration;
             break;
         }
@@ -421,6 +424,7 @@ void Method_Zeidel_P2P(MethodResultInfo& result, std::function<double(double, do
     int nums_local; // Индекс первой строки, которой процесс будет обрабатывать
     double norm_local; // Норма
     double norm_err;
+    double eps2 = eps * eps;
 
     /* Раздача работы процессам */
     Work_Distribution(NP, N, str_local, nums_local, str_per_proc, nums_start);
@@ -526,9 +530,9 @@ void Method_Zeidel_P2P(MethodResultInfo& result, std::function<double(double, do
 
         norm_local = NOD((int)temp.size(), h, temp, y_local);
 
-        MPI_Allreduce(&norm_local, &norm_err, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+        MPI_Allreduce(&norm_local, &norm_err, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 
-        if (norm_err < eps) {
+        if (norm_err < eps2) {
             result.iterations = iteration;
             break;
         }
@@ -573,7 +577,7 @@ void Method_Zeidel_SIMULT(MethodResultInfo& result, std::function<double(double,
     int nums_local; // Индекс первой строки, которой процесс будет обрабатывать
     double norm_local; // Норма
     double norm_err;
-
+    double eps2 = eps * eps;
     /* Раздача работы процессам */
     Work_Distribution(NP, N, str_local, nums_local, str_per_proc, nums_start);
 
@@ -676,9 +680,9 @@ void Method_Zeidel_SIMULT(MethodResultInfo& result, std::function<double(double,
         norm_local = NOD((int)temp.size(), h, temp, y_local);
 
         MPI_Allreduce(&norm_local, &norm_err, 1,
-                      MPI_DOUBLE,MPI_MAX, MPI_COMM_WORLD);
+                      MPI_DOUBLE,MPI_SUM, MPI_COMM_WORLD);
 
-        if (norm_err < eps) {
+        if (norm_err < eps2) {
             result.iterations = iteration;
             break;
         }
@@ -746,6 +750,7 @@ void Method_Zeidel_NOBLOCK(MethodResultInfo& result, std::function<double(double
     double hh = h * h;                // Квадрат шага
     double kk = K * K;                // Квадрат коэф. К
     double q = 1.0 / (4.0 + kk * hh); // Выражение из схемы
+    double eps2 = eps * eps;
 
     send_req1 = new MPI_Request[2], recv_req1 = new MPI_Request[2];
     send_req2 = new MPI_Request[2], recv_req2 = new MPI_Request[2];
@@ -880,9 +885,9 @@ void Method_Zeidel_NOBLOCK(MethodResultInfo& result, std::function<double(double
         norm_local = NOD((int)temp.size(), h, temp, y_local);
 
         MPI_Allreduce(&norm_local, &norm_err, 1,
-                      MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+                      MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 
-        if (norm_err < eps) {
+        if (norm_err < eps2) {
             result.iterations = iteration;
             break;
         }

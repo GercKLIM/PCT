@@ -13,9 +13,11 @@ include_directories(${MPI_INCLUDE_PATH})
 
 add_executable(LAB_4
         main.cpp
+
         include/N-BodyProblem.h
-        src/N-BodyProblem_MPI.cpp
+
         src/functions.cpp
+        src/N-BodyProblem_MPI.cpp
 )
 
 # Свяжем с MPIMain

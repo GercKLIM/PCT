@@ -1,7 +1,7 @@
 {
-      "test_name": "MAIN_TEST",
-              "T": 1,
-            "tau": 1,
- "max_iterations": 1000,
-            "EPS": 1e-8
+    "test_filename": "../INPUT/4body.txt",
+  "output_filepath": "../OUTPUT/test1/",
+                "T": 20,
+              "tau": 1,
+              "EPS": 1e-8
 }

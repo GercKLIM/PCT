@@ -18,15 +18,58 @@
 
 int main(int argc, char* argv[]) {
 
+
+
+    /* ### Инициализация переменных ### */
+    const std::string PTS_FILENAME = "../INPUT/input.json";
+    std::string TEST_FILENAME;
+    std::string OUTPUT_FILEPATH;
+
     int ID = 0; // Идентификатор текущего процесса
     int NP = 1; // Кол-во процессов
 
-    /* Запускаем MPI */
+    int N = 0;              // Кол-во тел
+    double tau = 1.0;       // Шаг по времени
+    double T = 20.0;        // Конечный момент времени
+    double countStep = 20.0;//
+    double time;            //
+    double EPS;             // Допустимая погрешность
+    std::vector<Body> input;//
+    bool output = true;     //
+
+
+
+
+    /* ### Получаем параметры программы ### */
+
+
+    input_json(PTS_FILENAME, "test_filename", TEST_FILENAME);
+    input_json(PTS_FILENAME, "output_filepath", OUTPUT_FILEPATH);
+    input_json(PTS_FILENAME, "EPS", EPS);
+    input_json(PTS_FILENAME, "T", T);
+    input_json(PTS_FILENAME, "tau", tau);
+    input_json(PTS_FILENAME, "EPS", EPS);
+
+
+    if (ID == 0) {
+        read(TEST_FILENAME, input, N);
+    }
+
+
+
+    /* ### Запускаем MPI ### */
+
+
+
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &NP); // Получаем кол-во процессов
     MPI_Comm_rank(MPI_COMM_WORLD, &ID); // Получаем номер текущего процесса
 
-    /* Делаем пересылку */
+
+
+    /* ### Создаем свою пересылку ### */
+
+
 
     /* Тела */
     int count = 3;
@@ -38,7 +81,7 @@ int main(int argc, char* argv[]) {
     MPI_Type_create_struct(count, lengths, offsets, types, &mpi_body);
     MPI_Type_commit(&mpi_body);
 
-    // скорость
+    /* Скорость */
     int count_v = 1;
     int lengths_v[1] = { 3 };
     MPI_Aint offsets_v[1] = { offsetof(Body, v) };
@@ -51,49 +94,17 @@ int main(int argc, char* argv[]) {
     MPI_Type_create_resized(mpi_body_v, offsetof(Body, v), sizeof(Body), &mpi_body_v_part);
     MPI_Type_commit(&mpi_body_v_part);
 
-    //std::string path = "4body.txt";
-    std::string path = "60kbody.txt";
 
-    int N = 0;
-    std::vector<Body> input;
-    if (ID == 0)
-        read(path, input, N);
+
+    /* ### Решаем задачу ### */
 
     MPI_Bcast(&N, 1, MPI_INT, 0, MPI_COMM_WORLD);
     input.resize(N);
     MPI_Bcast(input.data(), N, mpi_body, 0, MPI_COMM_WORLD);
 
-    double tau = 1.0, countStep = 20.0, time;
-    bool output;
-
-    double T = 20.0;
-
-    //if (myid == 0)
-    //    cout << "\n N=" << N << "\n";
-
-    if (path == "4body.txt")
-    {
-        T = 20.0;
-        output = true;
-    }
-    else
-    {
-        T = countStep * tau;
-        output = false;
-    }
-
-    if (output)
-        clear_files("solution(", N);
-
-    if (ID == 0)
-        std::cout << "\n T=" << T << "\n";
-
-    Runge_Kutta_MPI("solution(", input, tau, T, time, output, np, myid, N, mpi_body_v_part); //здесь поменять
-
-    if (ID == 0)
-        std::cout << "time: " << time / countStep << std::endl;
+    Runge_Kutta_MPI(OUTPUT_FILEPATH, input, tau, T, time, EPS, output, NP, ID, N, mpi_body_v_part); //здесь поменять
 
     MPI_Finalize();
 
-    return 0;
+    return EXIT_SUCCESS;
 }
