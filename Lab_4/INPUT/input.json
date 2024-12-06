@@ -2,6 +2,7 @@
     "test_filename": "../INPUT/4body.txt",
   "output_filepath": "../OUTPUT/test1/",
                 "T": 20,
-              "tau": 1,
-              "EPS": 1e-8
+              "tau": 0.0625,
+              "EPS": 1e-8,
+           "output": true
 }

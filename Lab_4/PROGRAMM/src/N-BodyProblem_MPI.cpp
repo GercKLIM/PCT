@@ -108,43 +108,47 @@ void Runge_Kutta_MPI(const std::string& path, const std::vector<Body>& init, dou
     while (t0 <= T) {
 
         f(k1, res, start, end, EPS);
-        for (int i = 0; i < NP; ++i) {
-            MPI_Bcast(k1.data() + i * count, count,
-                      MPI_BODY_VPART,i, MPI_COMM_WORLD);
-            //MPI_Allgather(k1.data() + start, count, MPI_BODY_VPART, k1.data(), count, MPI_BODY_VPART, MPI_COMM_WORLD);
-        }
+//        for (int i = 0; i < NP; ++i) {
+//            MPI_Bcast(k1.data() + i * count, count,
+//                      MPI_BODY_VPART,i, MPI_COMM_WORLD);
+//        }
+        MPI_Allgather(k1.data() + start, count, MPI_BODY_VPART, k1.data(),
+                      count, MPI_BODY_VPART, MPI_COMM_WORLD);
 
         vec_add_mul(res, k1, tau2, temp);
         f(k2, temp, start, end, EPS);
-        for (int i = 0; i < NP; ++i) {
-            MPI_Bcast(k2.data() + i * count, count,
-                      MPI_BODY_VPART, i, MPI_COMM_WORLD);
-            //MPI_Allgather(k2.data() + start, count, MPI_BODY_VPART, k2.data(), count, MPI_BODY_VPART, MPI_COMM_WORLD);
-        }
+//        for (int i = 0; i < NP; ++i) {
+//            MPI_Bcast(k2.data() + i * count, count,
+//                      MPI_BODY_VPART, i, MPI_COMM_WORLD);
+//        }
+        MPI_Allgather(k2.data() + start, count, MPI_BODY_VPART, k2.data(),
+                      count, MPI_BODY_VPART, MPI_COMM_WORLD);
 
         vec_add_mul(res, k2, tau2, temp);
         f(k3, temp, start, end, EPS);
 
-        for (int i = 0; i < NP; ++i) {
-            MPI_Bcast(k3.data() + i * count, count,
-                      MPI_BODY_VPART, i, MPI_COMM_WORLD);
-            //MPI_Allgather(k3.data() + start, count, MPI_BODY_VPART, k3.data(), count, MPI_BODY_VPART, MPI_COMM_WORLD);
-        }
+//        for (int i = 0; i < NP; ++i) {
+//            MPI_Bcast(k3.data() + i * count, count,
+//                      MPI_BODY_VPART, i, MPI_COMM_WORLD);
+//        }
+        MPI_Allgather(k3.data() + start, count, MPI_BODY_VPART, k3.data(),
+                      count, MPI_BODY_VPART, MPI_COMM_WORLD);
+
         vec_add_mul(res, k3, tau, temp);
         f(k4, temp, start, end, EPS);
-        for (int i = 0; i < NP; ++i) {
-            MPI_Bcast(k4.data() + i * count, count,
-                      MPI_BODY_VPART, i, MPI_COMM_WORLD);
-            //MPI_Allgather(k4.data() + start, count, MPI_BODY_VPART, k4.data(), count, MPI_BODY_VPART, MPI_COMM_WORLD);
-        }
+//        for (int i = 0; i < NP; ++i) {
+//            MPI_Bcast(k4.data() + i * count, count,
+//                      MPI_BODY_VPART, i, MPI_COMM_WORLD);
+//        }
+        MPI_Allgather(k4.data() + start, count, MPI_BODY_VPART, k4.data(), count, MPI_BODY_VPART, MPI_COMM_WORLD);
 
         k1 *= tau6; k2 *= tau3; k3 *= tau3; k4 *= tau6;
         res += k1; res += k2; res += k3; res += k4;
 
         t0 += tau;
 
-        if ((output && ID== 0) && ((int)(round)(10000 * t0)) % 1000 == 0) {
-            //if (output && myid == 0)
+        if ((output && ID== 0) /*&& ((int)(round)(10000 * t0)) % 1000 == 0*/) {
+//            if (output && ID == 0)
             for (int i = 0; i < size; ++i)
                 write(path, res[i], t0, i + 1);
         }

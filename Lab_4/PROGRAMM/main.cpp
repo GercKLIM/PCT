@@ -49,9 +49,11 @@ int main(int argc, char* argv[]) {
     input_json(PTS_FILENAME, "T", T);
     input_json(PTS_FILENAME, "tau", tau);
     input_json(PTS_FILENAME, "EPS", EPS);
+    input_json(PTS_FILENAME, "output", output);
 
 
     if (ID == 0) {
+        clear_files(TEST_FILENAME, N);
         read(TEST_FILENAME, input, N);
     }
 
@@ -106,5 +108,10 @@ int main(int argc, char* argv[]) {
 
     MPI_Finalize();
 
+    if (ID == 0){
+        std::cout << "TIME = " << time << std::endl;
+    }
+
+    std::cout << "Complete!" << std::endl;
     return EXIT_SUCCESS;
 }
