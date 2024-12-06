@@ -123,6 +123,7 @@ void Method_Jacobi_P2P(MethodResultInfo& result, std::function<double(double, do
     }
 }
 
+
 void Method_Jacobi_SIMULT(MethodResultInfo& result, std::function<double(double, double)>&f, const double& K, const int& N,
                           const double& eps, const int& max_iterations) {
 
@@ -236,6 +237,7 @@ void Method_Jacobi_SIMULT(MethodResultInfo& result, std::function<double(double,
         result.NP = NP;
     }
 }
+
 
 void Method_Jacobi_NOBLOCK(MethodResultInfo& result, std::function<double(double, double)>&f, const double& K, const int& N,
                            const double& eps, const int& max_iterations) {
@@ -408,6 +410,7 @@ void Method_Jacobi_NOBLOCK(MethodResultInfo& result, std::function<double(double
     delete[] recv_req2;
 }
 
+
 void Method_Zeidel_P2P(MethodResultInfo& result, std::function<double(double, double)>&f, const double& K, const int& N,
                        const double& eps, const int& max_iterations) {
 
@@ -560,6 +563,7 @@ void Method_Zeidel_P2P(MethodResultInfo& result, std::function<double(double, do
         result.NP = NP;
     }
 }
+
 
 void Method_Zeidel_SIMULT(MethodResultInfo& result, std::function<double(double, double)>&f, const double& K, const int& N,
                           const double& eps, const int& max_iterations) {
