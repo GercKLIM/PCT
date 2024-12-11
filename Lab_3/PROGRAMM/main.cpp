@@ -256,10 +256,105 @@ void test_fout(int argc, char** argv){
     MPI_Finalize();
 }
 
+void test_fout2(int argc, char** argv){
+    /* Путь к файлу с тестовыми параметрами */
+    const std::string TEST_FILENAME = "../INPUT/input_parametres_1.json";
+
+
+    /* Начальные параметры программы */
+    int ID = 0;                  // ID Процесса
+    int NP = 1;                  // Общее число процессов
+    int N = 1;                   // Кол-во разбиений
+    double K = 1;                // Коэф. уравнения K
+    int MAX_ITERATIONS = 1;      // Ограничение кол-ва итераций
+    double EPS = 1;              // Допустимая погрешность
+    std::string TEST_NAME = " "; // Назавние Теста
+
+    /* Получаем параметры из внешнего файла */
+    input_parametres(TEST_FILENAME, N, K, MAX_ITERATIONS, EPS, TEST_NAME);
+
+    /* Запускаем MPI */
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &NP); // Получаем общее число процессов
+    MPI_Comm_rank(MPI_COMM_WORLD, &ID); // Получаем ID текущего процесса
+
+
+
+    /* Файл для вывода *
+    std::ofstream Fout(OUT_FILENAME);
+
+    if (!Fout) {
+        std::cout << "File " <<  OUT_FILENAME << " is NOT open. " << std::endl;
+    }
+
+
+
+
+    /* Определение задачи */
+
+    /* Правая часть */
+    std::function<double(double, double)> f = ([&](double x, double y){
+        return (2 * sin(M_PI * y) + K * K * (1 - x) * x * sin(M_PI * y)
+                + M_PI * M_PI * (1 - x) * x * sin(M_PI * y));
+    });
+
+    /* Точное решение */
+    std::function<double(double, double)> TRUE_SOL = ([&](double x, double y){
+        return ((1 - x) * x * sin(M_PI * y));
+    });
+
+
+
+    /* РЕШЕНИЕ УРАВНЕНИЯ */
+
+
+
+    /* Решение методом Якоби ISend IRecv */
+    MethodResultInfo MJ3;
+    Method_Jacobi_NOBLOCK(MJ3, f, K, N, EPS, MAX_ITERATIONS);
+    if (ID ==0 ) {
+        MJ3.norm_sol = test_sol(N, MJ3.Y, TRUE_SOL);
+        //print_MethodResultInfoFile(MJ3, Fout);
+    }
+
+
+    /* Решение методом Зейделя ISend IRecv */
+    MethodResultInfo MZ3;
+    Method_Zeidel_NOBLOCK(MZ3, f, K, N, EPS, MAX_ITERATIONS);
+    if (ID == 0) {
+        MZ3.norm_sol = test_sol(N, MZ3.Y, TRUE_SOL);
+        //print_MethodResultInfoFile(MZ3, Fout);
+    }
+
+
+    /* КОНЕЦ И запись в файлы */
+
+    if (ID == 0) {
+        std::ofstream file1("../OUTPUT/RESULT_MJ_ISEND.txt", std::ios::app);
+        std::ofstream file2("../OUTPUT/RESULT_MZ_ISEND.txt", std::ios::app);
+        if (!file1.is_open() || !file2.is_open()) {
+            std::cout << "[LOG]: File is NOT open.";
+        }
+
+        file1 << MJ3.NP << " " << MJ3.time << "\n";
+        file2 << MZ3.NP << " " << MZ3.time << "\n";;
+
+        std::cout << Logs::LOG_SUCCESS << "Complete!" << std::endl;
+
+        file1.close();
+        file2.close();
+    }
+
+
+    MPI_Finalize();
+
+
+}
+
 
 
 int main(int argc, char** argv) {
 
-    test_cout(argc, argv);
+    test_fout2(argc, argv);
     return EXIT_SUCCESS;
 }
