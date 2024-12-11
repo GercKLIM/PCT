@@ -165,7 +165,7 @@ void Runge_Kutta(const std::string& path, const std::vector<Body>& init, double 
  */
 void Runge_Kutta_MPI(const std::string& path, const std::vector<Body>& init, double tau,
                      double T, double& t, const double& EPS, bool output,
-                     int NP, int myid, int N, MPI_Datatype MPI_BODY_VPART);
+                     int NP, int myid, int N, MPI_Datatype MPI_BODY_VPART, const int& max_iteration);
 
 
 

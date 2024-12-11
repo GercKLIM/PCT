@@ -114,7 +114,7 @@ void Method_Jacobi_P2P(MethodResultInfo& result, std::function<double(double, do
     /* Записываем результаты */
     if (ID == 0) {
         result.time = t1;
-        result.norm_iter = norm_err;
+        result.norm_iter = norm_err; // TODO: sqrt
         result.NP = NP;
         result.Y = y;
         result.Yp = temp;
@@ -342,12 +342,12 @@ void Method_Jacobi_NOBLOCK(MethodResultInfo& result, std::function<double(double
 
         if (iteration % 2 == 0) {
 
-            MPI_Waitall(2, send_req2, MPI_STATUSES_IGNORE);
-            MPI_Waitall(2, recv_req2, MPI_STATUSES_IGNORE);
-        } else {
-
             MPI_Waitall(2, send_req1, MPI_STATUSES_IGNORE);
             MPI_Waitall(2, recv_req1, MPI_STATUSES_IGNORE);
+        } else {
+
+            MPI_Waitall(2, send_req2, MPI_STATUSES_IGNORE);
+            MPI_Waitall(2, recv_req2, MPI_STATUSES_IGNORE);
         }
 
         /* пересчитываем верхние строки */

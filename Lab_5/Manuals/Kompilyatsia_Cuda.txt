@@ -1,0 +1,2 @@
+nvcc -O2 -gencode arch=compute_70,code=sm_70 -Xcompiler "-fopenmp" -o  Lab5 lab5.cu
+

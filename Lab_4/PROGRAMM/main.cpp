@@ -36,6 +36,7 @@ int main(int argc, char* argv[]) {
     double EPS;             // Допустимая погрешность
     std::vector<Body> input;//
     bool output = true;     //
+    int max_iteration;
 
 
 
@@ -50,6 +51,8 @@ int main(int argc, char* argv[]) {
     input_json(PTS_FILENAME, "tau", tau);
     input_json(PTS_FILENAME, "EPS", EPS);
     input_json(PTS_FILENAME, "output", output);
+    input_json(PTS_FILENAME, "max_iteration", max_iteration);
+
 
 
     if (ID == 0) {
@@ -90,7 +93,7 @@ int main(int argc, char* argv[]) {
     MPI_Datatype types_v[1] = { MPI_DOUBLE };
     MPI_Datatype mpi_body_v;
     MPI_Type_create_struct(count_v, lengths_v, offsets_v, types_v, &mpi_body_v);
-    MPI_Type_commit(&mpi_body_v);
+    //MPI_Type_commit(&mpi_body_v);
 
     MPI_Datatype mpi_body_v_part;
     MPI_Type_create_resized(mpi_body_v, offsetof(Body, v), sizeof(Body), &mpi_body_v_part);
@@ -104,7 +107,8 @@ int main(int argc, char* argv[]) {
     input.resize(N);
     MPI_Bcast(input.data(), N, mpi_body, 0, MPI_COMM_WORLD);
 
-    Runge_Kutta_MPI(OUTPUT_FILEPATH, input, tau, T, time, EPS, output, NP, ID, N, mpi_body_v_part); //здесь поменять
+    Runge_Kutta_MPI(OUTPUT_FILEPATH, input, tau, T, time, EPS,
+                    output, NP, ID, N, mpi_body_v_part, max_iteration); //здесь поменять
 
     MPI_Finalize();
 

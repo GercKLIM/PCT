@@ -83,7 +83,7 @@ void Runge_Kutta(const std::string& path, const std::vector<Body>& init, double 
 // параллельный рунге-кутта
 void Runge_Kutta_MPI(const std::string& path, const std::vector<Body>& init, double tau,
                      double T, double& t, const double& EPS, bool output,
-                     int NP, int ID, int N, MPI_Datatype MPI_BODY_VPART) {
+                     int NP, int ID, int N, MPI_Datatype MPI_BODY_VPART,const int& max_iteration) {
 
     int size = init.size();
     int count = N / NP;
@@ -103,10 +103,12 @@ void Runge_Kutta_MPI(const std::string& path, const std::vector<Body>& init, dou
     if (ID == 0)
         t = -MPI_Wtime();
 
+    int iter = 0;
+
     // N тел, делим массив k1, k2, .. на NP частей, каждый процесс считает свою часть массива
     // и пересылает с помощью Bcast остальным процессам
-    while (t0 <= T) {
-
+    while ((t0 <= T) and (iter < max_iteration)){
+        iter++;
         f(k1, res, start, end, EPS);
 //        for (int i = 0; i < NP; ++i) {
 //            MPI_Bcast(k1.data() + i * count, count,
