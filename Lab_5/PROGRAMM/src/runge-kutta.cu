@@ -16,7 +16,10 @@ float Runge_Kutta(const std::string& path, const std::vector<mytype>& global_m,
                   std::vector<mytype>& global_r, std::vector<mytype>& global_v,
                   mytype tau, mytype T, bool output) {
 
-    int N = global_m.size(), N3 = 3 * N;
+
+    int N = global_m.size();  // Кол-во тел
+    int N3 = 3 * N;
+
     mytype *device_m = nullptr;
     mytype *device_r = nullptr;
     mytype *device_v = nullptr;
@@ -30,12 +33,16 @@ float Runge_Kutta(const std::string& path, const std::vector<mytype>& global_m,
     mytype *kv4 = nullptr;
     mytype *temp_device_r = nullptr;
     mytype *temp_device_v = nullptr;
+
     mytype tau2 = tau / 2, t0 = 0.0;
-    dim3 blocks((N + BS - 1) / BS), threads(BS);
+
+    dim3 blocks((N + BS - 1) / BS); // Число блоков
+    dim3 threads(BS);               // Число потоков
 
     // Вывод числа тел
     std::cout << "[LOG]: N = " << N << std::endl;
 
+    // Запись начального положения
     if (output) {
         for (size_t i = 0; i < N; ++i) {
             write(path, {global_r[3 * i], global_r[3 * i + 1], global_r[3 * i + 2]}, t0, i + 1);
@@ -62,7 +69,7 @@ float Runge_Kutta(const std::string& path, const std::vector<mytype>& global_m,
     cudaMemcpy(device_r, global_r.data(), N3 * sizeof(mytype), cudaMemcpyHostToDevice);
     cudaMemcpy(device_v, global_v.data(), N3 * sizeof(mytype), cudaMemcpyHostToDevice);
 
-    cudaEvent_t start, finish;
+    cudaEvent_t start, finish; // Время старта/финиша
     cudaEventCreate(&start);
     cudaEventCreate(&finish);
 
@@ -124,5 +131,6 @@ float Runge_Kutta(const std::string& path, const std::vector<mytype>& global_m,
     cudaFree(kv3);
     cudaFree(kv4);
 
+    //return time;
     return time / iter;
 }

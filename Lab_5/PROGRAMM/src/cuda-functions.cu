@@ -24,13 +24,11 @@ __device__ mytype norm(mytype x1, mytype x2, mytype x3) {
  * @param N Число тел.
  */
 __global__ void f(mytype* kr, mytype* kv, mytype* device_m, mytype* device_r, mytype* device_v, int N) {
+
     int idx = blockIdx.x * blockDim.x + threadIdx.x; // Глобальный индекс текущего потока
     int tIdx = threadIdx.x;                          // Локальный индекс в блоке
 
-
-
-
-// Локальные переменные для вычислений
+    // Локальные переменные для вычислений
     mytype kvx = 0, kvy = 0, kvz = 0.0;
     mytype x = device_r[3 * idx], y = device_r[3 * idx + 1], z = device_r[3 * idx + 2];
     mytype diff_x, diff_y, diff_z;
@@ -103,6 +101,7 @@ __global__ void summarize(mytype* device_r, mytype* device_v, mytype tau,
                           mytype* kr2, mytype* kv2,
                           mytype* kr3, mytype* kv3,
                           mytype* kr4, mytype* kv4, int N) {
+
     int i = threadIdx.x + blockDim.x * blockIdx.x;
     mytype tau6 = tau / 6.0f;
 

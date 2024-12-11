@@ -13,7 +13,7 @@
 #include <iomanip>
 #include <stdio.h>
 
-#include <nlohmann/json.hpp> // Для работы с json файлами
+#include <json/json.h> // Для работы с json файлами
 
 
 
@@ -61,28 +61,8 @@ __host__ void clear_files(const std::string& path, int N);
 
 
 /** Функция получения параметров из .json файла */
-template <typename type>
-bool input_json(const std::string& filename, const std::string& name, type& pts) {
-    std::ifstream config_file(filename);
-    if (!config_file.is_open()) {
-        std::cerr << "[LOG]: ERROR: Unable to open " << filename << std::endl;
-        return false;
-    }
-    nlohmann::json config;
-    try {
-        config_file >> config;
-    } catch (const nlohmann::json::parse_error& e) {
-        std::cerr << "[LOG]: ERROR: Parsing error: " << e.what() << "\n";
-        return false;
-    }
-    try {
-        pts = config.at(name).get<type>();
-    } catch (const nlohmann::json::out_of_range& e) {
-        std::cerr << "[LOG]: ERROR: Key \"" << name << "\" not found: " << e.what() << "\n";
-        return false;
-    }
-    return true;
-}
+bool input_parametres(const std::string& filename, std::string& test_filename, std::string& output_filename,
+                      double& T, double&tau, double& EPS, bool& output, int& max_iterations);
 
 
 /**

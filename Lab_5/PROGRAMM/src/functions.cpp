@@ -55,5 +55,44 @@ __host__ void clear_files(const std::string& path, int N) {
     }
 }
 
+/** Функция получения параметров из .json файла */
+bool input_parametres(const std::string& filename, std::string& test_filename, std::string& output_filename,
+                      double& T, double&tau, double& EPS, bool& output, int& max_iterations){
+
+    // Открываем файл
+    std::ifstream config_file(filename);
+
+    // Проверяем открытие файла
+    if (!config_file.is_open()) {
+        std::cout << "ERROR: Don't open " << filename  << std::endl;
+        return false;
+    }
+
+    // Загружаем JSON
+
+    Json::Reader json_reader;
+    Json::Value json_root;
+
+    bool read_succeeded = json_reader.parse(config_file, json_root);
+    if (!read_succeeded) {
+        std::cout << "ERROR: Parsing error" << std::endl;
+        return false;
+    }
+
+    //t_seconds = json_root.get("dt", 1.0 / 300.0).asDouble();
+
+
+    //NP = config.at("NP").get<int>();
+    test_filename = json_root.get("test_filename", " ").asString();
+    output_filename = json_root.get("output_filepath", " ").asString();
+    T = json_root.get("T", 0).asDouble();
+    tau = json_root.get("tau", 1).asDouble();
+    EPS = json_root.get("EPS", 1).asDouble();
+    output = json_root.get("output", false).asBool();
+    max_iterations = json_root.get("max_iterations", 0).asInt();
+
+    return true;
+}
+
 
 
