@@ -32,33 +32,30 @@ bool input_parametres(const std::string& filename, int& N, double& K,
 
     // Проверяем открытие файла
     if (!config_file.is_open()) {
-        std::cout << Logs::LOG_ERROR << "ERROR: Don't open " << filename  << std::endl;
+        std::cout << "ERROR: Don't open " << filename  << std::endl;
         return false;
     }
 
     // Загружаем JSON
-    nlohmann::json config;
-    try {
-        config_file >> config;
-    } catch (const nlohmann::json::parse_error& e) {
-        std::cout << Logs::LOG_ERROR << "ERROR: Parsing error with " << e.what() << "\n";
+
+    Json::Reader json_reader;
+    Json::Value json_root;
+
+    bool read_succeeded = json_reader.parse(config_file, json_root);
+    if (!read_succeeded) {
+        std::cout << "ERROR: Parsing error" << std::endl;
         return false;
     }
 
-    // Получаем значения из JSON
-    try {
+    //t_seconds = json_root.get("dt", 1.0 / 300.0).asDouble();
+
 
         //NP = config.at("NP").get<int>();
-        N = config.at("N").get<int>();
-        K = config.at("K").get<double>();
-        max_iterations = config.at("max_iterations").get<int>();
-        EPS = config.at("EPS").get<double>();
-        test_name = config.at("test_name").get<std::string>();
-
-    } catch (const nlohmann::json::out_of_range& e) {
-        std::cout << Logs::LOG_ERROR << "ERROR: " <<  e.what() << "\n";
-        return false;
-    }
+    N = json_root.get("N", 100).asInt();
+    K = json_root.get("K", 1).asDouble();
+    max_iterations = json_root.get("max_iterations", 1).asInt();
+    EPS = json_root.get("EPS", 1).asDouble();
+    test_name = json_root.get("test_name", " ").asString();
 
     return true;
 }
