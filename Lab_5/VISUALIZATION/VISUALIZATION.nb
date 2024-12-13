@@ -1,0 +1,2009 @@
+(* Content-type: application/vnd.wolfram.cdf.text *)
+
+(*** Wolfram CDF File ***)
+(* http://www.wolfram.com/cdf *)
+
+(* CreatedBy='Wolfram 14.1' *)
+
+(*************************************************************************)
+(*                                                                       *)
+(*                                                                       *)
+(*  This file was created under the Wolfram Enterprise licensing terms.  *)
+(*                                                                       *)
+(*       For additional information concerning CDF licensing see:        *)
+(*                                                                       *)
+(*        www.wolfram.com/cdf/adopting-cdf/licensing-options.html        *)
+(*                                                                       *)
+(*                                                                       *)
+(*                                                                       *)
+(*************************************************************************)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[      1060,         20]
+NotebookDataLength[     90556,       1988]
+NotebookOptionsPosition[     89742,       1963]
+NotebookOutlinePosition[     90138,       1979]
+CellTagsIndexPosition[     90095,       1976]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Clear", "[", "\"\<Global`*\>\"", "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"SetDirectory", "[", 
+     RowBox[{"NotebookDirectory", "[", "]"}], "]"}], ";"}], 
+   "*)"}]}]}], "Input",
+ CellChangeTimes->{{3.941941907933743*^9, 3.941941916490254*^9}, 
+   3.941941968754899*^9, {3.9430958124364977`*^9, 
+   3.943095814980788*^9}},ExpressionUUID->"0a859b7d-b6b8-4013-a83c-\
+c4da3aa8bd14"],
+
+Cell[CellGroupData[{
+
+Cell["\:0412\:0438\:0437\:0443\:0430\:043b\:0438\:0437\:0430\:0446\:0438\:044f\
+ \:0440\:0435\:0448\:0435\:043d\:0438\:044f \:0437\:0430\:0434\:0430\:0447\
+\:0438 N - \:0422\:0435\:043b", "Title",
+ CellChangeTimes->{
+  3.9419419736380453`*^9, {3.941942018455698*^9, 
+   3.9419420380578136`*^9}},ExpressionUUID->"af647caf-8306-42af-a0c0-\
+03e082e49958"],
+
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "\:0423\:043a\:0430\:0437\:044b\:0432\:0430\:0435\:043c", " ", 
+    "\:043f\:0443\:0442\:044c", " ", "\:043a", " ", 
+    "\:0434\:0438\:0440\:0435\:043a\:0442\:043e\:0440\:0438\:0438", " ", 
+    "\:0438", " ", "\:0448\:0430\:0431\:043b\:043e\:043d", " ", 
+    "\:0444\:0430\:0439\:043b\:043e\:0432"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+    "directory", "=", 
+     "\"\</home/gercklim/WORK_DIRECTORY/7_\:0421\:0415\:041c/\:0422\:041f\
+\:0412/PCT/Lab_4/OUTPUT/test1/\>\""}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"filePattern", "=", "\"\<*.txt\>\""}], ";"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "\:041f\:043e\:043b\:0443\:0447\:0430\:0435\:043c", " ", 
+     "\:0441\:043f\:0438\:0441\:043e\:043a", " ", 
+     "\:0444\:0430\:0439\:043b\:043e\:0432", " ", "\:043f\:043e", " ", 
+     "\:0448\:0430\:0431\:043b\:043e\:043d\:0443"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"files", "=", 
+     RowBox[{"FileNames", "[", 
+      RowBox[{"filePattern", ",", "directory"}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "\:0418\:043c\:043f\:043e\:0440\:0442\:0438\:0440\:0443\:0435\:043c", " ",
+      "\:0432\:0441\:0435", " ", "\:0444\:0430\:0439\:043b\:044b", " ", 
+     "\:043a\:0430\:043a", " ", "\:0442\:0430\:0431\:043b\:0438\:0446\:044b", 
+     " ", "\:0441", " ", 
+     "\:0432\:0440\:0435\:043c\:0435\:043d\:043d\:044b\:043c\:0438", " ", 
+     "\:043c\:0435\:0442\:043a\:0430\:043c\:0438", " ", "\:0438", " ", 
+     "\:043a\:043e\:043e\:0440\:0434\:0438\:043d\:0430\:0442\:0430\:043c\:0438\
+"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"data", "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Import", "[", 
+        RowBox[{"#", ",", "\"\<Table\>\""}], "]"}], "&"}], "/@", "files"}]}], 
+    ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "\:0418\:043c\:043f\:043e\:0440\:0442\:0438\:0440\:0443\:0435\:043c", " ",
+      "\:0432\:0441\:0435", " ", "\:0444\:0430\:0439\:043b\:044b", " ", 
+     "\:0432", " ", "\:043c\:0430\:0441\:0441\:0438\:0432"}], 
+    "*)"}]}]}]], "Input",
+ CellChangeTimes->{{3.9419420432389193`*^9, 3.941942092141263*^9}, {
+   3.941942137281578*^9, 3.941942177228394*^9}, 3.9419422333298483`*^9, {
+   3.9419423816037493`*^9, 3.941942382602631*^9}, {3.9419425954887447`*^9, 
+   3.941942595691704*^9}, {3.941942628941371*^9, 3.94194263590256*^9}, {
+   3.9419426863409452`*^9, 3.941942688640924*^9}, {3.9424890886937237`*^9, 
+   3.942489099939287*^9}},
+ CellLabel->"In[7]:=",ExpressionUUID->"4a501400-888d-48f5-abf9-2e4b7fb554fc"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"VisualizeMotion", "[", "data_", "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"data2", ",", " ", "frames"}], "}"}], ",", 
+     "\[IndentingNewLine]", "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{
+      "\:0423\:0431\:0438\:0440\:0430\:0435\:043c", " ", 
+       "\:0432\:0440\:0435\:043c\:0435\:043d\:043d\:044b\:0435", " ", 
+       "\:043c\:0435\:0442\:043a\:0438", " ", "\:0438", " ", 
+       "\:043e\:0441\:0442\:0430\:0432\:043b\:044f\:0435\:043c", " ", 
+       "\:0442\:043e\:043b\:044c\:043a\:043e", " ", 
+       "\:043a\:043e\:043e\:0440\:0434\:0438\:043d\:0430\:0442\:044b"}], 
+      "*)"}], "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"data2", "=", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Map", "[", 
+          RowBox[{"Rest", ",", "#"}], "]"}], "&"}], "/@", "data"}]}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+       "\:041e\:043f\:0440\:0435\:0434\:0435\:043b\:044f\:0435\:043c", " ", 
+        "\:043a\:043e\:043b\:0438\:0447\:0435\:0441\:0442\:0432\:043e", " ", 
+        "\:0448\:0430\:0433\:043e\:0432", " ", 
+        "\:0432\:0440\:0435\:043c\:0435\:043d\:0438"}], "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"frames", "=", 
+       RowBox[{"Table", "[", 
+        RowBox[{
+         RowBox[{"Graphics3D", "[", 
+          RowBox[{
+           RowBox[{"Table", "[", 
+            RowBox[{
+             RowBox[{"Sphere", "[", 
+              RowBox[{
+               RowBox[{"data2", "[", 
+                RowBox[{"[", 
+                 RowBox[{"body", ",", "t"}], "]"}], "]"}], ",", "0.1"}], 
+              "]"}], ",", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+             RowBox[{"{", 
+              RowBox[{"body", ",", 
+               RowBox[{"Length", "[", "data2", "]"}]}], "}"}]}], "]"}], ",", 
+           RowBox[{"Boxed", "->", "False"}], ",", 
+           RowBox[{"PlotRange", "->", "All"}], ",", 
+           RowBox[{"AxesLabel", "->", 
+            RowBox[{"{", 
+             RowBox[{"\"\<X\>\"", ",", "\"\<Y\>\"", ",", "\"\<Z\>\""}], 
+             "}"}]}], ",", 
+           RowBox[{"ImageSize", "->", "Large"}]}], "]"}], ",", 
+         RowBox[{"(*", 
+          RowBox[{
+          "\:0412\:0438\:0437\:0443\:0430\:043b\:0438\:0437\:0430\:0446\:0438\
+\:044f", " ", "\:043a\:0430\:0436\:0434\:043e\:0433\:043e", " ", 
+           "\:0442\:0435\:043b\:0430"}], "*)"}], "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{"t", ",", 
+           RowBox[{"Length", "[", 
+            RowBox[{"data2", "[", 
+             RowBox[{"[", "1", "]"}], "]"}], "]"}]}], "}"}]}], "  ", 
+        RowBox[{"(*", 
+         RowBox[{
+         "\:041f\:0440\:043e\:0445\:043e\:0434", " ", "\:043f\:043e", " ", 
+          "\:0432\:0441\:0435\:043c", " ", 
+          "\:043c\:043e\:043c\:0435\:043d\:0442\:0430\:043c", " ", 
+          "\:0432\:0440\:0435\:043c\:0435\:043d\:0438"}], "*)"}], 
+        "\[IndentingNewLine]", "]"}]}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+       "\:0421\:043e\:0437\:0434\:0430\:0435\:043c", " ", 
+        "\:0430\:043d\:0438\:043c\:0430\:0446\:0438\:044e"}], "*)"}], 
+      RowBox[{"ListAnimate", "[", "frames", "]"}]}]}], "\[IndentingNewLine]", 
+    "]"}]}], "\n", "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "\:0412\:044b\:0437\:043e\:0432", " ", 
+    "\:0444\:0443\:043d\:043a\:0446\:0438\:0438"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"anime1", " ", "=", " ", 
+    RowBox[{"VisualizeMotion", "[", "data", "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\n"}], "Input",
+ CellChangeTimes->{{3.941942165501107*^9, 3.941942201659334*^9}, {
+   3.941942241729143*^9, 3.941942245512381*^9}, {3.941942326627714*^9, 
+   3.941942377413501*^9}, {3.9419424598578663`*^9, 3.941942463682488*^9}, {
+   3.9419425293072567`*^9, 3.941942607650784*^9}, {3.941942649654069*^9, 
+   3.941942786805735*^9}, {3.9419428470522013`*^9, 3.941942857043015*^9}, {
+   3.9419434595274143`*^9, 3.9419434644455833`*^9}, 
+   3.942489705662808*^9},ExpressionUUID->"5e1aaf6f-deb2-4329-a6d7-\
+11872f64d5ca"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`i12$$ = 52, Typeset`show$$ = True, 
+    Typeset`bookmarkList$$ = {
+    "\"min\"" :> {$CellContext`i12$$ = 1}, 
+     "\"max\"" :> {$CellContext`i12$$ = 66}}, Typeset`bookmarkMode$$ = "Menu",
+     Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`i12$$], 1, ""}, 1, 66, 1, ControlType -> Animator}}, 
+    Typeset`size$$ = Automatic, Typeset`update$$ = 0, Typeset`initDone$$, 
+    Typeset`skipInitDone$$ = True, Typeset`keyframeActionsQ$$ = False, 
+    Typeset`keyframeList$$ = {}}, 
+    PaneBox[
+     PanelBox[GridBox[{
+        {
+         ItemBox[
+          ItemBox[
+           TagBox[
+            StyleBox[GridBox[{
+               {"\<\"\"\>", 
+                AnimatorBox[Dynamic[$CellContext`i12$$], {1, 66, 1},
+                 AnimationRate->Automatic,
+                 AnimationRunTime->8.912831783294678,
+                 AnimationTimeIndex->3.9128317832946777`,
+                 
+                 AppearanceElements->{
+                  "ProgressSlider", "PlayPauseButton", "FasterSlowerButtons", 
+                   "DirectionButton"},
+                 AutoAction->False,
+                 DisplayAllSteps->True]}
+              },
+              AutoDelete->False,
+              
+              GridBoxAlignment->{
+               "Columns" -> {Right, {Left}}, "Rows" -> {{Baseline}}},
+              
+              GridBoxItemSize->{
+               "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+             "ListAnimateLabel",
+             StripOnInput->False],
+            {"ControlArea", Top}],
+           Alignment->{Automatic, Inherited},
+           StripOnInput->False],
+          Background->None,
+          StripOnInput->False]},
+        {
+         ItemBox[
+          TagBox[
+           StyleBox[
+            PaneBox[
+             TagBox[
+              PaneSelectorBox[{1->
+               
+               Graphics3DBox[{SphereBox[{1., 0., 0.}, 0.1], 
+                 SphereBox[{0., 1., 0.}, 0.1], SphereBox[{-1., 0., 0.}, 0.1], 
+                 SphereBox[{0., -1., 0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 2->
+               
+               Graphics3DBox[{
+                 SphereBox[{0.746924558675802, 0.8218018556288351, 0.}, 0.1], 
+                 SphereBox[{-0.8218018556288351, 0.746924558675802, 0.}, 0.1],
+                  SphereBox[{-0.746924558675802, -0.8218018556288351, 0.}, 
+                  0.1], SphereBox[{0.8218018556288351, -0.746924558675802, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 3->
+               
+               Graphics3DBox[{
+                 SphereBox[{0.1825596391529956, 1.3398089982407533`, 0.}, 
+                  0.1], SphereBox[{-1.3398089982407533`, 0.1825596391529955, 
+                  0.}, 0.1], 
+                 SphereBox[{-0.1825596391529955, -1.3398089982407533`, 0.}, 
+                  0.1], SphereBox[{1.3398089982407533`, -0.1825596391529956, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 4->
+               
+               Graphics3DBox[{
+                 SphereBox[{-0.4378009560524869, 1.5563921043672904`, 0.}, 
+                  0.1], SphereBox[{-1.5563921043672904`, -0.437800956052487, 
+                  0.}, 0.1], 
+                 SphereBox[{0.437800956052487, -1.5563921043672904`, 0.}, 
+                  0.1], SphereBox[{1.5563921043672904`, 0.4378009560524869, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 5->
+               
+               Graphics3DBox[{
+                 SphereBox[{-1.0054089941845266`, 1.5632246746727845`, 0.}, 
+                  0.1], SphereBox[{-1.5632246746727845`, -1.0054089941845268`,
+                   0.}, 0.1], 
+                 SphereBox[{1.0054089941845268`, -1.5632246746727845`, 0.}, 
+                  0.1], SphereBox[{1.5632246746727845`, 1.0054089941845266`, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 6->
+               
+               Graphics3DBox[{
+                 SphereBox[{-1.4867144928847849`, 1.4310500922488227`, 0.}, 
+                  0.1], SphereBox[{-1.4310500922488227`, -1.486714492884785, 
+                  0.}, 0.1], 
+                 SphereBox[{1.486714492884785, -1.4310500922488227`, 0.}, 
+                  0.1], SphereBox[{1.4310500922488227`, 1.4867144928847849`, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 7->
+               
+               Graphics3DBox[{
+                 SphereBox[{-1.873404472796147, 1.206043432309382, 0.}, 0.1], 
+                 SphereBox[{-1.206043432309382, -1.8734044727961472`, 0.}, 
+                  0.1], SphereBox[{1.8734044727961472`, -1.206043432309382, 
+                  0.}, 0.1], 
+                 SphereBox[{1.206043432309382, 1.873404472796147, 0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 8->
+               
+               Graphics3DBox[{
+                 SphereBox[{-2.1649668898624683`, 0.9189988654137622, 0.}, 
+                  0.1], SphereBox[{-0.9189988654137622, -2.1649668898624688`, 
+                  0.}, 0.1], 
+                 SphereBox[{2.1649668898624688`, -0.9189988654137622, 0.}, 
+                  0.1], SphereBox[{0.9189988654137622, 2.1649668898624683`, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 9->
+               
+               Graphics3DBox[{
+                 SphereBox[{-2.362931136436991, 0.5918238458123883, 0.}, 0.1],
+                  SphereBox[{-0.5918238458123883, -2.3629311364369916`, 0.}, 
+                  0.1], SphereBox[{2.3629311364369916`, -0.5918238458123883, 
+                  0.}, 0.1], 
+                 SphereBox[{0.5918238458123883, 2.362931136436991, 0.}, 0.1]},
+                
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 10->
+               
+               Graphics3DBox[{
+                 SphereBox[{-2.468892666887094, 0.2414091536734909, 0.}, 0.1],
+                  SphereBox[{-0.241409153673491, -2.468892666887094, 0.}, 
+                  0.1], SphereBox[{2.468892666887094, -0.2414091536734909, 
+                  0.}, 0.1], 
+                 SphereBox[{0.2414091536734909, 2.468892666887094, 0.}, 0.1]},
+                
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 11->
+               
+               Graphics3DBox[{
+                 SphereBox[{-2.4838169164380672`, -0.1179759924717313, 0.}, 
+                  0.1], SphereBox[{0.1179759924717311, -2.4838169164380672`, 
+                  0.}, 0.1], 
+                 SphereBox[{2.4838169164380672`, 0.1179759924717313, 0.}, 
+                  0.1], SphereBox[{-0.1179759924717314, 2.4838169164380672`, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 12->
+               
+               Graphics3DBox[{
+                 SphereBox[{-2.4078071975467634`, -0.4730060929571649, 0.}, 
+                  0.1], SphereBox[{0.4730060929571647, -2.407807197546764, 
+                  0.}, 0.1], 
+                 SphereBox[{2.407807197546764, 0.4730060929571649, 0.}, 0.1], 
+                 SphereBox[{-0.4730060929571651, 2.4078071975467634`, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 13->
+               
+               Graphics3DBox[{
+                 SphereBox[{-2.24007641824555, -0.8098657092942444, 0.}, 0.1],
+                  SphereBox[{0.809865709294244, -2.2400764182455504`, 0.}, 
+                  0.1], SphereBox[{2.2400764182455504`, 0.8098657092942444, 
+                  0.}, 0.1], 
+                 SphereBox[{-0.8098657092942445, 2.24007641824555, 0.}, 0.1]},
+                
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 14->
+               
+               Graphics3DBox[{
+                 SphereBox[{-1.9790940204552305`, -1.1126883627330733`, 0.}, 
+                  0.1], SphereBox[{1.1126883627330728`, -1.979094020455231, 
+                  0.}, 0.1], 
+                 SphereBox[{1.979094020455231, 1.1126883627330733`, 0.}, 0.1],
+                  SphereBox[{-1.1126883627330735`, 1.9790940204552305`, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 15->
+               
+               Graphics3DBox[{
+                 SphereBox[{-1.6230782293228314`, -1.3614428225155335`, 0.}, 
+                  0.1], SphereBox[{1.3614428225155328`, -1.6230782293228319`, 
+                  0.}, 0.1], 
+                 SphereBox[{1.6230782293228319`, 1.3614428225155335`, 0.}, 
+                  0.1], SphereBox[{-1.3614428225155337`, 1.6230782293228314`, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 16->
+               
+               Graphics3DBox[{
+                 SphereBox[{-1.1714100269392418`, -1.5286151791002343`, 0.}, 
+                  0.1], SphereBox[{1.5286151791002336`, -1.1714100269392422`, 
+                  0.}, 0.1], 
+                 SphereBox[{1.1714100269392422`, 1.5286151791002345`, 0.}, 
+                  0.1], SphereBox[{-1.5286151791002347`, 1.1714100269392418`, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 17->
+               
+               Graphics3DBox[{
+                 SphereBox[{-0.6287298590283966, -1.5736336832911577`, 0.}, 
+                  0.1], SphereBox[{1.573633683291157, -0.6287298590283976, 
+                  0.}, 0.1], 
+                 SphereBox[{0.6287298590283976, 1.573633683291158, 0.}, 0.1], 
+                 SphereBox[{-1.5736336832911582`, 0.6287298590283966, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 18->
+               
+               Graphics3DBox[{
+                 SphereBox[{-0.0172723452100062, -1.4341504511464136`, 0.}, 
+                  0.1], SphereBox[{1.4341504511464127`, -0.0172723452100075, 
+                  0.}, 0.1], 
+                 SphereBox[{0.0172723452100077, 1.434150451146414, 0.}, 0.1], 
+                 SphereBox[{-1.4341504511464145`, 0.0172723452100063, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 19->
+               
+               Graphics3DBox[{
+                 SphereBox[{0.5861688785765012, -1.021235317111255, 0.}, 0.1],
+                  SphereBox[{1.0212353171112536`, 0.5861688785764994, 0.}, 
+                  0.1], SphereBox[{-0.5861688785764989, 1.0212353171112556`, 
+                  0.}, 0.1], 
+                 SphereBox[{-1.0212353171112563`, -0.5861688785765009, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 20->
+               
+               Graphics3DBox[{
+                 SphereBox[{0.9723902947775109, -0.2802605399093744, 0.}, 
+                  0.1], SphereBox[{0.2802605399093728, 0.972390294777508, 0.},
+                   0.1], SphereBox[{-0.972390294777507, 0.2802605399093758, 
+                  0.}, 0.1], 
+                 SphereBox[{-0.2802605399093766, -0.9723902947775105, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 21->
+               
+               Graphics3DBox[{
+                 SphereBox[{0.8743194234896654, 0.5827071981776146, 0.}, 0.1],
+                  SphereBox[{-0.5827071981776173, 0.8743194234896603, 0.}, 
+                  0.1], SphereBox[{-0.8743194234896586, -0.5827071981776116, 
+                  0.}, 0.1], 
+                 SphereBox[{0.5827071981776105, -0.8743194234896645, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 22->
+               
+               Graphics3DBox[{
+                 SphereBox[{0.3694014048637348, 1.2016455817583283`, 0.}, 
+                  0.1], SphereBox[{-1.2016455817583325`, 0.3694014048637255, 
+                  0.}, 0.1], 
+                 SphereBox[{-0.3694014048637228, -1.2016455817583225`, 0.}, 
+                  0.1], SphereBox[{1.2016455817583207`, -0.3694014048637328, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 23->
+               
+               Graphics3DBox[{SphereBox[{1., 0., 0.}, 0.1], 
+                 SphereBox[{0., 1., 0.}, 0.1], SphereBox[{-1., 0., 0.}, 0.1], 
+                 SphereBox[{0., -1., 0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 24->
+               
+               Graphics3DBox[{
+                 SphereBox[{0.746924558675802, 0.8218018556288351, 0.}, 0.1], 
+                 SphereBox[{-0.8218018556288351, 0.746924558675802, 0.}, 0.1],
+                  SphereBox[{-0.746924558675802, -0.8218018556288351, 0.}, 
+                  0.1], SphereBox[{0.8218018556288351, -0.746924558675802, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 25->
+               
+               Graphics3DBox[{
+                 SphereBox[{0.1825596391529956, 1.3398089982407533`, 0.}, 
+                  0.1], 
+                 SphereBox[{-1.3398089982407533`, 0.1825596391529955, 0.}, 
+                  0.1], SphereBox[{-0.1825596391529955, -1.3398089982407533`, 
+                  0.}, 0.1], 
+                 SphereBox[{1.3398089982407533`, -0.1825596391529956, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 26->
+               
+               Graphics3DBox[{
+                 SphereBox[{-0.4378009560524869, 1.5563921043672904`, 0.}, 
+                  0.1], SphereBox[{-1.5563921043672904`, -0.437800956052487, 
+                  0.}, 0.1], 
+                 SphereBox[{0.437800956052487, -1.5563921043672904`, 0.}, 
+                  0.1], SphereBox[{1.5563921043672904`, 0.4378009560524869, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 27->
+               
+               Graphics3DBox[{
+                 SphereBox[{-1.0054089941845266`, 1.5632246746727845`, 0.}, 
+                  0.1], SphereBox[{-1.5632246746727845`, -1.0054089941845268`,
+                   0.}, 0.1], 
+                 SphereBox[{1.0054089941845268`, -1.5632246746727845`, 0.}, 
+                  0.1], SphereBox[{1.5632246746727845`, 1.0054089941845266`, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 28->
+               
+               Graphics3DBox[{
+                 SphereBox[{-1.4867144928847849`, 1.4310500922488227`, 0.}, 
+                  0.1], SphereBox[{-1.4310500922488227`, -1.486714492884785, 
+                  0.}, 0.1], 
+                 SphereBox[{1.486714492884785, -1.4310500922488227`, 0.}, 
+                  0.1], SphereBox[{1.4310500922488227`, 1.4867144928847849`, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 29->
+               
+               Graphics3DBox[{
+                 SphereBox[{-1.873404472796147, 1.206043432309382, 0.}, 0.1], 
+                 SphereBox[{-1.206043432309382, -1.8734044727961472`, 0.}, 
+                  0.1], SphereBox[{1.8734044727961472`, -1.206043432309382, 
+                  0.}, 0.1], 
+                 SphereBox[{1.206043432309382, 1.873404472796147, 0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 30->
+               
+               Graphics3DBox[{
+                 SphereBox[{-2.1649668898624683`, 0.9189988654137622, 0.}, 
+                  0.1], SphereBox[{-0.9189988654137622, -2.1649668898624688`, 
+                  0.}, 0.1], 
+                 SphereBox[{2.1649668898624688`, -0.9189988654137622, 0.}, 
+                  0.1], SphereBox[{0.9189988654137622, 2.1649668898624683`, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 31->
+               
+               Graphics3DBox[{
+                 SphereBox[{-2.362931136436991, 0.5918238458123883, 0.}, 0.1],
+                  SphereBox[{-0.5918238458123883, -2.3629311364369916`, 0.}, 
+                  0.1], SphereBox[{2.3629311364369916`, -0.5918238458123883, 
+                  0.}, 0.1], 
+                 SphereBox[{0.5918238458123883, 2.362931136436991, 0.}, 0.1]},
+                
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 32->
+               
+               Graphics3DBox[{
+                 SphereBox[{-2.468892666887094, 0.2414091536734909, 0.}, 0.1],
+                  SphereBox[{-0.241409153673491, -2.468892666887094, 0.}, 
+                  0.1], SphereBox[{2.468892666887094, -0.2414091536734909, 
+                  0.}, 0.1], 
+                 SphereBox[{0.2414091536734909, 2.468892666887094, 0.}, 0.1]},
+                
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 33->
+               
+               Graphics3DBox[{
+                 SphereBox[{-2.4838169164380672`, -0.1179759924717313, 0.}, 
+                  0.1], SphereBox[{0.1179759924717311, -2.4838169164380672`, 
+                  0.}, 0.1], 
+                 SphereBox[{2.4838169164380672`, 0.1179759924717313, 0.}, 
+                  0.1], SphereBox[{-0.1179759924717314, 2.4838169164380672`, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 34->
+               
+               Graphics3DBox[{
+                 SphereBox[{-2.4078071975467634`, -0.4730060929571649, 0.}, 
+                  0.1], SphereBox[{0.4730060929571647, -2.407807197546764, 
+                  0.}, 0.1], 
+                 SphereBox[{2.407807197546764, 0.4730060929571649, 0.}, 0.1], 
+                 SphereBox[{-0.4730060929571651, 2.4078071975467634`, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 35->
+               
+               Graphics3DBox[{
+                 SphereBox[{-2.24007641824555, -0.8098657092942444, 0.}, 0.1],
+                  SphereBox[{0.809865709294244, -2.2400764182455504`, 0.}, 
+                  0.1], SphereBox[{2.2400764182455504`, 0.8098657092942444, 
+                  0.}, 0.1], 
+                 SphereBox[{-0.8098657092942445, 2.24007641824555, 0.}, 0.1]},
+                
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 36->
+               
+               Graphics3DBox[{
+                 SphereBox[{-1.9790940204552305`, -1.1126883627330733`, 0.}, 
+                  0.1], SphereBox[{1.1126883627330728`, -1.979094020455231, 
+                  0.}, 0.1], 
+                 SphereBox[{1.979094020455231, 1.1126883627330733`, 0.}, 0.1],
+                  SphereBox[{-1.1126883627330735`, 1.9790940204552305`, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 37->
+               
+               Graphics3DBox[{
+                 SphereBox[{-1.6230782293228314`, -1.3614428225155335`, 0.}, 
+                  0.1], SphereBox[{1.3614428225155328`, -1.6230782293228319`, 
+                  0.}, 0.1], 
+                 SphereBox[{1.6230782293228319`, 1.3614428225155335`, 0.}, 
+                  0.1], SphereBox[{-1.3614428225155337`, 1.6230782293228314`, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 38->
+               
+               Graphics3DBox[{
+                 SphereBox[{-1.1714100269392418`, -1.5286151791002343`, 0.}, 
+                  0.1], SphereBox[{1.5286151791002336`, -1.1714100269392422`, 
+                  0.}, 0.1], 
+                 SphereBox[{1.1714100269392422`, 1.5286151791002345`, 0.}, 
+                  0.1], SphereBox[{-1.5286151791002347`, 1.1714100269392418`, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 39->
+               
+               Graphics3DBox[{
+                 SphereBox[{-0.6287298590283966, -1.5736336832911577`, 0.}, 
+                  0.1], SphereBox[{1.573633683291157, -0.6287298590283976, 
+                  0.}, 0.1], 
+                 SphereBox[{0.6287298590283976, 1.573633683291158, 0.}, 0.1], 
+                 SphereBox[{-1.5736336832911582`, 0.6287298590283966, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 40->
+               
+               Graphics3DBox[{
+                 SphereBox[{-0.0172723452100062, -1.4341504511464136`, 0.}, 
+                  0.1], SphereBox[{1.4341504511464127`, -0.0172723452100075, 
+                  0.}, 0.1], 
+                 SphereBox[{0.0172723452100077, 1.434150451146414, 0.}, 0.1], 
+                 SphereBox[{-1.4341504511464145`, 0.0172723452100063, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 41->
+               
+               Graphics3DBox[{
+                 SphereBox[{0.5861688785765012, -1.021235317111255, 0.}, 0.1],
+                  SphereBox[{1.0212353171112536`, 0.5861688785764994, 0.}, 
+                  0.1], SphereBox[{-0.5861688785764989, 1.0212353171112556`, 
+                  0.}, 0.1], 
+                 SphereBox[{-1.0212353171112563`, -0.5861688785765009, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 42->
+               
+               Graphics3DBox[{
+                 SphereBox[{0.9723902947775109, -0.2802605399093744, 0.}, 
+                  0.1], SphereBox[{0.2802605399093728, 0.972390294777508, 0.},
+                   0.1], SphereBox[{-0.972390294777507, 0.2802605399093758, 
+                  0.}, 0.1], 
+                 SphereBox[{-0.2802605399093766, -0.9723902947775105, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 43->
+               
+               Graphics3DBox[{
+                 SphereBox[{0.8743194234896654, 0.5827071981776146, 0.}, 0.1],
+                  SphereBox[{-0.5827071981776173, 0.8743194234896603, 0.}, 
+                  0.1], SphereBox[{-0.8743194234896586, -0.5827071981776116, 
+                  0.}, 0.1], 
+                 SphereBox[{0.5827071981776105, -0.8743194234896645, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 44->
+               
+               Graphics3DBox[{
+                 SphereBox[{0.3694014048637348, 1.2016455817583283`, 0.}, 
+                  0.1], SphereBox[{-1.2016455817583325`, 0.3694014048637255, 
+                  0.}, 0.1], 
+                 SphereBox[{-0.3694014048637228, -1.2016455817583225`, 0.}, 
+                  0.1], SphereBox[{1.2016455817583207`, -0.3694014048637328, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 45->
+               
+               Graphics3DBox[{SphereBox[{1., 0., 0.}, 0.1], 
+                 SphereBox[{0., 1., 0.}, 0.1], SphereBox[{-1., 0., 0.}, 0.1], 
+                 SphereBox[{0., -1., 0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 46->
+               
+               Graphics3DBox[{
+                 SphereBox[{0.746924558675802, 0.8218018556288351, 0.}, 0.1], 
+                 SphereBox[{-0.8218018556288351, 0.746924558675802, 0.}, 0.1],
+                  SphereBox[{-0.746924558675802, -0.8218018556288351, 0.}, 
+                  0.1], SphereBox[{0.8218018556288351, -0.746924558675802, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 47->
+               
+               Graphics3DBox[{
+                 SphereBox[{0.1825596391529956, 1.3398089982407533`, 0.}, 
+                  0.1], SphereBox[{-1.3398089982407533`, 0.1825596391529955, 
+                  0.}, 0.1], 
+                 SphereBox[{-0.1825596391529955, -1.3398089982407533`, 0.}, 
+                  0.1], SphereBox[{1.3398089982407533`, -0.1825596391529956, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 48->
+               
+               Graphics3DBox[{
+                 SphereBox[{-0.4378009560524869, 1.5563921043672904`, 0.}, 
+                  0.1], SphereBox[{-1.5563921043672904`, -0.437800956052487, 
+                  0.}, 0.1], 
+                 SphereBox[{0.437800956052487, -1.5563921043672904`, 0.}, 
+                  0.1], SphereBox[{1.5563921043672904`, 0.4378009560524869, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 49->
+               
+               Graphics3DBox[{
+                 SphereBox[{-1.0054089941845266`, 1.5632246746727845`, 0.}, 
+                  0.1], SphereBox[{-1.5632246746727845`, -1.0054089941845268`,
+                   0.}, 0.1], 
+                 SphereBox[{1.0054089941845268`, -1.5632246746727845`, 0.}, 
+                  0.1], SphereBox[{1.5632246746727845`, 1.0054089941845266`, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 50->
+               
+               Graphics3DBox[{
+                 SphereBox[{-1.4867144928847849`, 1.4310500922488227`, 0.}, 
+                  0.1], SphereBox[{-1.4310500922488227`, -1.486714492884785, 
+                  0.}, 0.1], 
+                 SphereBox[{1.486714492884785, -1.4310500922488227`, 0.}, 
+                  0.1], SphereBox[{1.4310500922488227`, 1.4867144928847849`, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 51->
+               
+               Graphics3DBox[{
+                 SphereBox[{-1.873404472796147, 1.206043432309382, 0.}, 0.1], 
+                 SphereBox[{-1.206043432309382, -1.8734044727961472`, 0.}, 
+                  0.1], SphereBox[{1.8734044727961472`, -1.206043432309382, 
+                  0.}, 0.1], 
+                 SphereBox[{1.206043432309382, 1.873404472796147, 0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 52->
+               
+               Graphics3DBox[{
+                 SphereBox[{-2.1649668898624683`, 0.9189988654137622, 0.}, 
+                  0.1], 
+                 SphereBox[{-0.9189988654137622, -2.1649668898624688`, 0.}, 
+                  0.1], SphereBox[{2.1649668898624688`, -0.9189988654137622, 
+                  0.}, 0.1], 
+                 SphereBox[{0.9189988654137622, 2.1649668898624683`, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 53->
+               
+               Graphics3DBox[{
+                 SphereBox[{-2.362931136436991, 0.5918238458123883, 0.}, 0.1],
+                  SphereBox[{-0.5918238458123883, -2.3629311364369916`, 0.}, 
+                  0.1], SphereBox[{2.3629311364369916`, -0.5918238458123883, 
+                  0.}, 0.1], 
+                 SphereBox[{0.5918238458123883, 2.362931136436991, 0.}, 0.1]},
+                
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 54->
+               
+               Graphics3DBox[{
+                 SphereBox[{-2.468892666887094, 0.2414091536734909, 0.}, 0.1],
+                  SphereBox[{-0.241409153673491, -2.468892666887094, 0.}, 
+                  0.1], SphereBox[{2.468892666887094, -0.2414091536734909, 
+                  0.}, 0.1], 
+                 SphereBox[{0.2414091536734909, 2.468892666887094, 0.}, 0.1]},
+                
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 55->
+               
+               Graphics3DBox[{
+                 SphereBox[{-2.4838169164380672`, -0.1179759924717313, 0.}, 
+                  0.1], SphereBox[{0.1179759924717311, -2.4838169164380672`, 
+                  0.}, 0.1], 
+                 SphereBox[{2.4838169164380672`, 0.1179759924717313, 0.}, 
+                  0.1], SphereBox[{-0.1179759924717314, 2.4838169164380672`, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 56->
+               
+               Graphics3DBox[{
+                 SphereBox[{-2.4078071975467634`, -0.4730060929571649, 0.}, 
+                  0.1], SphereBox[{0.4730060929571647, -2.407807197546764, 
+                  0.}, 0.1], 
+                 SphereBox[{2.407807197546764, 0.4730060929571649, 0.}, 0.1], 
+                 SphereBox[{-0.4730060929571651, 2.4078071975467634`, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 57->
+               
+               Graphics3DBox[{
+                 SphereBox[{-2.24007641824555, -0.8098657092942444, 0.}, 0.1],
+                  SphereBox[{0.809865709294244, -2.2400764182455504`, 0.}, 
+                  0.1], SphereBox[{2.2400764182455504`, 0.8098657092942444, 
+                  0.}, 0.1], 
+                 SphereBox[{-0.8098657092942445, 2.24007641824555, 0.}, 0.1]},
+                
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 58->
+               
+               Graphics3DBox[{
+                 SphereBox[{-1.9790940204552305`, -1.1126883627330733`, 0.}, 
+                  0.1], SphereBox[{1.1126883627330728`, -1.979094020455231, 
+                  0.}, 0.1], 
+                 SphereBox[{1.979094020455231, 1.1126883627330733`, 0.}, 0.1],
+                  SphereBox[{-1.1126883627330735`, 1.9790940204552305`, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 59->
+               
+               Graphics3DBox[{
+                 SphereBox[{-1.6230782293228314`, -1.3614428225155335`, 0.}, 
+                  0.1], SphereBox[{1.3614428225155328`, -1.6230782293228319`, 
+                  0.}, 0.1], 
+                 SphereBox[{1.6230782293228319`, 1.3614428225155335`, 0.}, 
+                  0.1], SphereBox[{-1.3614428225155337`, 1.6230782293228314`, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 60->
+               
+               Graphics3DBox[{
+                 SphereBox[{-1.1714100269392418`, -1.5286151791002343`, 0.}, 
+                  0.1], SphereBox[{1.5286151791002336`, -1.1714100269392422`, 
+                  0.}, 0.1], 
+                 SphereBox[{1.1714100269392422`, 1.5286151791002345`, 0.}, 
+                  0.1], SphereBox[{-1.5286151791002347`, 1.1714100269392418`, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 61->
+               
+               Graphics3DBox[{
+                 SphereBox[{-0.6287298590283966, -1.5736336832911577`, 0.}, 
+                  0.1], SphereBox[{1.573633683291157, -0.6287298590283976, 
+                  0.}, 0.1], 
+                 SphereBox[{0.6287298590283976, 1.573633683291158, 0.}, 0.1], 
+                 SphereBox[{-1.5736336832911582`, 0.6287298590283966, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 62->
+               
+               Graphics3DBox[{
+                 SphereBox[{-0.0172723452100062, -1.4341504511464136`, 0.}, 
+                  0.1], SphereBox[{1.4341504511464127`, -0.0172723452100075, 
+                  0.}, 0.1], 
+                 SphereBox[{0.0172723452100077, 1.434150451146414, 0.}, 0.1], 
+                 SphereBox[{-1.4341504511464145`, 0.0172723452100063, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 63->
+               
+               Graphics3DBox[{
+                 SphereBox[{0.5861688785765012, -1.021235317111255, 0.}, 0.1],
+                  SphereBox[{1.0212353171112536`, 0.5861688785764994, 0.}, 
+                  0.1], SphereBox[{-0.5861688785764989, 1.0212353171112556`, 
+                  0.}, 0.1], 
+                 SphereBox[{-1.0212353171112563`, -0.5861688785765009, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 64->
+               
+               Graphics3DBox[{
+                 SphereBox[{0.9723902947775109, -0.2802605399093744, 0.}, 
+                  0.1], SphereBox[{0.2802605399093728, 0.972390294777508, 0.},
+                   0.1], SphereBox[{-0.972390294777507, 0.2802605399093758, 
+                  0.}, 0.1], 
+                 SphereBox[{-0.2802605399093766, -0.9723902947775105, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 65->
+               
+               Graphics3DBox[{
+                 SphereBox[{0.8743194234896654, 0.5827071981776146, 0.}, 0.1],
+                  SphereBox[{-0.5827071981776173, 0.8743194234896603, 0.}, 
+                  0.1], SphereBox[{-0.8743194234896586, -0.5827071981776116, 
+                  0.}, 0.1], 
+                 SphereBox[{0.5827071981776105, -0.8743194234896645, 0.}, 
+                  0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All], 66->
+               
+               Graphics3DBox[{
+                 SphereBox[{0.3694014048637348, 1.2016455817583283`, 0.}, 
+                  0.1], SphereBox[{-1.2016455817583325`, 0.3694014048637255, 
+                  0.}, 0.1], 
+                 SphereBox[{-0.3694014048637228, -1.2016455817583225`, 0.}, 
+                  0.1], SphereBox[{1.2016455817583207`, -0.3694014048637328, 
+                  0.}, 0.1]},
+                AxesLabel->{
+                  FormBox["\"X\"", TraditionalForm], 
+                  FormBox["\"Y\"", TraditionalForm], 
+                  FormBox["\"Z\"", TraditionalForm]},
+                Boxed->False,
+                ImageSize->Large,
+                PlotRange->All]}, Dynamic[$CellContext`i12$$],
+               Alignment->Automatic,
+               BaseStyle->"ListAnimateCore",
+               ImageSize->All,
+               TransitionDirection->Horizontal,
+               TransitionDuration->0.5,
+               TransitionEffect->Automatic],
+              Identity,
+              Editable->True,
+              Selectable->True],
+             ImageMargins->10],
+            Deployed->False,
+            StripOnInput->False,
+            ScriptLevel->0,
+            GraphicsBoxOptions->{PreserveImageOptions->True},
+            Graphics3DBoxOptions->{PreserveImageOptions->True}],
+           Identity,
+           Editable->False,
+           Selectable->False],
+          Alignment->{Left, Center},
+          Background->GrayLevel[1],
+          Frame->1,
+          FrameStyle->GrayLevel[0, 0.2],
+          ItemSize->Automatic,
+          StripOnInput->False]}
+       },
+       AutoDelete->False,
+       GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Top}}},
+       GridBoxDividers->{"Columns" -> {{False}}, "Rows" -> {{False}}},
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       
+       GridBoxSpacings->{"Columns" -> {
+           Offset[0.7], {
+            Offset[0.5599999999999999]}, 
+           Offset[0.7]}, "Rows" -> {
+           Offset[0.4], {
+            Offset[0.8]}, 
+           Offset[0.4]}}],
+      DefaultBaseStyle->{},
+      FrameMargins->{{5, 5}, {5, 5}}],
+     BaselinePosition->Automatic,
+     ImageMargins->0],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "ListAnimate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{{3.941942379397842*^9, 3.9419423868478613`*^9}, {
+   3.941942466575037*^9, 3.941942472251145*^9}, {3.941942530442088*^9, 
+   3.9419425333141327`*^9}, {3.9419425919668303`*^9, 3.941942609665248*^9}, {
+   3.941942679064303*^9, 3.941942694392777*^9}, {3.941942754863551*^9, 
+   3.9419427753340073`*^9}, 3.9419428589023848`*^9, 3.941942927361124*^9, {
+   3.941943466959155*^9, 3.941943470395582*^9}, {3.942489694038981*^9, 
+   3.942489697831946*^9}},
+ CellLabel->"Out[14]=",ExpressionUUID->"b449bcba-4512-49f7-9fa4-dcd00bd579d8"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+   "\"\</home/gercklim/WORK_DIRECTORY/7_\:0421\:0415\:041c/\:0422\:041f\:0412/\
+PCT/Lab_4/VISUALIZATION/test1.gif\>\"", ",", "  ", "anime1"}], "]"}], 
+  "\[IndentingNewLine]"}]], "Input",
+ CellChangeTimes->{{3.94194347314363*^9, 3.941943506520667*^9}, {
+  3.941943543290029*^9, 3.941943573953491*^9}},
+ CellLabel->
+  "In[151]:=",ExpressionUUID->"b9b61698-643e-4643-8257-626c635a4c2f"],
+
+Cell[BoxData["\<\"/home/gercklim/WORK_DIRECTORY/7_\:0421\:0415\:041c/\:0422\
+\:041f\:0412/PCT/Lab_4/VISUALIZATION/test1.gif\"\>"], "Output",
+ CellChangeTimes->{3.941943579180704*^9},
+ CellLabel->
+  "Out[151]=",ExpressionUUID->"51805799-591b-4e50-a6c9-a6d01ef49362"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "\:0424\:0443\:043d\:043a\:0446\:0438\:044f", " ", "\:0434\:043b\:044f", 
+    " ", "\:0438\:043c\:043f\:043e\:0440\:0442\:0430", " ", 
+    "\:0434\:0430\:043d\:043d\:044b\:0445", " ", "\:0438\:0437", " ", 
+    "\:0444\:0430\:0439\:043b\:043e\:0432"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"ImportData", "[", 
+     RowBox[{"folderPath_String", ",", "filePattern_String"}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"files", ",", "data"}], "}"}], ",", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+       "\:041f\:043e\:043b\:0443\:0447\:0430\:0435\:043c", " ", 
+        "\:0441\:043f\:0438\:0441\:043e\:043a", " ", 
+        "\:0444\:0430\:0439\:043b\:043e\:0432", " ", "\:043f\:043e", " ", 
+        "\:0448\:0430\:0431\:043b\:043e\:043d\:0443"}], "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"files", "=", 
+        RowBox[{"FileNames", "[", 
+         RowBox[{"filePattern", ",", "folderPath"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+        "\:0418\:043c\:043f\:043e\:0440\:0442\:0438\:0440\:0443\:0435\:043c", 
+         " ", "\:0432\:0441\:0435", " ", "\:0444\:0430\:0439\:043b\:044b", 
+         " ", "\:043a\:0430\:043a", " ", 
+         "\:0442\:0430\:0431\:043b\:0438\:0446\:044b", " ", "\:0441", " ", 
+         "\:0432\:0440\:0435\:043c\:0435\:043d\:043d\:044b\:043c\:0438", " ", 
+         "\:043c\:0435\:0442\:043a\:0430\:043c\:0438", " ", "\:0438", " ", 
+         "\:043a\:043e\:043e\:0440\:0434\:0438\:043d\:0430\:0442\:0430\:043c\
+\:0438"}], "*)"}], "\[IndentingNewLine]", 
+       RowBox[{"data", "=", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Import", "[", 
+           RowBox[{"#", ",", "\"\<Table\>\""}], "]"}], "&"}], "/@", 
+         "files"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+        "\:0423\:0431\:0438\:0440\:0430\:0435\:043c", " ", 
+         "\:0432\:0440\:0435\:043c\:0435\:043d\:043d\:044b\:0435", " ", 
+         "\:043c\:0435\:0442\:043a\:0438", " ", "\:0438", " ", 
+         "\:043e\:0441\:0442\:0430\:0432\:043b\:044f\:0435\:043c", " ", 
+         "\:0442\:043e\:043b\:044c\:043a\:043e", " ", 
+         "\:043a\:043e\:043e\:0440\:0434\:0438\:043d\:0430\:0442\:044b"}], 
+        "*)"}], "\[IndentingNewLine]", 
+       RowBox[{"data", "=", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Map", "[", 
+           RowBox[{"Rest", ",", "#"}], "]"}], "&"}], "/@", "data"}]}], ";", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", "data"}]}], 
+     "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "\:0424\:0443\:043d\:043a\:0446\:0438\:044f", " ", "\:0434\:043b\:044f", 
+     " ", "\:043c\:0430\:043d\:0438\:043f\:0443\:043b\:044f\:0446\:0438\:0438\
+", " ", "\:0438", " ", 
+     "\:0432\:0438\:0437\:0443\:0430\:043b\:0438\:0437\:0430\:0446\:0438\:0438\
+", " ", "\:0434\:0432\:0438\:0436\:0435\:043d\:0438\:044f", " ", 
+     "\:0442\:0435\:043b"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"VisualizeMotion", "[", "data_", "]"}], ":=", 
+     RowBox[{"Manipulate", "[", 
+      RowBox[{
+       RowBox[{"Graphics3D", "[", 
+        RowBox[{
+         RowBox[{"Table", "[", 
+          RowBox[{
+           RowBox[{"Sphere", "[", 
+            RowBox[{
+             RowBox[{"data", "[", 
+              RowBox[{"[", 
+               RowBox[{"body", ",", "t"}], "]"}], "]"}], ",", "0.1"}], "]"}], 
+           ",", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+            "\:0412\:0438\:0437\:0443\:0430\:043b\:0438\:0437\:0430\:0446\
+\:0438\:044f", " ", "\:043a\:0430\:0436\:0434\:043e\:0433\:043e", " ", 
+             "\:0442\:0435\:043b\:0430"}], "*)"}], "\[IndentingNewLine]", 
+           RowBox[{"{", 
+            RowBox[{"body", ",", 
+             RowBox[{"Length", "[", "data", "]"}]}], "}"}]}], "]"}], ",", 
+         RowBox[{"Boxed", "->", "False"}], ",", 
+         RowBox[{"PlotRange", "->", "All"}], ",", 
+         RowBox[{"AxesLabel", "->", 
+          RowBox[{"{", 
+           RowBox[{"\"\<X\>\"", ",", "\"\<Y\>\"", ",", "\"\<Z\>\""}], "}"}]}],
+          ",", 
+         RowBox[{"ImageSize", "->", "Large"}]}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+          "t", ",", "1", ",", "\"\<\:0412\:0440\:0435\:043c\:044f\>\""}], 
+          "}"}], ",", "1", ",", 
+         RowBox[{"Length", "[", 
+          RowBox[{"data", "[", 
+           RowBox[{"[", "1", "]"}], "]"}], "]"}], ",", "1"}], "}"}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{"ControlType", "->", "Slider"}]}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"\:041f\:0440\:0438\:043c\:0435\:0440", " ", 
+      RowBox[{
+      "\:0438\:0441\:043f\:043e\:043b\:044c\:0437\:043e\:0432\:0430\:043d\
+\:0438\:044f", ":", 
+       RowBox[{
+       "\:0441\:043d\:0430\:0447\:0430\:043b\:0430", " ", 
+        "\:0438\:043c\:043f\:043e\:0440\:0442\:0438\:0440\:0443\:0435\:043c", 
+        " ", "\:0434\:0430\:043d\:043d\:044b\:0435"}]}]}], ",", 
+     RowBox[{
+     "\:043f\:043e\:0442\:043e\:043c", " ", 
+      "\:0432\:0438\:0437\:0443\:0430\:043b\:0438\:0437\:0438\:0440\:0443\
+\:0435\:043c"}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"data", "=", 
+     RowBox[{"ImportData", "[", 
+      RowBox[{"directory", ",", "\"\<*.txt\>\""}], "]"}]}], ";"}], "\n", 
+   RowBox[{"VisualizeMotion", "[", "data", "]"}], "\n"}]}]], "Input",
+ CellChangeTimes->{{3.941942861472282*^9, 3.941942938076045*^9}},
+ CellLabel->
+  "In[147]:=",ExpressionUUID->"22a05a1d-dbeb-47f1-96a5-fd2420daa9aa"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`t$$ = 1, Typeset`show$$ = True, 
+    Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`t$$], 1, "\:0412\:0440\:0435\:043c\:044f"}, 1, 22, 1,
+       ControlType -> Slider}}, Typeset`size$$ = {
+    576., {252.84982697942684`, 258.47482697942684`}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = True, 
+    Typeset`keyframeActionsQ$$ = False, Typeset`keyframeList$$ = {}}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, "Variables" :> {$CellContext`t$$ = 1}, 
+      "ControllerVariables" :> {}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$, Typeset`keyframeActionsQ$$, 
+        Typeset`keyframeList$$}, "Body" :> Graphics3D[
+        Table[
+         Sphere[
+          Part[CompressedData["
+1:eJxt1XlI02Ecx/HpBC1C6FA0NNR/REiSROii50cpeSRp0SGFaSQaWi5Cs8CK
+DCoyzS7CLPpDUzswCIusfGb/pFKCSnnLEo+cmUtzboaZ+Xy+39HxwGC8B2PH
+i+fjfyBze4pep9O5zD085x6/n6tjEbq/ziKL886mwSFxwf4sNXSrmV8vLu8R
+volvhTUqpbArc5L7ykbv2K8u3fJ0kJb2Y9DGfa9ry+tAT4uMjU8yTTnbub/o
+/Rhwo2FK2nYvqb8+YOXef2R0Kts+I6tCqld/j5ngfsc9MKgz3smoZei2GdJG
+uRuuXTZEDjkbS9a1F66x9HFfbM54F23UG/PqZ+pODTZxX9oandrVqzd6eSRX
+PwqtldSjYs6lh2ye6636hJcRvdz3b0xd9XjEyXhp03huunmYe6VrR27ig1nZ
+rS2Iu/r+G/f8ihKTn80uvbVP4Tn1k9zPFNUavGrH5e0T90PCsmzcZ7OalxWs
+6Jflwwl5xcF27veOhR1vqyqSHSd31G4Zt3J3OnR4w0Bdn0gMc2uf3mXhPp2f
+pLX4jok3kfFDDWPN3HMqw2sypkeE1d985WKZ4/dp8xWNEaVtwrnwyXPL2ol/
+/n91HC7gQJIL6nAgb8IFdTiQwXBBHQ7kPrigDgeyBi6ow4EcgAvqcCDvwgV1
+OJBH4YL6eeVAkgvqC5UDQS6oeygHIhou+H2UA5EEF9Q7lQPxEC6oeyoHogAu
+qN9SDsRZuKBeqhwIt2zlgvoH5UB4ZikX1PcoB8KSplxQL1MOhAkuqLsHzDuQ
+0XDB31c5kCFwofvjOP4nOnAgyQV1OJDkgjocCHJBHQ4EuaAOB4JcUIcDQS6o
+w4FGLqjDgUYuqMOBhvuBOxxouB/4d4ADDfcDdzjQcD9whwOB+4E7HAjcD9zh
+QJTABXU4EBVwQT1OORBdcEH9i3Igk+GCeptyILvhgvp65UB2qfvBcS/5zDuQ
+nwuUC91/j8MF7QS5oE47gd3gTjuB3eDPQzuB3eBOO4Hd4E47gd3gTjuB3dCo
+005gN7jTTpAL6n7YCXJB3Qc7gd3gno+dwG5w78FOYDf4cy7HTmA3HHuHncBu
+cK/ETmA3uPdgJ16p3eB+EDvxEy6om7ETVrig3oydMMAFdZNyIJ6q+4H7L473
+418=
+           "], $CellContext`body, $CellContext`t$$], 0.1], {$CellContext`body, 
+          Length[CompressedData["
+1:eJxt1XlI02Ecx/HpBC1C6FA0NNR/REiSROii50cpeSRp0SGFaSQaWi5Cs8CK
+DCoyzS7CLPpDUzswCIusfGb/pFKCSnnLEo+cmUtzboaZ+Xy+39HxwGC8B2PH
+i+fjfyBze4pep9O5zD085x6/n6tjEbq/ziKL886mwSFxwf4sNXSrmV8vLu8R
+volvhTUqpbArc5L7ykbv2K8u3fJ0kJb2Y9DGfa9ry+tAT4uMjU8yTTnbub/o
+/Rhwo2FK2nYvqb8+YOXef2R0Kts+I6tCqld/j5ngfsc9MKgz3smoZei2GdJG
+uRuuXTZEDjkbS9a1F66x9HFfbM54F23UG/PqZ+pODTZxX9oandrVqzd6eSRX
+PwqtldSjYs6lh2ye6636hJcRvdz3b0xd9XjEyXhp03huunmYe6VrR27ig1nZ
+rS2Iu/r+G/f8ihKTn80uvbVP4Tn1k9zPFNUavGrH5e0T90PCsmzcZ7OalxWs
+6Jflwwl5xcF27veOhR1vqyqSHSd31G4Zt3J3OnR4w0Bdn0gMc2uf3mXhPp2f
+pLX4jok3kfFDDWPN3HMqw2sypkeE1d985WKZ4/dp8xWNEaVtwrnwyXPL2ol/
+/n91HC7gQJIL6nAgb8IFdTiQwXBBHQ7kPrigDgeyBi6ow4EcgAvqcCDvwgV1
+OJBH4YL6eeVAkgvqC5UDQS6oeygHIhou+H2UA5EEF9Q7lQPxEC6oeyoHogAu
+qN9SDsRZuKBeqhwIt2zlgvoH5UB4ZikX1PcoB8KSplxQL1MOhAkuqLsHzDuQ
+0XDB31c5kCFwofvjOP4nOnAgyQV1OJDkgjocCHJBHQ4EuaAOB4JcUIcDQS6o
+w4FGLqjDgUYuqMOBhvuBOxxouB/4d4ADDfcDdzjQcD9whwOB+4E7HAjcD9zh
+QJTABXU4EBVwQT1OORBdcEH9i3Igk+GCeptyILvhgvp65UB2qfvBcS/5zDuQ
+nwuUC91/j8MF7QS5oE47gd3gTjuB3eDPQzuB3eBOO4Hd4E47gd3gTjuB3dCo
+005gN7jTTpAL6n7YCXJB3Qc7gd3gno+dwG5w78FOYDf4cy7HTmA3HHuHncBu
+cK/ETmA3uPdgJ16p3eB+EDvxEy6om7ETVrig3oydMMAFdZNyIJ6q+4H7L473
+418=
+           "]]}], Boxed -> False, PlotRange -> All, 
+        AxesLabel -> {"X", "Y", "Z"}, ImageSize -> Large], 
+      "Specifications" :> {{{$CellContext`t$$, 1, 
+          "\:0412\:0440\:0435\:043c\:044f"}, 1, 22, 1}}, 
+      "Options" :> {ControlType -> Slider}, "DefaultOptions" :> {}],
+     ImageSizeCache->{
+      621.0999999999999, {295.36545197942684`, 300.99045197942684`}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{{3.941942924274571*^9, 3.941942938753984*^9}, 
+   3.941943470457572*^9},
+ CellLabel->
+  "Out[150]=",ExpressionUUID->"ec262b8c-2150-49bf-a963-255f02ff3d02"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "\:0424\:0443\:043d\:043a\:0446\:0438\:044f", " ", "\:0434\:043b\:044f", 
+    " ", "\:043c\:0430\:043d\:0438\:043f\:0443\:043b\:044f\:0446\:0438\:0438",
+     " ", "\:0438", " ", 
+    "\:0432\:0438\:0437\:0443\:0430\:043b\:0438\:0437\:0430\:0446\:0438\:0438\
+", " ", "\:0434\:0432\:0438\:0436\:0435\:043d\:0438\:044f", " ", 
+    "\:0442\:0435\:043b", " ", "\:0441", " ", 
+    "\:0442\:0440\:0430\:0435\:043a\:0442\:043e\:0440\:0438\:044f\:043c\:0438\
+"}], "*)"}], 
+  RowBox[{
+   RowBox[{
+    RowBox[{"VisualizeMotion", "[", "data_", "]"}], ":=", 
+    RowBox[{"Manipulate", "[", 
+     RowBox[{
+      RowBox[{"Graphics3D", "[", 
+       RowBox[{"(*", 
+        RowBox[{
+        "\:0420\:0438\:0441\:0443\:0435\:043c", " ", 
+         "\:0442\:0440\:0430\:0435\:043a\:0442\:043e\:0440\:0438\:0438", " ", 
+         "\:0438", " ", "\:0442\:0435\:043b\:0430"}], "*)"}], 
+       RowBox[{
+        RowBox[{"Table", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"(*", 
+            RowBox[{
+            "\:0422\:0440\:0430\:0435\:043a\:0442\:043e\:0440\:0438\:044f", 
+             " ", "\:0442\:0435\:043b\:0430", " ", 
+             RowBox[{"(", "\:043b\:0438\:043d\:0438\:0438", ")"}]}], "*)"}], 
+           RowBox[{
+            RowBox[{"Line", "[", 
+             RowBox[{"data", "[", 
+              RowBox[{"[", 
+               RowBox[{"body", ",", 
+                RowBox[{"1", ";;", "t"}]}], "]"}], "]"}], "]"}], ",", 
+            RowBox[{"(*", 
+             RowBox[{
+             "\:0422\:0435\:043a\:0443\:0449\:0435\:0435", " ", 
+              "\:043f\:043e\:043b\:043e\:0436\:0435\:043d\:0438\:0435", " ", 
+              "\:0442\:0435\:043b\:0430", " ", 
+              RowBox[{"(", "\:0441\:0444\:0435\:0440\:0430", ")"}]}], "*)"}], 
+            
+            RowBox[{"Sphere", "[", 
+             RowBox[{
+              RowBox[{"data", "[", 
+               RowBox[{"[", 
+                RowBox[{"body", ",", "t"}], "]"}], "]"}], ",", "0.1"}], 
+             "]"}]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"body", ",", 
+            RowBox[{"Length", "[", "data", "]"}]}], "}"}]}], "]"}], ",", 
+        RowBox[{"Boxed", "->", "False"}], ",", 
+        RowBox[{"PlotRange", "->", "All"}], ",", 
+        RowBox[{"AxesLabel", "->", 
+         RowBox[{"{", 
+          RowBox[{"\"\<X\>\"", ",", "\"\<Y\>\"", ",", "\"\<Z\>\""}], "}"}]}], 
+        ",", 
+        RowBox[{"ImageSize", "->", "Large"}]}], "]"}], ",", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+         "t", ",", "1", ",", "\"\<\:0412\:0440\:0435\:043c\:044f\>\""}], 
+         "}"}], ",", "1", ",", 
+        RowBox[{"Length", "[", 
+         RowBox[{"data", "[", 
+          RowBox[{"[", "1", "]"}], "]"}], "]"}], ",", "1"}], "}"}], ",", 
+      RowBox[{"(*", 
+       RowBox[{
+       "\:041f\:043e\:043b\:0437\:0443\:043d\:043e\:043a", " ", 
+        "\:0434\:043b\:044f", " ", 
+        "\:0443\:043f\:0440\:0430\:0432\:043b\:0435\:043d\:0438\:044f", " ", 
+        "\:0432\:0440\:0435\:043c\:0435\:043d\:0435\:043c"}], "*)"}], 
+      RowBox[{"ControlType", "->", "Slider"}]}], "]"}]}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"VisualizeMotion", "[", "data", "]"}], "\n"}]}]], "Input",
+ CellChangeTimes->{{3.94194378110894*^9, 3.941943791182719*^9}},
+ CellLabel->
+  "In[153]:=",ExpressionUUID->"87a61ffe-4f44-4079-bd91-91fc611266b4"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`t$$ = 14, Typeset`show$$ = True, 
+    Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`t$$], 1, "\:0412\:0440\:0435\:043c\:044f"}, 1, 22, 1,
+       ControlType -> Slider}}, Typeset`size$$ = {
+    576., {245.8863213040598, 251.5113213040598}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = True, 
+    Typeset`keyframeActionsQ$$ = False, Typeset`keyframeList$$ = {}}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, "Variables" :> {$CellContext`t$$ = 1}, 
+      "ControllerVariables" :> {}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$, Typeset`keyframeActionsQ$$, 
+        Typeset`keyframeList$$}, "Body" :> Graphics3D[
+        Table[{
+          Line[
+           Part[CompressedData["
+1:eJxt1XlI02Ecx/HpBC1C6FA0NNR/REiSROii50cpeSRp0SGFaSQaWi5Cs8CK
+DCoyzS7CLPpDUzswCIusfGb/pFKCSnnLEo+cmUtzboaZ+Xy+39HxwGC8B2PH
+i+fjfyBze4pep9O5zD085x6/n6tjEbq/ziKL886mwSFxwf4sNXSrmV8vLu8R
+volvhTUqpbArc5L7ykbv2K8u3fJ0kJb2Y9DGfa9ry+tAT4uMjU8yTTnbub/o
+/Rhwo2FK2nYvqb8+YOXef2R0Kts+I6tCqld/j5ngfsc9MKgz3smoZei2GdJG
+uRuuXTZEDjkbS9a1F66x9HFfbM54F23UG/PqZ+pODTZxX9oandrVqzd6eSRX
+PwqtldSjYs6lh2ye6636hJcRvdz3b0xd9XjEyXhp03huunmYe6VrR27ig1nZ
+rS2Iu/r+G/f8ihKTn80uvbVP4Tn1k9zPFNUavGrH5e0T90PCsmzcZ7OalxWs
+6Jflwwl5xcF27veOhR1vqyqSHSd31G4Zt3J3OnR4w0Bdn0gMc2uf3mXhPp2f
+pLX4jok3kfFDDWPN3HMqw2sypkeE1d985WKZ4/dp8xWNEaVtwrnwyXPL2ol/
+/n91HC7gQJIL6nAgb8IFdTiQwXBBHQ7kPrigDgeyBi6ow4EcgAvqcCDvwgV1
+OJBH4YL6eeVAkgvqC5UDQS6oeygHIhou+H2UA5EEF9Q7lQPxEC6oeyoHogAu
+qN9SDsRZuKBeqhwIt2zlgvoH5UB4ZikX1PcoB8KSplxQL1MOhAkuqLsHzDuQ
+0XDB31c5kCFwofvjOP4nOnAgyQV1OJDkgjocCHJBHQ4EuaAOB4JcUIcDQS6o
+w4FGLqjDgUYuqMOBhvuBOxxouB/4d4ADDfcDdzjQcD9whwOB+4E7HAjcD9zh
+QJTABXU4EBVwQT1OORBdcEH9i3Igk+GCeptyILvhgvp65UB2qfvBcS/5zDuQ
+nwuUC91/j8MF7QS5oE47gd3gTjuB3eDPQzuB3eBOO4Hd4E47gd3gTjuB3dCo
+005gN7jTTpAL6n7YCXJB3Qc7gd3gno+dwG5w78FOYDf4cy7HTmA3HHuHncBu
+cK/ETmA3uPdgJ16p3eB+EDvxEy6om7ETVrig3oydMMAFdZNyIJ6q+4H7L473
+418=
+            "], $CellContext`body, 
+            Span[1, $CellContext`t$$]]], 
+          Sphere[
+           Part[CompressedData["
+1:eJxt1XlI02Ecx/HpBC1C6FA0NNR/REiSROii50cpeSRp0SGFaSQaWi5Cs8CK
+DCoyzS7CLPpDUzswCIusfGb/pFKCSnnLEo+cmUtzboaZ+Xy+39HxwGC8B2PH
+i+fjfyBze4pep9O5zD085x6/n6tjEbq/ziKL886mwSFxwf4sNXSrmV8vLu8R
+volvhTUqpbArc5L7ykbv2K8u3fJ0kJb2Y9DGfa9ry+tAT4uMjU8yTTnbub/o
+/Rhwo2FK2nYvqb8+YOXef2R0Kts+I6tCqld/j5ngfsc9MKgz3smoZei2GdJG
+uRuuXTZEDjkbS9a1F66x9HFfbM54F23UG/PqZ+pODTZxX9oandrVqzd6eSRX
+PwqtldSjYs6lh2ye6636hJcRvdz3b0xd9XjEyXhp03huunmYe6VrR27ig1nZ
+rS2Iu/r+G/f8ihKTn80uvbVP4Tn1k9zPFNUavGrH5e0T90PCsmzcZ7OalxWs
+6Jflwwl5xcF27veOhR1vqyqSHSd31G4Zt3J3OnR4w0Bdn0gMc2uf3mXhPp2f
+pLX4jok3kfFDDWPN3HMqw2sypkeE1d985WKZ4/dp8xWNEaVtwrnwyXPL2ol/
+/n91HC7gQJIL6nAgb8IFdTiQwXBBHQ7kPrigDgeyBi6ow4EcgAvqcCDvwgV1
+OJBH4YL6eeVAkgvqC5UDQS6oeygHIhou+H2UA5EEF9Q7lQPxEC6oeyoHogAu
+qN9SDsRZuKBeqhwIt2zlgvoH5UB4ZikX1PcoB8KSplxQL1MOhAkuqLsHzDuQ
+0XDB31c5kCFwofvjOP4nOnAgyQV1OJDkgjocCHJBHQ4EuaAOB4JcUIcDQS6o
+w4FGLqjDgUYuqMOBhvuBOxxouB/4d4ADDfcDdzjQcD9whwOB+4E7HAjcD9zh
+QJTABXU4EBVwQT1OORBdcEH9i3Igk+GCeptyILvhgvp65UB2qfvBcS/5zDuQ
+nwuUC91/j8MF7QS5oE47gd3gTjuB3eDPQzuB3eBOO4Hd4E47gd3gTjuB3dCo
+005gN7jTTpAL6n7YCXJB3Qc7gd3gno+dwG5w78FOYDf4cy7HTmA3HHuHncBu
+cK/ETmA3uPdgJ16p3eB+EDvxEy6om7ETVrig3oydMMAFdZNyIJ6q+4H7L473
+418=
+            "], $CellContext`body, $CellContext`t$$], 
+           0.1]}, {$CellContext`body, 
+          Length[CompressedData["
+1:eJxt1XlI02Ecx/HpBC1C6FA0NNR/REiSROii50cpeSRp0SGFaSQaWi5Cs8CK
+DCoyzS7CLPpDUzswCIusfGb/pFKCSnnLEo+cmUtzboaZ+Xy+39HxwGC8B2PH
+i+fjfyBze4pep9O5zD085x6/n6tjEbq/ziKL886mwSFxwf4sNXSrmV8vLu8R
+volvhTUqpbArc5L7ykbv2K8u3fJ0kJb2Y9DGfa9ry+tAT4uMjU8yTTnbub/o
+/Rhwo2FK2nYvqb8+YOXef2R0Kts+I6tCqld/j5ngfsc9MKgz3smoZei2GdJG
+uRuuXTZEDjkbS9a1F66x9HFfbM54F23UG/PqZ+pODTZxX9oandrVqzd6eSRX
+PwqtldSjYs6lh2ye6636hJcRvdz3b0xd9XjEyXhp03huunmYe6VrR27ig1nZ
+rS2Iu/r+G/f8ihKTn80uvbVP4Tn1k9zPFNUavGrH5e0T90PCsmzcZ7OalxWs
+6Jflwwl5xcF27veOhR1vqyqSHSd31G4Zt3J3OnR4w0Bdn0gMc2uf3mXhPp2f
+pLX4jok3kfFDDWPN3HMqw2sypkeE1d985WKZ4/dp8xWNEaVtwrnwyXPL2ol/
+/n91HC7gQJIL6nAgb8IFdTiQwXBBHQ7kPrigDgeyBi6ow4EcgAvqcCDvwgV1
+OJBH4YL6eeVAkgvqC5UDQS6oeygHIhou+H2UA5EEF9Q7lQPxEC6oeyoHogAu
+qN9SDsRZuKBeqhwIt2zlgvoH5UB4ZikX1PcoB8KSplxQL1MOhAkuqLsHzDuQ
+0XDB31c5kCFwofvjOP4nOnAgyQV1OJDkgjocCHJBHQ4EuaAOB4JcUIcDQS6o
+w4FGLqjDgUYuqMOBhvuBOxxouB/4d4ADDfcDdzjQcD9whwOB+4E7HAjcD9zh
+QJTABXU4EBVwQT1OORBdcEH9i3Igk+GCeptyILvhgvp65UB2qfvBcS/5zDuQ
+nwuUC91/j8MF7QS5oE47gd3gTjuB3eDPQzuB3eBOO4Hd4E47gd3gTjuB3dCo
+005gN7jTTpAL6n7YCXJB3Qc7gd3gno+dwG5w78FOYDf4cy7HTmA3HHuHncBu
+cK/ETmA3uPdgJ16p3eB+EDvxEy6om7ETVrig3oydMMAFdZNyIJ6q+4H7L473
+418=
+           "]]}], Boxed -> False, PlotRange -> All, 
+        AxesLabel -> {"X", "Y", "Z"}, ImageSize -> Large], 
+      "Specifications" :> {{{$CellContext`t$$, 1, 
+          "\:0412\:0440\:0435\:043c\:044f"}, 1, 22, 1}}, 
+      "Options" :> {ControlType -> Slider}, "DefaultOptions" :> {}],
+     ImageSizeCache->{
+      621.0999999999999, {288.40194630405983`, 294.02694630405983`}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{3.941943793003366*^9},
+ CellLabel->
+  "Out[154]=",ExpressionUUID->"6b83a8bd-accf-4874-a2da-c79ec33b6b3e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "\:0424\:0443\:043d\:043a\:0446\:0438\:044f", " ", "\:0434\:043b\:044f", 
+    " ", "\:043c\:0430\:043d\:0438\:043f\:0443\:043b\:044f\:0446\:0438\:0438",
+     " ", "\:0438", " ", 
+    "\:0432\:0438\:0437\:0443\:0430\:043b\:0438\:0437\:0430\:0446\:0438\:0438\
+", " ", "\:0434\:0432\:0438\:0436\:0435\:043d\:0438\:044f", " ", 
+    "\:0442\:0435\:043b", " ", "\:0441", " ", 
+    "\:0442\:0440\:0430\:0435\:043a\:0442\:043e\:0440\:0438\:044f\:043c\:0438\
+"}], "*)"}], 
+  RowBox[{
+   RowBox[{
+    RowBox[{"VisualizeMotion", "[", "data_", "]"}], ":=", 
+    RowBox[{"Manipulate", "[", 
+     RowBox[{
+      RowBox[{"Graphics3D", "[", 
+       RowBox[{"(*", 
+        RowBox[{
+        "\:0420\:0438\:0441\:0443\:0435\:043c", " ", 
+         "\:0442\:0440\:0430\:0435\:043a\:0442\:043e\:0440\:0438\:0438", " ", 
+         "\:0438", " ", "\:0442\:0435\:043b\:0430"}], "*)"}], 
+       RowBox[{
+        RowBox[{"Table", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"(*", 
+            RowBox[{
+            "\:0428\:0442\:0440\:0438\:0445\:043e\:0432\:0430\:043d\:043d\
+\:0430\:044f", " ", "\:043a\:0440\:0430\:0441\:043d\:0430\:044f", " ", 
+             "\:0442\:0440\:0430\:0435\:043a\:0442\:043e\:0440\:0438\:044f"}],
+             "*)"}], 
+           RowBox[{
+            RowBox[{"Style", "[", 
+             RowBox[{
+              RowBox[{"Line", "[", 
+               RowBox[{"data", "[", 
+                RowBox[{"[", 
+                 RowBox[{"body", ",", 
+                  RowBox[{"1", ";;", "t"}]}], "]"}], "]"}], "]"}], ",", "Red",
+               ",", 
+              RowBox[{"Dashing", "[", 
+               RowBox[{"{", 
+                RowBox[{"0.02", ",", "0.02"}], "}"}], "]"}]}], "]"}], ",", 
+            RowBox[{"(*", 
+             RowBox[{
+             "\:0421\:0442\:0438\:043b\:044c", " ", "\:0434\:043b\:044f", " ",
+               "\:043b\:0438\:043d\:0438\:0438"}], "*)"}], 
+            RowBox[{"(*", 
+             RowBox[{
+             "\:0422\:0435\:043a\:0443\:0449\:0435\:0435", " ", 
+              "\:043f\:043e\:043b\:043e\:0436\:0435\:043d\:0438\:0435", " ", 
+              "\:0442\:0435\:043b\:0430", " ", 
+              RowBox[{"(", "\:0441\:0444\:0435\:0440\:0430", ")"}]}], "*)"}], 
+            
+            RowBox[{"Sphere", "[", 
+             RowBox[{
+              RowBox[{"data", "[", 
+               RowBox[{"[", 
+                RowBox[{"body", ",", "t"}], "]"}], "]"}], ",", "0.1"}], 
+             "]"}]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"body", ",", 
+            RowBox[{"Length", "[", "data", "]"}]}], "}"}]}], "]"}], ",", 
+        RowBox[{"Boxed", "->", "False"}], ",", 
+        RowBox[{"PlotRange", "->", "All"}], ",", 
+        RowBox[{"AxesLabel", "->", 
+         RowBox[{"{", 
+          RowBox[{"\"\<X\>\"", ",", "\"\<Y\>\"", ",", "\"\<Z\>\""}], "}"}]}], 
+        ",", 
+        RowBox[{"ImageSize", "->", "Large"}]}], "]"}], ",", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+         "t", ",", "1", ",", "\"\<\:0412\:0440\:0435\:043c\:044f\>\""}], 
+         "}"}], ",", "1", ",", 
+        RowBox[{"Length", "[", 
+         RowBox[{"data", "[", 
+          RowBox[{"[", "1", "]"}], "]"}], "]"}], ",", "1"}], "}"}], ",", 
+      RowBox[{"(*", 
+       RowBox[{
+       "\:041f\:043e\:043b\:0437\:0443\:043d\:043e\:043a", " ", 
+        "\:0434\:043b\:044f", " ", 
+        "\:0443\:043f\:0440\:0430\:0432\:043b\:0435\:043d\:0438\:044f", " ", 
+        "\:0432\:0440\:0435\:043c\:0435\:043d\:0435\:043c"}], "*)"}], 
+      RowBox[{"ControlType", "->", "Slider"}]}], "]"}]}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"VisualizeMotion", "[", "data", "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.9419438597855186`*^9, 3.9419438647619457`*^9}},
+ CellLabel->
+  "In[155]:=",ExpressionUUID->"2e3bc2ab-acae-4ef5-93d0-4fac0033d6e0"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`t$$ = 22, Typeset`show$$ = True, 
+    Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`t$$], 1, "\:0412\:0440\:0435\:043c\:044f"}, 1, 22, 1,
+       ControlType -> Slider}}, Typeset`size$$ = {
+    576., {245.8863213040598, 251.5113213040598}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = True, 
+    Typeset`keyframeActionsQ$$ = False, Typeset`keyframeList$$ = {}}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, "Variables" :> {$CellContext`t$$ = 1}, 
+      "ControllerVariables" :> {}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$, Typeset`keyframeActionsQ$$, 
+        Typeset`keyframeList$$}, "Body" :> Graphics3D[
+        Table[{
+          Style[
+           Line[
+            Part[CompressedData["
+1:eJxt1XlI02Ecx/HpBC1C6FA0NNR/REiSROii50cpeSRp0SGFaSQaWi5Cs8CK
+DCoyzS7CLPpDUzswCIusfGb/pFKCSnnLEo+cmUtzboaZ+Xy+39HxwGC8B2PH
+i+fjfyBze4pep9O5zD085x6/n6tjEbq/ziKL886mwSFxwf4sNXSrmV8vLu8R
+volvhTUqpbArc5L7ykbv2K8u3fJ0kJb2Y9DGfa9ry+tAT4uMjU8yTTnbub/o
+/Rhwo2FK2nYvqb8+YOXef2R0Kts+I6tCqld/j5ngfsc9MKgz3smoZei2GdJG
+uRuuXTZEDjkbS9a1F66x9HFfbM54F23UG/PqZ+pODTZxX9oandrVqzd6eSRX
+PwqtldSjYs6lh2ye6636hJcRvdz3b0xd9XjEyXhp03huunmYe6VrR27ig1nZ
+rS2Iu/r+G/f8ihKTn80uvbVP4Tn1k9zPFNUavGrH5e0T90PCsmzcZ7OalxWs
+6Jflwwl5xcF27veOhR1vqyqSHSd31G4Zt3J3OnR4w0Bdn0gMc2uf3mXhPp2f
+pLX4jok3kfFDDWPN3HMqw2sypkeE1d985WKZ4/dp8xWNEaVtwrnwyXPL2ol/
+/n91HC7gQJIL6nAgb8IFdTiQwXBBHQ7kPrigDgeyBi6ow4EcgAvqcCDvwgV1
+OJBH4YL6eeVAkgvqC5UDQS6oeygHIhou+H2UA5EEF9Q7lQPxEC6oeyoHogAu
+qN9SDsRZuKBeqhwIt2zlgvoH5UB4ZikX1PcoB8KSplxQL1MOhAkuqLsHzDuQ
+0XDB31c5kCFwofvjOP4nOnAgyQV1OJDkgjocCHJBHQ4EuaAOB4JcUIcDQS6o
+w4FGLqjDgUYuqMOBhvuBOxxouB/4d4ADDfcDdzjQcD9whwOB+4E7HAjcD9zh
+QJTABXU4EBVwQT1OORBdcEH9i3Igk+GCeptyILvhgvp65UB2qfvBcS/5zDuQ
+nwuUC91/j8MF7QS5oE47gd3gTjuB3eDPQzuB3eBOO4Hd4E47gd3gTjuB3dCo
+005gN7jTTpAL6n7YCXJB3Qc7gd3gno+dwG5w78FOYDf4cy7HTmA3HHuHncBu
+cK/ETmA3uPdgJ16p3eB+EDvxEy6om7ETVrig3oydMMAFdZNyIJ6q+4H7L473
+418=
+             "], $CellContext`body, 
+             Span[1, $CellContext`t$$]]], Red, 
+           Dashing[{0.02, 0.02}]], 
+          Sphere[
+           Part[CompressedData["
+1:eJxt1XlI02Ecx/HpBC1C6FA0NNR/REiSROii50cpeSRp0SGFaSQaWi5Cs8CK
+DCoyzS7CLPpDUzswCIusfGb/pFKCSnnLEo+cmUtzboaZ+Xy+39HxwGC8B2PH
+i+fjfyBze4pep9O5zD085x6/n6tjEbq/ziKL886mwSFxwf4sNXSrmV8vLu8R
+volvhTUqpbArc5L7ykbv2K8u3fJ0kJb2Y9DGfa9ry+tAT4uMjU8yTTnbub/o
+/Rhwo2FK2nYvqb8+YOXef2R0Kts+I6tCqld/j5ngfsc9MKgz3smoZei2GdJG
+uRuuXTZEDjkbS9a1F66x9HFfbM54F23UG/PqZ+pODTZxX9oandrVqzd6eSRX
+PwqtldSjYs6lh2ye6636hJcRvdz3b0xd9XjEyXhp03huunmYe6VrR27ig1nZ
+rS2Iu/r+G/f8ihKTn80uvbVP4Tn1k9zPFNUavGrH5e0T90PCsmzcZ7OalxWs
+6Jflwwl5xcF27veOhR1vqyqSHSd31G4Zt3J3OnR4w0Bdn0gMc2uf3mXhPp2f
+pLX4jok3kfFDDWPN3HMqw2sypkeE1d985WKZ4/dp8xWNEaVtwrnwyXPL2ol/
+/n91HC7gQJIL6nAgb8IFdTiQwXBBHQ7kPrigDgeyBi6ow4EcgAvqcCDvwgV1
+OJBH4YL6eeVAkgvqC5UDQS6oeygHIhou+H2UA5EEF9Q7lQPxEC6oeyoHogAu
+qN9SDsRZuKBeqhwIt2zlgvoH5UB4ZikX1PcoB8KSplxQL1MOhAkuqLsHzDuQ
+0XDB31c5kCFwofvjOP4nOnAgyQV1OJDkgjocCHJBHQ4EuaAOB4JcUIcDQS6o
+w4FGLqjDgUYuqMOBhvuBOxxouB/4d4ADDfcDdzjQcD9whwOB+4E7HAjcD9zh
+QJTABXU4EBVwQT1OORBdcEH9i3Igk+GCeptyILvhgvp65UB2qfvBcS/5zDuQ
+nwuUC91/j8MF7QS5oE47gd3gTjuB3eDPQzuB3eBOO4Hd4E47gd3gTjuB3dCo
+005gN7jTTpAL6n7YCXJB3Qc7gd3gno+dwG5w78FOYDf4cy7HTmA3HHuHncBu
+cK/ETmA3uPdgJ16p3eB+EDvxEy6om7ETVrig3oydMMAFdZNyIJ6q+4H7L473
+418=
+            "], $CellContext`body, $CellContext`t$$], 
+           0.1]}, {$CellContext`body, 
+          Length[CompressedData["
+1:eJxt1XlI02Ecx/HpBC1C6FA0NNR/REiSROii50cpeSRp0SGFaSQaWi5Cs8CK
+DCoyzS7CLPpDUzswCIusfGb/pFKCSnnLEo+cmUtzboaZ+Xy+39HxwGC8B2PH
+i+fjfyBze4pep9O5zD085x6/n6tjEbq/ziKL886mwSFxwf4sNXSrmV8vLu8R
+volvhTUqpbArc5L7ykbv2K8u3fJ0kJb2Y9DGfa9ry+tAT4uMjU8yTTnbub/o
+/Rhwo2FK2nYvqb8+YOXef2R0Kts+I6tCqld/j5ngfsc9MKgz3smoZei2GdJG
+uRuuXTZEDjkbS9a1F66x9HFfbM54F23UG/PqZ+pODTZxX9oandrVqzd6eSRX
+PwqtldSjYs6lh2ye6636hJcRvdz3b0xd9XjEyXhp03huunmYe6VrR27ig1nZ
+rS2Iu/r+G/f8ihKTn80uvbVP4Tn1k9zPFNUavGrH5e0T90PCsmzcZ7OalxWs
+6Jflwwl5xcF27veOhR1vqyqSHSd31G4Zt3J3OnR4w0Bdn0gMc2uf3mXhPp2f
+pLX4jok3kfFDDWPN3HMqw2sypkeE1d985WKZ4/dp8xWNEaVtwrnwyXPL2ol/
+/n91HC7gQJIL6nAgb8IFdTiQwXBBHQ7kPrigDgeyBi6ow4EcgAvqcCDvwgV1
+OJBH4YL6eeVAkgvqC5UDQS6oeygHIhou+H2UA5EEF9Q7lQPxEC6oeyoHogAu
+qN9SDsRZuKBeqhwIt2zlgvoH5UB4ZikX1PcoB8KSplxQL1MOhAkuqLsHzDuQ
+0XDB31c5kCFwofvjOP4nOnAgyQV1OJDkgjocCHJBHQ4EuaAOB4JcUIcDQS6o
+w4FGLqjDgUYuqMOBhvuBOxxouB/4d4ADDfcDdzjQcD9whwOB+4E7HAjcD9zh
+QJTABXU4EBVwQT1OORBdcEH9i3Igk+GCeptyILvhgvp65UB2qfvBcS/5zDuQ
+nwuUC91/j8MF7QS5oE47gd3gTjuB3eDPQzuB3eBOO4Hd4E47gd3gTjuB3dCo
+005gN7jTTpAL6n7YCXJB3Qc7gd3gno+dwG5w78FOYDf4cy7HTmA3HHuHncBu
+cK/ETmA3uPdgJ16p3eB+EDvxEy6om7ETVrig3oydMMAFdZNyIJ6q+4H7L473
+418=
+           "]]}], Boxed -> False, PlotRange -> All, 
+        AxesLabel -> {"X", "Y", "Z"}, ImageSize -> Large], 
+      "Specifications" :> {{{$CellContext`t$$, 1, 
+          "\:0412\:0440\:0435\:043c\:044f"}, 1, 22, 1}}, 
+      "Options" :> {ControlType -> Slider}, "DefaultOptions" :> {}],
+     ImageSizeCache->{
+      621.0999999999999, {288.40194630405983`, 294.02694630405983`}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{3.9419438653170357`*^9},
+ CellLabel->
+  "Out[156]=",ExpressionUUID->"aedcac33-80e9-464f-97ae-c4fac4ac49af"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{606, 683.25},
+WindowMargins->{{Automatic, 63}, {Automatic, 26.25}},
+FrontEndVersion->"14.1 for Linux x86 (64-bit) (July 16, 2024)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"ec872e23-4113-41a4-97f3-913338683f29"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[1460, 33, 468, 13, 66, "Input",ExpressionUUID->"0a859b7d-b6b8-4013-a83c-c4da3aa8bd14"],
+Cell[CellGroupData[{
+Cell[1953, 50, 352, 6, 157, "Title",ExpressionUUID->"af647caf-8306-42af-a0c0-03e082e49958"],
+Cell[2308, 58, 2744, 59, 343, "Input",ExpressionUUID->"4a501400-888d-48f5-abf9-2e4b7fb554fc"],
+Cell[CellGroupData[{
+Cell[5077, 121, 4195, 96, 558, "Input",ExpressionUUID->"5e1aaf6f-deb2-4329-a6d7-11872f64d5ca"],
+Cell[9275, 219, 50156, 1084, 597, "Output",ExpressionUUID->"b449bcba-4512-49f7-9fa4-dcd00bd579d8"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[59468, 1308, 446, 10, 90, "Input",ExpressionUUID->"b9b61698-643e-4643-8257-626c635a4c2f"],
+Cell[59917, 1320, 265, 4, 53, "Output",ExpressionUUID->"51805799-591b-4e50-a6c9-a6d01ef49362"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[60219, 1329, 5872, 133, 854, "Input",ExpressionUUID->"22a05a1d-dbeb-47f1-96a5-fd2420daa9aa"],
+Cell[66094, 1464, 4566, 86, 613, "Output",ExpressionUUID->"ec262b8c-2150-49bf-a963-255f02ff3d02"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[70697, 1555, 3399, 81, 363, "Input",ExpressionUUID->"87a61ffe-4f44-4079-bd91-91fc611266b4"],
+Cell[74099, 1638, 5823, 110, 599, "Output",ExpressionUUID->"6b83a8bd-accf-4874-a2da-c79ec33b6b3e"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[79959, 1753, 3865, 92, 380, "Input",ExpressionUUID->"2e3bc2ab-acae-4ef5-93d0-4fac0033d6e0"],
+Cell[83827, 1847, 5887, 112, 599, "Output",ExpressionUUID->"aedcac33-80e9-464f-97ae-c4fac4ac49af"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+

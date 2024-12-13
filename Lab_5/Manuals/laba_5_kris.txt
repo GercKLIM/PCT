@@ -1,0 +1,283 @@
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
+#include <random>
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <vector>
+#include <array>
+#include <string>
+#include <iomanip>
+#include <stdio.h>
+
+using namespace std;
+
+typedef float mytype;
+
+constexpr mytype G = -6.67e-11;
+constexpr mytype eps = 1e-6;
+constexpr int BS = 32;
+
+void read(const string& path, vector<mytype>& global_m, vector<mytype>& global_r, vector<mytype>& global_v, int& N)
+{
+	std::ifstream file(path);
+
+	file >> N;
+	global_m.resize(N);
+	global_r.resize(N * 3);
+	global_v.resize(N * 3);
+
+	for (size_t i = 0; i < N; ++i)
+		file >> global_m[i] >> global_r[3 * i] >> global_r[3 * i + 1] >> global_r[3 * i + 2] >> global_v[3 * i] >> global_v[3 * i + 1] >> global_v[3 * i + 2];
+
+	file.close();
+}
+
+__host__ void write(const std::string& path, const std::vector<mytype>& r, mytype t, int number)
+{
+	std::ofstream file(path + std::to_string(number) + ").txt", std::ios::app);
+	file << t << "\t\t\t" << std::fixed << std::setprecision(12) << r[0] << "\t\t\t" << r[1] << "\t\t\t" << r[2] << std::endl;
+	file.close(); file.clear();
+}
+
+__host__ void clear_files(const std::string& path, int N)
+{
+	for (int i = 1; i < N + 1; ++i)
+	{
+		std::ofstream output(path + std::to_string(i) + ").txt");
+		//cout << "\n Clearing " << path + std::to_string(i) + ").txt" << "\n";
+		output << "";
+		output.close();
+	}
+}
+
+__device__ mytype norm(mytype x1, mytype x2, mytype x3)
+{
+	mytype norm = (x1 * x1) + (x2 * x2) + (x3 * x3);
+	//return norm * sqrtf(norm);      // для double
+	return norm * __fsqrt_rd(norm);   // для float
+}
+__global__ void f(mytype* kr, mytype* kv, mytype* device_m, mytype* device_r, mytype* device_v, int N)
+{
+	int idx = blockIdx.x * blockDim.x + threadIdx.x, tIdx = threadIdx.x;              // 2
+
+	mytype kvx = 0, kvy = 0, kvz = 0.0, a = 0,
+		x = device_r[3 * idx], y = device_r[3 * idx + 1], z = device_r[3 * idx + 2],    // 5   
+		diff_x, diff_y, diff_z;
+	__shared__ mytype shared_r[3 * BS], shared_m[BS];                                 // 1
+
+	for (int i = 0; i < N; i += BS)                                                   // N     всего: (BS + BS + 21 * BS + 16) * N + N + 24 + 8 + N
+	{
+		shared_m[tIdx] = device_m[i + tIdx];                                            // 1
+		shared_r[3 * tIdx + 0] = device_r[3 * (i + tIdx) + 0];                          // 5
+		shared_r[3 * tIdx + 1] = device_r[3 * (i + tIdx) + 1];                          // 5
+		shared_r[3 * tIdx + 2] = device_r[3 * (i + tIdx) + 2];                          // 5
+
+		__syncthreads();
+		for (int j = 0; j < BS; ++j)                                                    // BS      
+		{
+			if (i + j < N)                                                                // BS
+			{
+				diff_x = x - shared_r[3 * j + 0];                                           // 3
+				diff_y = y - shared_r[3 * j + 1];                                           // 3
+				diff_z = z - shared_r[3 * j + 2];                                           // 3
+
+				//a = shared_m[j] / max(norm(diff_x, diff_y, diff_z), eps);            // для double           // 6
+				a = __fdividef(shared_m[j], fmaxf(norm(diff_x, diff_y, diff_z), eps));   // для float
+
+				kvx += diff_x * a;                                                          // 2
+				kvy += diff_y * a;                                                          // 2
+				kvz += diff_z * a;                                                          // 2
+			}
+		}
+		__syncthreads();
+	}
+	if (idx < N)
+	{
+		kv[3 * idx + 0] = G * kvx;                                                     // 4
+		kv[3 * idx + 1] = G * kvy;                                                     // 4
+		kv[3 * idx + 2] = G * kvz;                                                     // 4
+
+		for (int i = 0; i < 3; ++i)                                                     // 3
+		{
+			kr[3 * idx + i] = device_v[3 * idx + i];                                      // 4      
+		}
+	}
+}
+__global__ void add(mytype* device_r, mytype* kr, mytype tau, mytype* temp_device_r, int N)    // всего: 29
+{
+	int idx = threadIdx.x + blockDim.x * blockIdx.x;            // 2
+	if (idx < N)
+	{
+		for (int i = 0; i < 3; ++i)    // 3
+		{
+			temp_device_r[3 * idx + i] = device_r[3 * idx + i] + tau * kr[3 * idx + i];   // 8
+		}
+	}
+}
+
+//__global__ void summarize(mytype* device_r, mytype* device_v, mytype tau, mytype* kr2, mytype* kv2, int N)
+//{
+//	int idx = threadIdx.x + blockDim.x * blockIdx.x;
+//	if (idx < N)
+//		for (int i = 0; i < 3; ++i)
+//		{
+//			device_r[3 * idx + i] = device_r[3 * idx + i] + tau * kr2[3 * idx + i];
+//			device_v[3 * idx + i] = device_v[3 * idx + i] + tau * kv2[3 * idx + i];
+//		}
+//}
+
+__global__ void summarize(mytype* device_r, mytype* device_v, mytype tau, mytype* kr1, mytype* kv1, // всего: 113
+	mytype* kr2, mytype* kv2, mytype* kr3, mytype* kv3, mytype* kr4, mytype* kv4, int N)
+{
+	int i = threadIdx.x + blockDim.x * blockIdx.x;   // 2
+  mytype tau6 = tau / 6.0f;  // +++++++++++
+
+	if (i < N)
+		for (int j = 0; j < 3; ++j)  // 3
+		{
+			device_r[3 * i + j] += tau6 * (kr1[3 * i + j] + 2.0f * kr2[3 * i + j] + 2.0f * kr3[3 * i + j] + kr4[3 * i + j]);  // 18
+			device_v[3 * i + j] += tau6 * (kv1[3 * i + j] + 2.0f * kv2[3 * i + j] + 2.0f * kv3[3 * i + j] + kv4[3 * i + j]);  // 18
+		}
+}
+
+float Runge_Kutta(const std::string& path, const std::vector<mytype>& global_m, std::vector<mytype>& global_r, std::vector<mytype>& global_v,
+	mytype tau, mytype T, bool output)
+{
+	int N = global_m.size(), N3 = 3 * N;
+	mytype* device_m, * device_r, * device_v, * kr1, * kv1, * kr2, * kv2, * kr3, * kv3, * kr4, * kv4,
+		* temp_device_r, * temp_device_v, tau2 = tau / 2, t0 = 0.0;
+	dim3 blocks((N + BS - 1) / BS), threads(BS);
+
+	cout << "\n N=" << N;
+
+	if (output)
+		for (size_t i = 0; i < N; ++i)
+			write(path, { global_r[3 * i + 0], global_r[3 * i + 1], global_r[3 * i + 2] }, t0, i + 1);
+
+	cudaMalloc(&device_m, N * sizeof(mytype));
+	cudaMalloc(&device_r, N3 * sizeof(mytype));
+	cudaMalloc(&device_v, N3 * sizeof(mytype));
+	cudaMalloc(&temp_device_r, N3 * sizeof(mytype));
+	cudaMalloc(&temp_device_v, N3 * sizeof(mytype));
+	cudaMalloc(&kr1, N3 * sizeof(mytype));
+	cudaMalloc(&kr2, N3 * sizeof(mytype));
+	cudaMalloc(&kr3, N3 * sizeof(mytype));
+	cudaMalloc(&kr4, N3 * sizeof(mytype));
+	cudaMalloc(&kv1, N3 * sizeof(mytype));
+	cudaMalloc(&kv2, N3 * sizeof(mytype));
+	cudaMalloc(&kv3, N3 * sizeof(mytype));
+	cudaMalloc(&kv4, N3 * sizeof(mytype));
+
+	cudaEvent_t start, finish;
+	cudaEventCreate(&start);
+	cudaEventCreate(&finish);
+	float time = 0;
+
+	cudaMemcpy(device_m, global_m.data(), N * sizeof(mytype), cudaMemcpyHostToDevice);
+	cudaMemcpy(device_r, global_r.data(), N3 * sizeof(mytype), cudaMemcpyHostToDevice);
+	cudaMemcpy(device_v, global_v.data(), N3 * sizeof(mytype), cudaMemcpyHostToDevice);
+
+	cudaEventRecord(start);
+
+	int iter = 0;
+	while (t0 <= T)
+	{
+		//f << <blocks, threads >> > (kr1, kv1, device_m, device_r, device_v, N);
+
+		//add << <blocks, threads >> > (device_r, kr1, tau2, temp_device_r, N);
+		//add << <blocks, threads >> > (device_v, kv1, tau2, temp_device_v, N);
+		//f << <blocks, threads >> > (kr2, kv2, device_m, temp_device_r, temp_device_v, N);
+
+		//summarize << <blocks, threads >> > (device_r, device_v, tau, kr2, kv2, N);
+
+		f << < blocks, threads >> > (kr1, kv1, device_m, device_r, device_v, N);
+
+		add << < blocks, threads >> > (device_r, kr1, tau2, temp_device_r, N);
+		add << < blocks, threads >> > (device_v, kv1, tau2, temp_device_v, N);
+		f << < blocks, threads >> > (kr2, kv2, device_m, temp_device_r, temp_device_v, N);
+
+		add << < blocks, threads >> > (device_r, kr2, tau2, temp_device_r, N);
+		add << < blocks, threads >> > (device_v, kv2, tau2, temp_device_v, N);
+		f << < blocks, threads >> > (kr3, kv3, device_m, temp_device_r, temp_device_v, N);
+
+		add << < blocks, threads >> > (device_r, kr3, tau, temp_device_r, N);
+		add << < blocks, threads >> > (device_v, kv3, tau, temp_device_v, N);
+		f << < blocks, threads >> > (kr4, kv4, device_m, temp_device_r, temp_device_v, N);
+
+		summarize << < blocks, threads >> > (device_r, device_v, tau, kr1, kv1, kr2, kv2, kr3, kv3, kr4, kv4, N);
+
+		t0 += tau;
+		iter++;
+		//if (iter%2==0)
+		//{
+		if (output)
+		{
+			cudaMemcpy(global_r.data(), device_r, global_r.size() * sizeof(mytype), cudaMemcpyDeviceToHost);
+			if (((int)(round)(1000 * t0)) % 100 == 0)
+				for (size_t i = 0; i < N; i++)
+					write(path, { global_r[3 * i + 0], global_r[3 * i + 1], global_r[3 * i + 2] }, t0, i + 1);
+		}
+		//}
+
+	}
+	cudaDeviceSynchronize();
+
+	cudaEventRecord(finish);
+	cudaEventSynchronize(finish);
+
+	cudaEventElapsedTime(&time, start, finish);
+
+	cudaMemcpy(global_r.data(), device_r, N3 * sizeof(mytype), cudaMemcpyDeviceToHost);
+	cudaMemcpy(global_v.data(), device_v, N3 * sizeof(mytype), cudaMemcpyDeviceToHost);
+
+	cudaFree(device_m);
+	cudaFree(device_r);
+	cudaFree(device_v);
+	cudaFree(temp_device_r);
+	cudaFree(temp_device_v);
+	cudaFree(kr1);
+	cudaFree(kr2);
+	cudaFree(kr3);
+	cudaFree(kr4);
+	cudaFree(kv1);
+	cudaFree(kv2);
+	cudaFree(kv3);
+	cudaFree(kv4);
+
+	return time / iter;
+}
+
+int main(int argc, char* argv[])
+{
+	int N = 0;
+	const string path = "4body.txt";
+
+	vector<mytype> global_m, global_r, global_v;
+
+	read(path, global_m, global_r, global_v, N);
+
+	double tmp = 0.1;
+	float time;
+	mytype tau = 0.1 / tmp, count = tmp * 200., T;
+
+	T = count * tau;
+
+	bool output;
+
+	if (path == "4body.txt") output = true;
+	else output = false;
+
+	if (output)
+		clear_files("solution(", N);
+   
+  double op = ((BS + BS + 21 * BS + 16) * N + N + 24 + 8 + N) * 4 + 29 * 6 + 113;
+	cout << "\n number of operations=" << op;
+
+	time = Runge_Kutta("solution(", global_m, global_r, global_v, tau, T, output);
+	std::cout << "\n time per step: " << time / 1000. << std::endl;
+ 
+  cout << "\n\n profit: " << op * N * N / time * 1000.;
+
+	return 0;
+}
