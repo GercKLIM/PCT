@@ -11,6 +11,10 @@ find_package(MPI REQUIRED)
 # Укажем, что проект использует MPI
 include_directories(${MPI_INCLUDE_PATH})
 
+include_directories(../INPUT)
+include_directories(../OUTPUT)
+
+
 add_executable(LAB_4
         main.cpp
 
@@ -18,19 +22,15 @@ add_executable(LAB_4
 
         src/functions.cpp
         src/N-BodyProblem_MPI.cpp
+
+        # JSON
+        include/json/json-forwards.h
+        include/json/json.h
+        include/json/jsoncpp.cpp
+
 )
 
 # Свяжем с MPIMain
 #target_link_libraries(Main_MPI ${MPI_LIBRARIES})
 target_link_libraries(LAB_4 PRIVATE MPI::MPI_CXX)
 
-
-# Добавляем библиотеку для работы с JSON файлами
-include(FetchContent)
-FetchContent_Declare(
-        json
-        GIT_REPOSITORY https://github.com/nlohmann/json.git
-        GIT_TAG v3.11.2 # Замените на последнюю стабильную версию
-)
-FetchContent_MakeAvailable(json)
-target_link_libraries(LAB_4 PRIVATE nlohmann_json::nlohmann_json)

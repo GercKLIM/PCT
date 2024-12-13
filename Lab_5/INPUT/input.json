@@ -1,5 +1,5 @@
 {
-    "test_filename": "../INPUT/1000_body_1.txt",
+    "test_filename": "../INPUT/64k_body_1.txt",
   "output_filepath": "../OUTPUT/test1/",
                 "T": 20,
               "tau": 0.1,

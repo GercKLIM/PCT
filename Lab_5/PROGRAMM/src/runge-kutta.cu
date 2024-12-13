@@ -20,6 +20,8 @@ float Runge_Kutta(const std::string& path, const std::vector<mytype>& global_m,
     int N = global_m.size();  // Кол-во тел
     int N3 = 3 * N;
 
+
+
     mytype *device_m = nullptr;
     mytype *device_r = nullptr;
     mytype *device_v = nullptr;

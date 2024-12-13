@@ -33,7 +33,7 @@ void test1(int argc, char* argv[]){
     double EPS;             // Допустимая погрешность
     std::vector<Body> input;//
     bool output = true;     //
-    int max_iteration;
+    int max_iterations;
 
 
 
@@ -41,14 +41,8 @@ void test1(int argc, char* argv[]){
     /* ### Получаем параметры программы ### */
 
 
-    input_json(PTS_FILENAME, "test_filename", TEST_FILENAME);
-    input_json(PTS_FILENAME, "output_filepath", OUTPUT_FILEPATH);
-    input_json(PTS_FILENAME, "EPS", EPS);
-    input_json(PTS_FILENAME, "T", T);
-    input_json(PTS_FILENAME, "tau", tau);
-    input_json(PTS_FILENAME, "EPS", EPS);
-    input_json(PTS_FILENAME, "output", output);
-    input_json(PTS_FILENAME, "max_iteration", max_iteration);
+    input_parametres(PTS_FILENAME, TEST_FILENAME, OUTPUT_FILEPATH,
+                     T, tau, EPS, output, max_iterations);
 
 
 
@@ -105,7 +99,7 @@ void test1(int argc, char* argv[]){
     MPI_Bcast(input.data(), N, mpi_body, 0, MPI_COMM_WORLD);
 
     Runge_Kutta_MPI(OUTPUT_FILEPATH, input, tau, T, time, EPS,
-                    output, NP, ID, N, mpi_body_v_part, max_iteration); //здесь поменять
+                    output, NP, ID, N, mpi_body_v_part, max_iterations); //здесь поменять
 
     MPI_Finalize();
 
@@ -134,7 +128,7 @@ void test_fout(int argc, char* argv[]){
     double EPS;             // Допустимая погрешность
     std::vector<Body> input;//
     bool output = true;     //
-    int max_iteration;
+    int max_iterations;
 
 
 
@@ -142,14 +136,8 @@ void test_fout(int argc, char* argv[]){
     /* ### Получаем параметры программы ### */
 
 
-    input_json(PTS_FILENAME, "test_filename", TEST_FILENAME);
-    input_json(PTS_FILENAME, "output_filepath", OUTPUT_FILEPATH);
-    input_json(PTS_FILENAME, "EPS", EPS);
-    input_json(PTS_FILENAME, "T", T);
-    input_json(PTS_FILENAME, "tau", tau);
-    input_json(PTS_FILENAME, "EPS", EPS);
-    input_json(PTS_FILENAME, "output", output);
-    input_json(PTS_FILENAME, "max_iteration", max_iteration);
+    input_parametres(PTS_FILENAME, TEST_FILENAME, OUTPUT_FILEPATH,
+                     T, tau, EPS, output, max_iterations);
 
     output = false;
 
@@ -206,7 +194,7 @@ void test_fout(int argc, char* argv[]){
     MPI_Bcast(input.data(), N, mpi_body, 0, MPI_COMM_WORLD);
 
     Runge_Kutta_MPI(OUTPUT_FILEPATH, input, tau, T, time, EPS,
-                    output, NP, ID, N, mpi_body_v_part, max_iteration); //здесь поменять
+                    output, NP, ID, N, mpi_body_v_part, max_iterations); //здесь поменять
 
     MPI_Finalize();
 
