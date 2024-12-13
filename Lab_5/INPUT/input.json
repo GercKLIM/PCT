@@ -1,9 +1,9 @@
 {
-    "test_filename": "../INPUT/64k_body_1.txt",
+    "test_filename": "../INPUT/4body.txt",
   "output_filepath": "../OUTPUT/test1/",
                 "T": 20,
-              "tau": 0.1,
-              "EPS": 1e-8,
-           "output": false,
+              "tau": 0.0625,
+              "EPS": 1e-16,
+           "output": true,
     "max_iterations": 1000000
 }

@@ -100,7 +100,7 @@ float Runge_Kutta(const std::string& path, const std::vector<mytype>& global_m,
         t0 += tau;
         ++iter;
 
-        if (output && ((int) (round(1000 * t0)) % 100 == 0)) {
+        if (output){
             cudaMemcpy(global_r.data(), device_r, N3 * sizeof(mytype), cudaMemcpyDeviceToHost);
             for (size_t i = 0; i < N; ++i) {
                 write(path, {global_r[3 * i], global_r[3 * i + 1], global_r[3 * i + 2]}, t0, i + 1);

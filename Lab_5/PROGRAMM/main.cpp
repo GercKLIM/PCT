@@ -31,7 +31,7 @@ void test1(){
     double countStep = 20.0;
     double time;            // Время работы алгоритма
     double EPS;             // Допустимая погрешность
-    bool output = true;     // Опция записи в файл
+    bool output = false;     // Опция записи в файл
     int max_iterations;      // Ограничение итераций
 
     std::vector<mytype> global_m; // Вектор всех масс
@@ -47,8 +47,11 @@ void test1(){
     input_parametres(PTS_FILENAME, TEST_FILENAME, OUTPUT_FILEPATH,
                           T, tau, EPS, output, max_iterations);
 
+
     read(TEST_FILENAME, global_m, global_r, global_v, N);
-    clear_files(OUTPUT_FILEPATH + "body-(", N);
+    if (output) {
+        clear_files(OUTPUT_FILEPATH + "body-(", N);
+    }
 
 
 
@@ -63,6 +66,16 @@ void test1(){
 
     time = Runge_Kutta(OUTPUT_FILEPATH + "body-(", global_m, global_r, global_v, tau, T, output);
 
+
+    std::ofstream F(OUTPUT_FILEPATH + "RESULT.txt", std::ios::app);
+    if (!F.is_open()){
+        std::cout << "[LOG]: File " << OUTPUT_FILEPATH + "RESULT.txt" << " is NOT open." << std::endl;
+    }
+
+    F << "Type = "<< typeid(mytype).name() << ", N = " << N  << ", T = " << T << ", tau = " << tau <<
+    ", TIME = " << time * T / tau << ", TIME per iter = " << time << std::endl;
+
+    typeid(mytype);
 
     std::cout << "[LOG]: Time per step: " << time / 1000. << std::endl;
     //std::cout << "[LOG]: Profit: " << op * N * N / time * 1000. << std::endl;
