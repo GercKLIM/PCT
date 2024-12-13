@@ -139,7 +139,7 @@ void test_fout(int argc, char* argv[]){
     input_parametres(PTS_FILENAME, TEST_FILENAME, OUTPUT_FILEPATH,
                      T, tau, EPS, output, max_iterations);
 
-    output = false;
+    //output = false;
 
     if (ID == 0) {
         clear_files(TEST_FILENAME, N);

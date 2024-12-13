@@ -197,10 +197,10 @@ void Runge_Kutta_MPI(const std::string& path, const std::vector<Body>& init, dou
     int iter = 0;
 
     // Основной цикл интегрирования
-    while ((t0 <= T) && (iter < max_iteration)) {
+    while ((t0 <= T)/* && (iter < max_iteration)*/) {
         iter++;
 
-        // Вычисление k1
+         // Вычисление k1
         f(k1, res, start, end, EPS);
         MPI_Allgatherv(k1.data() + start, count, MPI_BODY_VPART,
                        k1.data(), counts.data(), displs.data(), MPI_BODY_VPART, MPI_COMM_WORLD);
@@ -238,6 +238,7 @@ void Runge_Kutta_MPI(const std::string& path, const std::vector<Body>& init, dou
     }
 
     if (ID == 0) {
+        std::cout << iter << " " << t0 << " " << T << " " << max_iteration << std::endl;
         t += MPI_Wtime();
     }
 }
