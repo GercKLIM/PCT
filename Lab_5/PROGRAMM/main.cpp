@@ -59,10 +59,6 @@ void test1(){
 
     /* ### РЕШЕНИЕ ЗАДАЧИ ###*/
 
-    // Вывод кол-ва операций
-    //double op = ((BS + BS + 21 * BS + 16) * N + N + 24 + 8 + N) * 4 + 29 * 6 + 113;
-    //std::cout << "[LOG]: Num of operations = " << op << std::endl;
-
 
     time = Runge_Kutta(OUTPUT_FILEPATH + "body-(", global_m, global_r, global_v, tau, T, output);
 

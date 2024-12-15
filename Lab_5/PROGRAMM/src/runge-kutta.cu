@@ -108,7 +108,7 @@ float Runge_Kutta(const std::string& path, const std::vector<mytype>& global_m,
         }
     }
 
-    cudaDeviceSynchronize();
+    //cudaDeviceSynchronize();
     cudaEventRecord(finish);
     cudaEventSynchronize(finish);
 
