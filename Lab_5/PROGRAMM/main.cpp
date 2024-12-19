@@ -26,17 +26,17 @@ void test1(){
     std::string OUTPUT_FILEPATH;
 
     int N = 0;              // Кол-во тел
-    double tau = 1.0;       // Шаг по времени
-    double T = 20.0;        // Конечный момент времени
-    double countStep = 20.0;
-    double time;            // Время работы алгоритма
-    double EPS;             // Допустимая погрешность
+    mytype tau = 1.0;       // Шаг по времени
+    mytype T = 20.0;        // Конечный момент времени
+    mytype countStep = 20.0;
+    mytype time;            // Время работы алгоритма
+    mytype EPS;             // Допустимая погрешность
     bool output = false;     // Опция записи в файл
     int max_iterations;      // Ограничение итераций
 
     std::vector<mytype> global_m; // Вектор всех масс
-    std::vector<mytype> global_r; // Вектор всех координат
-    std::vector<mytype> global_v; // Вектор всех скоростей
+    std::vector<mytype3> global_r; // Вектор всех координат
+    std::vector<mytype3> global_v; // Вектор всех скоростей
 
 
 

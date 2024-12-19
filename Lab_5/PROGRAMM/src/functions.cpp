@@ -1,8 +1,7 @@
 #include "../include/N-body-problem-cuda.cuh"
 
-bool read(const std::string& path, std::vector<mytype>& global_m, std::vector<mytype>& global_r, std::vector<mytype>& global_v, int& N) {
+bool read(const std::string& path, std::vector<mytype>& global_m, std::vector<mytype3>& global_r, std::vector<mytype3>& global_v, int& N) {
     std::ifstream file(path);
-
     if (!file.is_open()) {
         std::cout << "[LOG]: File " << path << " is NOT open. \n";
         return false;
@@ -10,16 +9,17 @@ bool read(const std::string& path, std::vector<mytype>& global_m, std::vector<my
 
     file >> N;
     global_m.resize(N);
-    global_r.resize(N * 3);
-    global_v.resize(N * 3);
+    global_r.resize(N);
+    global_v.resize(N);
 
-    for (size_t i = 0; i < N; ++i) {
-        file >> global_m[i] >> global_r[3 * i] >> global_r[3 * i + 1] >> global_r[3 * i + 2]
-             >> global_v[3 * i] >> global_v[3 * i + 1] >> global_v[3 * i + 2];
+    for (int i = 0; i < N; ++i) {
+        mytype3 r, v;
+        file >> global_m[i] >> r.x >> r.y >> r.z >> v.x >> v.y >> v.z;
+        global_r[i] = r;
+        global_v[i] = v;
     }
 
     file.close();
-
     return true;
 }
 
@@ -30,7 +30,7 @@ bool read(const std::string& path, std::vector<mytype>& global_m, std::vector<my
  * @param t Текущее время.
  * @param number Номер тела.
  */
-__host__ bool write(const std::string& path, const std::vector<mytype>& r, mytype t, int number) {
+__host__ bool write(const std::string& path, const mytype3& r, mytype t, int number) {
     std::ofstream file(path + std::to_string(number) + ").txt", std::ios::app);
 
     if (!file.is_open()) {
@@ -38,10 +38,11 @@ __host__ bool write(const std::string& path, const std::vector<mytype>& r, mytyp
         return false;
     }
     file << t << "\t\t\t" << std::fixed << std::setprecision(12)
-         << r[0] << "\t\t\t" << r[1] << "\t\t\t" << r[2] << std::endl;
+         << r.x << "\t\t\t" << r.y << "\t\t\t" << r.z << std::endl;
     file.close();
     return true;
 }
+
 
 /**
  * @brief Очищает файлы вывода перед началом записи.
@@ -57,7 +58,7 @@ __host__ void clear_files(const std::string& path, int N) {
 
 /** Функция получения параметров из .json файла */
 bool input_parametres(const std::string& filename, std::string& test_filename, std::string& output_filename,
-                      double& T, double&tau, double& EPS, bool& output, int& max_iterations){
+                      mytype& T, mytype&tau, mytype& EPS, bool& output, int& max_iterations){
 
     // Открываем файл
     std::ifstream config_file(filename);

@@ -1,2 +1,16 @@
 Type = d, N = 1000, T = 20, tau = 0.1, TIME = 383.289, TIME per iter = 1.91645
 Type = f, N = 1000, T = 20, tau = 0.1, TIME = 119.549, TIME per iter = 0.597745
+Type = f, N = 1000, T = 20, tau = 0.1, TIME = 97.3803, TIME per iter = 0.486902
+Type = f, N = 1000, T = 20, tau = 0.1, TIME = 97.326, TIME per iter = 0.48663
+Type = d, N = 1000, T = 20, tau = 0.1, TIME = 556.908, TIME per iter = 2.78454
+Type = d, N = 1000, T = 20, tau = 0.1, TIME = 539.554, TIME per iter = 2.69777
+Type = f, N = 1000, T = 20, tau = 0.1, TIME = 97.2001, TIME per iter = 0.486001
+Type = d, N = 1000, T = 20, tau = 0.1, TIME = 513.351, TIME per iter = 2.56675
+Type = d, N = 1000, T = 20, tau = 0.1, TIME = 584.779, TIME per iter = 2.92389
+Type = f, N = 1000, T = 20, tau = 0.1, TIME = 96.8599, TIME per iter = 0.4843
+Type = d, N = 1000, T = 20, tau = 0.1, TIME = 588.797, TIME per iter = 2.94398
+Type = d, N = 1000, T = 20, tau = 0.1, TIME = 864.069, TIME per iter = 4.32034
+Type = f, N = 1000, T = 20, tau = 0.1, TIME = 316.035, TIME per iter = 1.58017
+Type = d, N = 1000, T = 20, tau = 0.1, TIME = 818.311, TIME per iter = 4.09156
+Type = d, N = 1000, T = 20, tau = 0.1, TIME = 859.192, TIME per iter = 4.29596
+Type = f, N = 1000, T = 20, tau = 0.1, TIME = 97.1561, TIME per iter = 0.48578

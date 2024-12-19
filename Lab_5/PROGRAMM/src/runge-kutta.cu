@@ -1,6 +1,8 @@
 #include "../include/N-body-problem-cuda.cuh"
 
 
+
+
 /**
  * @brief Метод Рунге-Кутта для решения задачи о движении N тел с использованием CUDA.
  * @param path Путь к файлу для вывода данных.
@@ -13,65 +15,54 @@
  * @return Среднее время выполнения одного шага.
  */
 float Runge_Kutta(const std::string& path, const std::vector<mytype>& global_m,
-                  std::vector<mytype>& global_r, std::vector<mytype>& global_v,
+                  std::vector<mytype3>& global_r, std::vector<mytype3>& global_v,
                   mytype tau, mytype T, bool output) {
 
+    int N = global_m.size();  // Количество тел
 
-    int N = global_m.size();  // Кол-во тел
-    int N3 = 3 * N;
-
-
-
+    mytype3 *device_r = nullptr, *device_v = nullptr;
+    mytype3 *kr1 = nullptr, *kv1 = nullptr;
+    mytype3 *kr2 = nullptr, *kv2 = nullptr;
+    mytype3 *kr3 = nullptr, *kv3 = nullptr;
+    mytype3 *kr4 = nullptr, *kv4 = nullptr;
+    mytype3 *temp_device_r = nullptr, *temp_device_v = nullptr;
     mytype *device_m = nullptr;
-    mytype *device_r = nullptr;
-    mytype *device_v = nullptr;
-    mytype *kr1 = nullptr;
-    mytype *kv1 = nullptr;
-    mytype *kr2 = nullptr;
-    mytype *kv2 = nullptr;
-    mytype *kr3 = nullptr;
-    mytype *kv3 = nullptr;
-    mytype *kr4 = nullptr;
-    mytype *kv4 = nullptr;
-    mytype *temp_device_r = nullptr;
-    mytype *temp_device_v = nullptr;
 
     mytype tau2 = tau / 2, t0 = 0.0;
 
     dim3 blocks((N + BS - 1) / BS); // Число блоков
     dim3 threads(BS);               // Число потоков
 
-    // Вывод числа тел
     std::cout << "[LOG]: N = " << N << std::endl;
 
     // Запись начального положения
     if (output) {
         for (size_t i = 0; i < N; ++i) {
-            write(path, {global_r[3 * i], global_r[3 * i + 1], global_r[3 * i + 2]}, t0, i + 1);
+            write(path, global_r[i], t0, i + 1);
         }
     }
 
     // Выделение памяти на устройстве
     cudaMalloc(&device_m, N * sizeof(mytype));
-    cudaMalloc(&device_r, N3 * sizeof(mytype));
-    cudaMalloc(&device_v, N3 * sizeof(mytype));
-    cudaMalloc(&temp_device_r, N3 * sizeof(mytype));
-    cudaMalloc(&temp_device_v, N3 * sizeof(mytype));
-    cudaMalloc(&kr1, N3 * sizeof(mytype));
-    cudaMalloc(&kr2, N3 * sizeof(mytype));
-    cudaMalloc(&kr3, N3 * sizeof(mytype));
-    cudaMalloc(&kr4, N3 * sizeof(mytype));
-    cudaMalloc(&kv1, N3 * sizeof(mytype));
-    cudaMalloc(&kv2, N3 * sizeof(mytype));
-    cudaMalloc(&kv3, N3 * sizeof(mytype));
-    cudaMalloc(&kv4, N3 * sizeof(mytype));
+    cudaMalloc(&device_r, N * sizeof(mytype3));
+    cudaMalloc(&device_v, N * sizeof(mytype3));
+    cudaMalloc(&temp_device_r, N * sizeof(mytype3));
+    cudaMalloc(&temp_device_v, N * sizeof(mytype3));
+    cudaMalloc(&kr1, N * sizeof(mytype3));
+    cudaMalloc(&kr2, N * sizeof(mytype3));
+    cudaMalloc(&kr3, N * sizeof(mytype3));
+    cudaMalloc(&kr4, N * sizeof(mytype3));
+    cudaMalloc(&kv1, N * sizeof(mytype3));
+    cudaMalloc(&kv2, N * sizeof(mytype3));
+    cudaMalloc(&kv3, N * sizeof(mytype3));
+    cudaMalloc(&kv4, N * sizeof(mytype3));
 
     // Копирование данных на устройство
     cudaMemcpy(device_m, global_m.data(), N * sizeof(mytype), cudaMemcpyHostToDevice);
-    cudaMemcpy(device_r, global_r.data(), N3 * sizeof(mytype), cudaMemcpyHostToDevice);
-    cudaMemcpy(device_v, global_v.data(), N3 * sizeof(mytype), cudaMemcpyHostToDevice);
+    cudaMemcpy(device_r, global_r.data(), N * sizeof(mytype3), cudaMemcpyHostToDevice);
+    cudaMemcpy(device_v, global_v.data(), N * sizeof(mytype3), cudaMemcpyHostToDevice);
 
-    cudaEvent_t start, finish; // Время старта/финиша
+    cudaEvent_t start, finish;
     cudaEventCreate(&start);
     cudaEventCreate(&finish);
 
@@ -100,23 +91,22 @@ float Runge_Kutta(const std::string& path, const std::vector<mytype>& global_m,
         t0 += tau;
         ++iter;
 
-        if (output){
-            cudaMemcpy(global_r.data(), device_r, N3 * sizeof(mytype), cudaMemcpyDeviceToHost);
+        if (output) {
+            cudaMemcpy(global_r.data(), device_r, N * sizeof(float3), cudaMemcpyDeviceToHost);
             for (size_t i = 0; i < N; ++i) {
-                write(path, {global_r[3 * i], global_r[3 * i + 1], global_r[3 * i + 2]}, t0, i + 1);
+                write(path, global_r[i], t0, i + 1);
             }
         }
     }
 
-    //cudaDeviceSynchronize();
     cudaEventRecord(finish);
     cudaEventSynchronize(finish);
 
     cudaEventElapsedTime(&time, start, finish);
 
     // Копирование данных обратно на хост
-    cudaMemcpy(global_r.data(), device_r, N3 * sizeof(mytype), cudaMemcpyDeviceToHost);
-    cudaMemcpy(global_v.data(), device_v, N3 * sizeof(mytype), cudaMemcpyDeviceToHost);
+    cudaMemcpy(global_r.data(), device_r, N * sizeof(mytype3), cudaMemcpyDeviceToHost);
+    cudaMemcpy(global_v.data(), device_v, N * sizeof(mytype3), cudaMemcpyDeviceToHost);
 
     // Освобождение памяти
     cudaFree(device_m);
@@ -133,6 +123,5 @@ float Runge_Kutta(const std::string& path, const std::vector<mytype>& global_m,
     cudaFree(kv3);
     cudaFree(kv4);
 
-    //return time;
     return time / iter;
 }
