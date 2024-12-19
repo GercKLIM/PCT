@@ -21,7 +21,7 @@ void test1(){
 
 
 
-    const std::string PTS_FILENAME = "../INPUT/input.json";
+    const std::string PTS_FILENAME = "INPUT/input.json";
     std::string TEST_FILENAME;
     std::string OUTPUT_FILEPATH;
 
@@ -71,9 +71,11 @@ void test1(){
     F << "Type = "<< typeid(mytype).name() << ", N = " << N  << ", T = " << T << ", tau = " << tau <<
     ", TIME = " << time * T / tau << ", TIME per iter = " << time << std::endl;
 
+    std::cout << "Type = "<< typeid(mytype).name() << ", N = " << N  << ", T = " << T << ", tau = " << tau <<
+      ", TIME = " << time * T / tau << ", TIME per iter = " << time << std::endl;
     typeid(mytype);
 
-    std::cout << "[LOG]: Time per step: " << time / 1000. << std::endl;
+    //std::cout << "[LOG]: Time per step: " << time / 1000. << std::endl;
     //std::cout << "[LOG]: Profit: " << op * N * N / time * 1000. << std::endl;
 }
 

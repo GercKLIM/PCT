@@ -18,7 +18,8 @@
 
 
 // Используемый тип данных для вычислений
-typedef double mytype;
+//typedef double mytype;
+typedef float mytype;
 
 
 

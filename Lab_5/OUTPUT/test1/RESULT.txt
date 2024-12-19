@@ -1,1 +1,2 @@
-
+Type = d, N = 1000, T = 20, tau = 0.1, TIME = 383.289, TIME per iter = 1.91645
+Type = f, N = 1000, T = 20, tau = 0.1, TIME = 119.549, TIME per iter = 0.597745
