@@ -20,15 +20,22 @@ float Runge_Kutta(const std::string& path, const std::vector<mytype>& global_m,
 
     int N = global_m.size();  // Количество тел
 
-    mytype3 *device_r = nullptr, *device_v = nullptr;
-    mytype3 *kr1 = nullptr, *kv1 = nullptr;
-    mytype3 *kr2 = nullptr, *kv2 = nullptr;
-    mytype3 *kr3 = nullptr, *kv3 = nullptr;
-    mytype3 *kr4 = nullptr, *kv4 = nullptr;
-    mytype3 *temp_device_r = nullptr, *temp_device_v = nullptr;
-    mytype *device_m = nullptr;
+    mytype  *device_m = nullptr;
+    mytype3 *device_r = nullptr;
+    mytype3 *device_v = nullptr;
+    mytype3 *kr1 = nullptr;
+    mytype3 *kv1 = nullptr;
+    mytype3 *kr2 = nullptr;
+    mytype3 *kv2 = nullptr;
+    mytype3 *kr3 = nullptr;
+    mytype3 *kv3 = nullptr;
+    mytype3 *kr4 = nullptr;
+    mytype3 *kv4 = nullptr;
+    mytype3 *temp_device_r = nullptr;
+    mytype3 *temp_device_v = nullptr;
 
-    mytype tau2 = tau / 2, t0 = 0.0;
+
+    mytype tau2 = tau / 2.0, t0 = 0.0;
 
     dim3 blocks((N + BS - 1) / BS); // Число блоков
     dim3 threads(BS);               // Число потоков
@@ -72,27 +79,32 @@ float Runge_Kutta(const std::string& path, const std::vector<mytype>& global_m,
     int iter = 0;
     while (t0 <= T) {
         // Расчёт этапов метода Рунге-Кутта
-        f<<<blocks, threads>>>(kr1, kv1, device_m, device_r, device_v, N);
+        f<<<blocks, threads>>>(kr1, kv1, device_m,
+                               device_r, device_v, N);
+        add<<<blocks, threads>>>(device_r, device_v, kr1,
+                                 kv1, temp_device_r, temp_device_v, N, tau2);
 
-        add<<<blocks, threads>>>(device_r, kr1, tau2, temp_device_r, N);
-        add<<<blocks, threads>>>(device_v, kv1, tau2, temp_device_v, N);
-        f<<<blocks, threads>>>(kr2, kv2, device_m, temp_device_r, temp_device_v, N);
+        f<<<blocks, threads>>>(kr2, kv2, device_m,
+                               temp_device_r, temp_device_v, N);
+        add<<<blocks, threads>>>(device_r, device_v, kr2,
+                                 kv2, temp_device_r, temp_device_v, N, tau2);
 
-        add<<<blocks, threads>>>(device_r, kr2, tau2, temp_device_r, N);
-        add<<<blocks, threads>>>(device_v, kv2, tau2, temp_device_v, N);
-        f<<<blocks, threads>>>(kr3, kv3, device_m, temp_device_r, temp_device_v, N);
+        f<<<blocks, threads>>>(kr3, kv3, device_m,
+                               temp_device_r, temp_device_v, N);
+        add<<<blocks, threads>>>(device_r, device_v, kr3,
+                                 kv3, temp_device_r, temp_device_v, N, tau);
 
-        add<<<blocks, threads>>>(device_r, kr3, tau, temp_device_r, N);
-        add<<<blocks, threads>>>(device_v, kv3, tau, temp_device_v, N);
-        f<<<blocks, threads>>>(kr4, kv4, device_m, temp_device_r, temp_device_v, N);
-
-        summarize<<<blocks, threads>>>(device_r, device_v, tau, kr1, kv1, kr2, kv2, kr3, kv3, kr4, kv4, N);
+        f<<<blocks, threads>>>(kr4, kv4, device_m,
+                               temp_device_r, temp_device_v, N);
+        summarize<<<blocks, threads>>>(device_r, device_v,
+                                       tau, kr1, kv1, kr2, kv2, kr3, kv3, kr4, kv4, N);
 
         t0 += tau;
         ++iter;
 
         if (output) {
-            cudaMemcpy(global_r.data(), device_r, N * sizeof(float3), cudaMemcpyDeviceToHost);
+            cudaMemcpy(global_r.data(), device_r, N * sizeof(mytype3),
+                       cudaMemcpyDeviceToHost);
             for (size_t i = 0; i < N; ++i) {
                 write(path, global_r[i], t0, i + 1);
             }
@@ -123,5 +135,5 @@ float Runge_Kutta(const std::string& path, const std::vector<mytype>& global_m,
     cudaFree(kv3);
     cudaFree(kv4);
 
-    return time / iter;
+    return 0.001 * time / iter ;
 }

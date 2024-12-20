@@ -18,17 +18,17 @@
 
 
 // Используемый тип данных для вычислений
-//typedef double mytype;
-//typedef double3 mytype3;
-typedef float mytype;
-typedef float3 mytype3;
+typedef double mytype;
+typedef double3 mytype3;
+//typedef float mytype;
+//typedef float3 mytype3;
 
 
 
 // Гравитационная постоянная и параметр стабилизации
 constexpr mytype G = -6.67e-11;
 constexpr mytype eps = 1e-6;
-constexpr int BS = 32; // Размер блока для CUDA
+constexpr int BS = 128; // Размер блока для CUDA
 
 
 
@@ -129,7 +129,9 @@ __global__ void f(mytype3* kr, mytype3* kv, mytype* device_m, mytype3* device_r,
  * @param temp_device_r Обновленные координаты.
  * @param N Число тел.
  */
-__global__ void add(mytype3* device_r, mytype3* kr, float tau, mytype3* temp_device_r, int N);
+__global__ void
+add(mytype3 *device_r, mytype3 *device_v, mytype3 *kr, mytype3 *kv, mytype3 *temp_device_r, mytype3 *temp_device_v,
+    int N, mytype tau);
 
 
 
@@ -142,7 +144,7 @@ __global__ void add(mytype3* device_r, mytype3* kr, float tau, mytype3* temp_dev
  * @param kv1..kv4 Вектора изменений скоростей.
  * @param N Число тел.
  */
-__global__ void summarize(mytype3* device_r, mytype3* device_v, float tau,
+__global__ void summarize(mytype3* device_r, mytype3* device_v, mytype tau,
                           mytype3* kr1, mytype3* kv1,
                           mytype3* kr2, mytype3* kv2,
                           mytype3* kr3, mytype3* kv3,
