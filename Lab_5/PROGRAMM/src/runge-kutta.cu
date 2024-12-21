@@ -73,34 +73,42 @@ float Runge_Kutta(const std::string& path, const std::vector<mytype>& global_m,
     cudaEventCreate(&start);
     cudaEventCreate(&finish);
 
+    /* КОЛ-ВО ОПЕРАЦИЙ
+     *
+     * M = threads * block * ( 4 * (4 + N * BS * 7) + 3 * ( 7 ) + 1 * 26)
+     * P = threads * block * ( 4 * ( 1 + N * (2 + 9 * BS) + 3 * 7 + 1 * 25) + 2
+     *
+     * */
+
+
     float time = 0.0f;
     cudaEventRecord(start);
 
     int iter = 0;
-    while (t0 <= T) {
+    while (t0 <= T) { // * threads * block
         // Расчёт этапов метода Рунге-Кутта
-        f<<<blocks, threads>>>(kr1, kv1, device_m,
+        f<<<blocks, threads>>>(kr1, kv1, device_m, // m: 4 + N * BS * 7   p: 1 + N * ( 2 + BS * 9)
                                device_r, device_v, N);
         add<<<blocks, threads>>>(device_r, device_v, kr1,
-                                 kv1, temp_device_r, temp_device_v, N, tau2);
+                                 kv1, temp_device_r, temp_device_v, N, tau2); // 7m 7p
 
         f<<<blocks, threads>>>(kr2, kv2, device_m,
-                               temp_device_r, temp_device_v, N);
+                               temp_device_r, temp_device_v, N); // m: 4 + N * BS * 7   p: 1 + N * ( 2 + BS * 9)
         add<<<blocks, threads>>>(device_r, device_v, kr2,
-                                 kv2, temp_device_r, temp_device_v, N, tau2);
+                                 kv2, temp_device_r, temp_device_v, N, tau2); // 7m 7p
 
         f<<<blocks, threads>>>(kr3, kv3, device_m,
-                               temp_device_r, temp_device_v, N);
+                               temp_device_r, temp_device_v, N); // m: 4 + N * BS * 7   p: 1 + N * ( 2 + BS * 9)
         add<<<blocks, threads>>>(device_r, device_v, kr3,
-                                 kv3, temp_device_r, temp_device_v, N, tau);
+                                 kv3, temp_device_r, temp_device_v, N, tau); // 7m 7p
 
         f<<<blocks, threads>>>(kr4, kv4, device_m,
-                               temp_device_r, temp_device_v, N);
+                               temp_device_r, temp_device_v, N); // m: 4 + N * BS * 7   p: 1 + N * ( 2 + BS * 9)
         summarize<<<blocks, threads>>>(device_r, device_v,
-                                       tau, kr1, kv1, kr2, kv2, kr3, kv3, kr4, kv4, N);
+                                       tau, kr1, kv1, kr2, kv2, kr3, kv3, kr4, kv4, N); // 26m 25p
 
-        t0 += tau;
-        ++iter;
+        t0 += tau; // 1p
+        ++iter; // 1p
 
         if (output) {
             cudaMemcpy(global_r.data(), device_r, N * sizeof(mytype3),

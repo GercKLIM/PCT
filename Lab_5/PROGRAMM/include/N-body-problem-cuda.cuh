@@ -18,10 +18,10 @@
 
 
 // Используемый тип данных для вычислений
-typedef double mytype;
-typedef double3 mytype3;
-//typedef float mytype;
-//typedef float3 mytype3;
+//typedef double mytype;
+//typedef double3 mytype3;
+typedef float mytype;
+typedef float3 mytype3;
 
 
 

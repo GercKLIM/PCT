@@ -70,9 +70,9 @@ __device__ double norm(const double3& v) {
  * @param device_v Скорости тел на устройстве.
  * @param N Число тел.
  */
-__global__ void f(mytype3* kr, mytype3* kv, mytype* device_m, mytype3* device_r, mytype3* device_v, int N) {
+__global__ void f(mytype3* kr, mytype3* kv, mytype* device_m, mytype3* device_r, mytype3* device_v, int N) { // m: 4 + N * BS * 8   p: 1 + N * ( 2 + BS * 9)
 
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    int idx = blockIdx.x * blockDim.x + threadIdx.x; // 1m 1p
 
     __shared__ mytype3 shared_r[BS];
     __shared__ mytype shared_m[BS];
@@ -81,29 +81,29 @@ __global__ void f(mytype3* kr, mytype3* kv, mytype* device_m, mytype3* device_r,
     mytype3 position = device_r[idx];
     mytype3 temp_sum = {0., 0., 0.};
 
-    for (int i = 0; i < N; i += BS) {
+    for (int i = 0; i < N; i += BS) { // *N
 
-        shared_m[threadIdx.x] = device_m[threadIdx.x + i];
-        shared_r[threadIdx.x] = device_r[threadIdx.x + i];
+        shared_m[threadIdx.x] = device_m[threadIdx.x + i]; // 1p
+        shared_r[threadIdx.x] = device_r[threadIdx.x + i]; // 1p
 
         __syncthreads();
 
-        for (int j = 0; j < BS; ++j) {
+        for (int j = 0; j < BS; ++j) { // * BS
             if (i + j < N) {
-                mytype3 diff = position - shared_r[j];
+                mytype3 diff = position - shared_r[j]; // 3p
 
-                mytype distance = my_fmax(norm(diff), eps);
-                mytype a = shared_m[j] / distance;
+                mytype distance = my_fmax(norm(diff), eps); // 4m 3p
+                mytype a = shared_m[j] / distance;                   // 1m
 
-                temp_sum = temp_sum + diff * a;
+                temp_sum = temp_sum + diff * a;                      // 3m 3p
 
             }
         }
         __syncthreads();
-    }
+    } // end * N
 
     if (idx < N) {
-        kv[idx] = temp_sum * G;
+        kv[idx] = temp_sum * G;                                       // 3m
         kr[idx] = device_v[idx];
     }
 }
@@ -121,12 +121,12 @@ __global__ void f(mytype3* kr, mytype3* kv, mytype* device_m, mytype3* device_r,
         add<<<blocks, threads>>>(device_v, kv1, tau2, temp_device_v, N, nullptr);
  */
 __global__ void
-add(mytype3 *device_r, mytype3 *device_v, mytype3 *kr, mytype3 *kv, mytype3 *temp_device_r, mytype3 *temp_device_v,
+add(mytype3 *device_r, mytype3 *device_v, mytype3 *kr, mytype3 *kv, mytype3 *temp_device_r, mytype3 *temp_device_v, // 7m 7p
     int N, mytype tau) {
-    int idx = threadIdx.x + blockDim.x * blockIdx.x;
+    int idx = threadIdx.x + blockDim.x * blockIdx.x; // 1m 1p
     if (idx < N) {
-        temp_device_r[idx] = device_r[idx] + kr[idx] * tau;
-        temp_device_v[idx] = device_v[idx] + kv[idx] * tau;
+        temp_device_r[idx] = device_r[idx] + kr[idx] * tau; // 3m 3p
+        temp_device_v[idx] = device_v[idx] + kv[idx] * tau; // 3m 3p
     }
 }
 
@@ -140,22 +140,22 @@ add(mytype3 *device_r, mytype3 *device_v, mytype3 *kr, mytype3 *kv, mytype3 *tem
  * @param kv1..kv4 Вектора изменений скоростей.
  * @param N Число тел.
  */
-__global__ void summarize(mytype3* device_r, mytype3* device_v, mytype tau,
+__global__ void summarize(mytype3* device_r, mytype3* device_v, mytype tau,  // 26m 25p
                           mytype3* kr1, mytype3* kv1,
                           mytype3* kr2, mytype3* kv2,
                           mytype3* kr3, mytype3* kv3,
                           mytype3* kr4, mytype3* kv4, int N) {
 
-    int idx = threadIdx.x + blockDim.x * blockIdx.x;
-    mytype tau6 = tau / 6.0;
+    int idx = threadIdx.x + blockDim.x * blockIdx.x; // 1m 1p
+    mytype tau6 = tau / 6.0; // 1m
 
     if (idx < N) {
 
         device_r[idx] = device_r[idx] + (kr1[idx] +
-                kr2[idx] * 2.0 + kr3[idx] * 2.0 + kr4[idx]) * tau6;
+                kr2[idx] * 2.0 + kr3[idx] * 2.0 + kr4[idx]) * tau6; // 12m 12p
 
         device_v[idx] = device_v[idx] + (kv1[idx] +
-                kv2[idx] * 2.0 + kv3[idx] * 2.0 + kv4[idx]) * tau6;
+                kv2[idx] * 2.0 + kv3[idx] * 2.0 + kv4[idx]) * tau6; // 12m 12p
     }
 }
 
